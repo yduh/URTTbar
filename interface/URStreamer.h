@@ -4,35 +4,30 @@
 //#include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
-
+#include "TLorentzVector.h"
 #include <vector>
 using namespace std;
 
-class Met{
+class Met: public TLorentzVector{
 friend class URStreamer;
 public:
-//  Met(const float &i_px_,const float &i_py_,const float &i_et_,const float &i_phi_):
+//  Met(const float &i_px_,const float &i_py_):
 //    
 //  {}
   Met():
+    TLorentzVector(),
     px_(0),
-    py_(0),
-    et_(0),
-    phi_(0)
+    py_(0)
   {}
   float px() const {return px_;}
   float py() const {return py_;}
-  float et() const {return et_;}
-  float phi() const {return phi_;}
+  ClassDef(Met, 1);
 private:
   float px_;
   float py_;
-  float et_;
-  float phi_;
   void setpx(const float value) {px_ = value;}
   void setpy(const float value) {py_ = value;}
-  void setet(const float value) {et_ = value;}
-  void setphi(const float value) {phi_ = value;}
+  void setLotentzVector(float pt, float phi){SetPtEtaPhiM(pt, 0., phi, 0.);}
 };
 
 class Geninfo{
@@ -62,19 +57,17 @@ private:
   void setrenScale(const Float_t value) {renScale_ = value;}
 };
 
-class Photon{
+class Photon: public TLorentzVector{
 friend class URStreamer;
 public:
-//  Photon(const float &i_px_,const float &i_py_,const float &i_pz_,const float &i_pt_,const float &i_eta_,const float &i_phi_,const int &i_charge_,const float &i_x_,const float &i_y_,const float &i_z_,const float &i_energy_,const float &i_rawEnergy_,const float &i_phiWidth_,const float &i_etaWidth_,const float &i_e3x3_,const float &i_maxCrystalEnergy_,const bool &i_isEB_,const bool &i_isEE_,const bool &i_isPFlowPhoton_,const bool &i_hasConversionTracks_,const bool &i_hasPixelSeed_):
+//  Photon(const float &i_px_,const float &i_py_,const float &i_pz_,const int &i_charge_,const float &i_x_,const float &i_y_,const float &i_z_,const float &i_energy_,const float &i_rawEnergy_,const float &i_phiWidth_,const float &i_etaWidth_,const float &i_e3x3_,const float &i_maxCrystalEnergy_,const bool &i_isEB_,const bool &i_isEE_,const bool &i_isPFlowPhoton_,const bool &i_hasConversionTracks_,const bool &i_hasPixelSeed_):
 //    
 //  {}
   Photon():
+    TLorentzVector(),
     px_(0),
     py_(0),
     pz_(0),
-    pt_(0),
-    eta_(0),
-    phi_(0),
     charge_(0),
     x_(0),
     y_(0),
@@ -94,9 +87,6 @@ public:
   float px() const {return px_;}
   float py() const {return py_;}
   float pz() const {return pz_;}
-  float pt() const {return pt_;}
-  float eta() const {return eta_;}
-  float phi() const {return phi_;}
   int charge() const {return charge_;}
   float x() const {return x_;}
   float y() const {return y_;}
@@ -112,13 +102,11 @@ public:
   bool isPFlowPhoton() const {return isPFlowPhoton_;}
   bool hasConversionTracks() const {return hasConversionTracks_;}
   bool hasPixelSeed() const {return hasPixelSeed_;}
+  ClassDef(Photon, 1);
 private:
   float px_;
   float py_;
   float pz_;
-  float pt_;
-  float eta_;
-  float phi_;
   int charge_;
   float x_;
   float y_;
@@ -137,9 +125,6 @@ private:
   void setpx(const float value) {px_ = value;}
   void setpy(const float value) {py_ = value;}
   void setpz(const float value) {pz_ = value;}
-  void setpt(const float value) {pt_ = value;}
-  void seteta(const float value) {eta_ = value;}
-  void setphi(const float value) {phi_ = value;}
   void setcharge(const int value) {charge_ = value;}
   void setx(const float value) {x_ = value;}
   void sety(const float value) {y_ = value;}
@@ -155,64 +140,20 @@ private:
   void setisPFlowPhoton(const bool value) {isPFlowPhoton_ = value;}
   void sethasConversionTracks(const bool value) {hasConversionTracks_ = value;}
   void sethasPixelSeed(const bool value) {hasPixelSeed_ = value;}
+  void setLotentzVector(float pt, float eta, float phi){SetPtEtaPhiM(pt, eta, phi, 0.);}
 };
 
-class Trigger{
+class Electron: public TLorentzVector{
 friend class URStreamer;
 public:
-//  Trigger(const Bool_t &i_IsoMu20_eta2p1_,const Bool_t &i_IsoMu24_,const Bool_t &i_IsoMu24_eta2p1_,const Bool_t &i_IsoMu30_,const Bool_t &i_IsoMu30_eta2p1_,const Bool_t &i_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_,const Bool_t &i_Ele27_WP80_,const Bool_t &i_Ele30_CaloIdVT_TrkIdT_):
-//    
-//  {}
-  Trigger():
-    IsoMu20_eta2p1_(0),
-    IsoMu24_(0),
-    IsoMu24_eta2p1_(0),
-    IsoMu30_(0),
-    IsoMu30_eta2p1_(0),
-    Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_(0),
-    Ele27_WP80_(0),
-    Ele30_CaloIdVT_TrkIdT_(0)
-  {}
-  Bool_t IsoMu20_eta2p1() const {return IsoMu20_eta2p1_;}
-  Bool_t IsoMu24() const {return IsoMu24_;}
-  Bool_t IsoMu24_eta2p1() const {return IsoMu24_eta2p1_;}
-  Bool_t IsoMu30() const {return IsoMu30_;}
-  Bool_t IsoMu30_eta2p1() const {return IsoMu30_eta2p1_;}
-  Bool_t Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL() const {return Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_;}
-  Bool_t Ele27_WP80() const {return Ele27_WP80_;}
-  Bool_t Ele30_CaloIdVT_TrkIdT() const {return Ele30_CaloIdVT_TrkIdT_;}
-private:
-  Bool_t IsoMu20_eta2p1_;
-  Bool_t IsoMu24_;
-  Bool_t IsoMu24_eta2p1_;
-  Bool_t IsoMu30_;
-  Bool_t IsoMu30_eta2p1_;
-  Bool_t Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_;
-  Bool_t Ele27_WP80_;
-  Bool_t Ele30_CaloIdVT_TrkIdT_;
-  void setIsoMu20_eta2p1(const Bool_t value) {IsoMu20_eta2p1_ = value;}
-  void setIsoMu24(const Bool_t value) {IsoMu24_ = value;}
-  void setIsoMu24_eta2p1(const Bool_t value) {IsoMu24_eta2p1_ = value;}
-  void setIsoMu30(const Bool_t value) {IsoMu30_ = value;}
-  void setIsoMu30_eta2p1(const Bool_t value) {IsoMu30_eta2p1_ = value;}
-  void setEle27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL(const Bool_t value) {Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_ = value;}
-  void setEle27_WP80(const Bool_t value) {Ele27_WP80_ = value;}
-  void setEle30_CaloIdVT_TrkIdT(const Bool_t value) {Ele30_CaloIdVT_TrkIdT_ = value;}
-};
-
-class Electron{
-friend class URStreamer;
-public:
-//  Electron(const float &i_px_,const float &i_py_,const float &i_pz_,const float &i_pt_,const float &i_eta_,const float &i_phi_,const int &i_charge_,const float &i_chargedIso_,const float &i_neutralIso_,const float &i_photonIso_,const float &i_puIso_,const float &i_r9_,const float &i_ESCOverETrack_,const float &i_DEtaSCTrk_,const float &i_DPhiSCTrk_,const float &i_ecalEnergy_,const bool &i_isEB_,const bool &i_isEE_,const bool &i_isEBGap_,const bool &i_isEBEtaGap_,const bool &i_isEBPhiGap_,const bool &i_isEEGap_,const bool &i_isEERingGap_,const bool &i_isEEDeeGap_,const bool &i_isEBEEGap_,const bool &i_isElectron_,const bool &i_ecalSeed_,const bool &i_trackSeed_,const bool &i_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_,const bool &i_Ele27_WP80_,const bool &i_Ele30_CaloIdVT_TrkIdT_,const float &i_e1x5_,const float &i_e5x5_,const float &i_sigmaIEtaIEta_,const float &i_sigmaIPhiIPhi_,const float &i_hcalDepth1OverEcalBc_,const float &i_hcalDepth2OverEcalBc_,const float &i_x_,const float &i_y_,const float &i_z_,const float &i_energy_,const float &i_rawEnergy_,const float &i_phiWidth_,const float &i_etaWidth_):
+//  Electron(const float &i_px_,const float &i_py_,const float &i_pz_,const int &i_charge_,const float &i_chargedIso_,const float &i_neutralIso_,const float &i_photonIso_,const float &i_puIso_,const float &i_r9_,const float &i_ESCOverETrack_,const float &i_DEtaSCTrk_,const float &i_DPhiSCTrk_,const float &i_ecalEnergy_,const float &i_dB_,const float &i_dz_,const bool &i_passConversionVeto_,const bool &i_isEB_,const bool &i_isEE_,const bool &i_isEBGap_,const bool &i_isEBEtaGap_,const bool &i_isEBPhiGap_,const bool &i_isEEGap_,const bool &i_isEERingGap_,const bool &i_isEEDeeGap_,const bool &i_isEBEEGap_,const bool &i_isElectron_,const bool &i_ecalSeed_,const bool &i_trackSeed_,const bool &i_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_,const bool &i_Ele27_WP80_,const bool &i_Ele30_CaloIdVT_TrkIdT_,const float &i_e1x5_,const float &i_e5x5_,const float &i_sigmaIEtaIEta_,const float &i_sigmaIPhiIPhi_,const float &i_hcalDepth1OverEcalBc_,const float &i_hcalDepth2OverEcalBc_,const float &i_x_,const float &i_y_,const float &i_z_,const float &i_energy_,const float &i_rawEnergy_,const float &i_phiWidth_,const float &i_etaWidth_):
 //    
 //  {}
   Electron():
+    TLorentzVector(),
     px_(0),
     py_(0),
     pz_(0),
-    pt_(0),
-    eta_(0),
-    phi_(0),
     charge_(0),
     chargedIso_(0),
     neutralIso_(0),
@@ -223,6 +164,9 @@ public:
     DEtaSCTrk_(0),
     DPhiSCTrk_(0),
     ecalEnergy_(0),
+    dB_(0),
+    dz_(0),
+    passConversionVeto_(0),
     isEB_(0),
     isEE_(0),
     isEBGap_(0),
@@ -255,9 +199,6 @@ public:
   float px() const {return px_;}
   float py() const {return py_;}
   float pz() const {return pz_;}
-  float pt() const {return pt_;}
-  float eta() const {return eta_;}
-  float phi() const {return phi_;}
   int charge() const {return charge_;}
   float chargedIso() const {return chargedIso_;}
   float neutralIso() const {return neutralIso_;}
@@ -268,6 +209,9 @@ public:
   float DEtaSCTrk() const {return DEtaSCTrk_;}
   float DPhiSCTrk() const {return DPhiSCTrk_;}
   float ecalEnergy() const {return ecalEnergy_;}
+  float dB() const {return dB_;}
+  float dz() const {return dz_;}
+  bool passConversionVeto() const {return passConversionVeto_;}
   bool isEB() const {return isEB_;}
   bool isEE() const {return isEE_;}
   bool isEBGap() const {return isEBGap_;}
@@ -296,13 +240,11 @@ public:
   float rawEnergy() const {return rawEnergy_;}
   float phiWidth() const {return phiWidth_;}
   float etaWidth() const {return etaWidth_;}
+  ClassDef(Electron, 1);
 private:
   float px_;
   float py_;
   float pz_;
-  float pt_;
-  float eta_;
-  float phi_;
   int charge_;
   float chargedIso_;
   float neutralIso_;
@@ -313,6 +255,9 @@ private:
   float DEtaSCTrk_;
   float DPhiSCTrk_;
   float ecalEnergy_;
+  float dB_;
+  float dz_;
+  bool passConversionVeto_;
   bool isEB_;
   bool isEE_;
   bool isEBGap_;
@@ -344,9 +289,6 @@ private:
   void setpx(const float value) {px_ = value;}
   void setpy(const float value) {py_ = value;}
   void setpz(const float value) {pz_ = value;}
-  void setpt(const float value) {pt_ = value;}
-  void seteta(const float value) {eta_ = value;}
-  void setphi(const float value) {phi_ = value;}
   void setcharge(const int value) {charge_ = value;}
   void setchargedIso(const float value) {chargedIso_ = value;}
   void setneutralIso(const float value) {neutralIso_ = value;}
@@ -357,6 +299,9 @@ private:
   void setDEtaSCTrk(const float value) {DEtaSCTrk_ = value;}
   void setDPhiSCTrk(const float value) {DPhiSCTrk_ = value;}
   void setecalEnergy(const float value) {ecalEnergy_ = value;}
+  void setdB(const float value) {dB_ = value;}
+  void setdz(const float value) {dz_ = value;}
+  void setpassConversionVeto(const bool value) {passConversionVeto_ = value;}
   void setisEB(const bool value) {isEB_ = value;}
   void setisEE(const bool value) {isEE_ = value;}
   void setisEBGap(const bool value) {isEBGap_ = value;}
@@ -385,25 +330,23 @@ private:
   void setrawEnergy(const float value) {rawEnergy_ = value;}
   void setphiWidth(const float value) {phiWidth_ = value;}
   void setetaWidth(const float value) {etaWidth_ = value;}
+  void setLotentzVector(float pt, float eta, float phi){SetPtEtaPhiM(pt, eta, phi, 0.);}
 };
 
-class Jet{
+class Jet: public TLorentzVector{
 friend class URStreamer;
 public:
-//  Jet(const float &i_px_,const float &i_py_,const float &i_pz_,const float &i_pt_,const float &i_eta_,const float &i_phi_,const int &i_charge_,const float &i_e_,const float &i_area_,const float &i_mass_,const float &i_chargedHadronEnergy_,const float &i_neutralHadronEnergy_,const float &i_photonEnergy_,const float &i_electronEnergy_,const float &i_muonEnergy_,const float &i_forwardEM_,const float &i_forwardHad_,const float &i_numChargedHadrons_,const float &i_numNeutralHadrons_,const float &i_numPhotons_,const float &i_numElectrons_,const float &i_numMuons_,const float &i_numForwardEMs_,const float &i_numForwardHads_,const float &i_puId_,const float &i_jetBProb_,const float &i_jetProb_,const float &i_trkHiPur_,const float &i_trkHiEff_,const float &i_ssvHiEff_,const float &i_ssvHiPur_,const float &i_csv_,const float &i_csvIncl_,const float &i_vtxMass_,const float &i_vtxNtracks_,const float &i_vtx3DVal_,const float &i_vtx3DSig_):
+//  Jet(const float &i_px_,const float &i_py_,const float &i_pz_,const int &i_charge_,const float &i_e_,const float &i_area_,const float &i_chargedHadronEnergy_,const float &i_neutralHadronEnergy_,const float &i_photonEnergy_,const float &i_electronEnergy_,const float &i_muonEnergy_,const float &i_forwardEM_,const float &i_forwardHad_,const float &i_numChargedHadrons_,const float &i_numNeutralHadrons_,const float &i_numPhotons_,const float &i_numElectrons_,const float &i_numMuons_,const float &i_numForwardEMs_,const float &i_numForwardHads_,const float &i_puId_,const float &i_jetBProb_,const float &i_jetProb_,const float &i_trkHiPur_,const float &i_trkHiEff_,const float &i_ssvHiEff_,const float &i_ssvHiPur_,const float &i_csv_,const float &i_csvIncl_,const float &i_vtxMass_,const float &i_vtxNtracks_,const float &i_vtx3DVal_,const float &i_vtx3DSig_):
 //    
 //  {}
   Jet():
+    TLorentzVector(),
     px_(0),
     py_(0),
     pz_(0),
-    pt_(0),
-    eta_(0),
-    phi_(0),
     charge_(0),
     e_(0),
     area_(0),
-    mass_(0),
     chargedHadronEnergy_(0),
     neutralHadronEnergy_(0),
     photonEnergy_(0),
@@ -435,13 +378,9 @@ public:
   float px() const {return px_;}
   float py() const {return py_;}
   float pz() const {return pz_;}
-  float pt() const {return pt_;}
-  float eta() const {return eta_;}
-  float phi() const {return phi_;}
   int charge() const {return charge_;}
   float e() const {return e_;}
   float area() const {return area_;}
-  float mass() const {return mass_;}
   float chargedHadronEnergy() const {return chargedHadronEnergy_;}
   float neutralHadronEnergy() const {return neutralHadronEnergy_;}
   float photonEnergy() const {return photonEnergy_;}
@@ -469,17 +408,14 @@ public:
   float vtxNtracks() const {return vtxNtracks_;}
   float vtx3DVal() const {return vtx3DVal_;}
   float vtx3DSig() const {return vtx3DSig_;}
+  ClassDef(Jet, 1);
 private:
   float px_;
   float py_;
   float pz_;
-  float pt_;
-  float eta_;
-  float phi_;
   int charge_;
   float e_;
   float area_;
-  float mass_;
   float chargedHadronEnergy_;
   float neutralHadronEnergy_;
   float photonEnergy_;
@@ -510,13 +446,9 @@ private:
   void setpx(const float value) {px_ = value;}
   void setpy(const float value) {py_ = value;}
   void setpz(const float value) {pz_ = value;}
-  void setpt(const float value) {pt_ = value;}
-  void seteta(const float value) {eta_ = value;}
-  void setphi(const float value) {phi_ = value;}
   void setcharge(const int value) {charge_ = value;}
   void sete(const float value) {e_ = value;}
   void setarea(const float value) {area_ = value;}
-  void setmass(const float value) {mass_ = value;}
   void setchargedHadronEnergy(const float value) {chargedHadronEnergy_ = value;}
   void setneutralHadronEnergy(const float value) {neutralHadronEnergy_ = value;}
   void setphotonEnergy(const float value) {photonEnergy_ = value;}
@@ -544,21 +476,20 @@ private:
   void setvtxNtracks(const float value) {vtxNtracks_ = value;}
   void setvtx3DVal(const float value) {vtx3DVal_ = value;}
   void setvtx3DSig(const float value) {vtx3DSig_ = value;}
+  void setLotentzVector(float pt, float eta, float phi, float mass){SetPtEtaPhiM(pt, eta, phi, mass);}
 };
 
-class Muon{
+class Muon: public TLorentzVector{
 friend class URStreamer;
 public:
-//  Muon(const float &i_px_,const float &i_py_,const float &i_pz_,const float &i_pt_,const float &i_eta_,const float &i_phi_,const int &i_charge_,const float &i_chargedIso_,const float &i_neutralIso_,const float &i_photonIso_,const float &i_puIso_,const float &i_ECalEnergy_,const float &i_HCalEnergy_,const int &i_numChambers_,const int &i_numMatchedStations_,const float &i_ptErr_,const float &i_chi2_,const int &i_ndof_,const float &i_validHits_,const bool &i_isGlobal_,const bool &i_isTracker_,const bool &i_isCalo_,const bool &i_isPF_,const bool &i_isStandAlone_,const bool &i_isLoose_,const bool &i_IsoMu20_eta2p1_,const bool &i_IsoMu24_,const bool &i_IsoMu24_eta2p1_,const bool &i_IsoMu30_,const bool &i_IsoMu30_eta2p1_):
+//  Muon(const float &i_px_,const float &i_py_,const float &i_pz_,const int &i_charge_,const float &i_chargedIso_,const float &i_neutralIso_,const float &i_photonIso_,const float &i_puIso_,const float &i_ECalEnergy_,const float &i_HCalEnergy_,const int &i_numChambers_,const int &i_numMatchedStations_,const float &i_dB_,const float &i_ptErr_,const float &i_chi2_,const int &i_ndof_,const float &i_validHits_,const float &i_pixelHits_,const float &i_trackerLayers_,const float &i_dz_,const bool &i_isGlobal_,const bool &i_isTracker_,const bool &i_isCalo_,const bool &i_isPF_,const bool &i_isStandAlone_,const bool &i_isLoose_,const bool &i_IsoMu20_eta2p1_,const bool &i_IsoMu24_,const bool &i_IsoMu24_eta2p1_,const bool &i_IsoMu30_,const bool &i_IsoMu30_eta2p1_):
 //    
 //  {}
   Muon():
+    TLorentzVector(),
     px_(0),
     py_(0),
     pz_(0),
-    pt_(0),
-    eta_(0),
-    phi_(0),
     charge_(0),
     chargedIso_(0),
     neutralIso_(0),
@@ -568,10 +499,14 @@ public:
     HCalEnergy_(0),
     numChambers_(0),
     numMatchedStations_(0),
+    dB_(0),
     ptErr_(0),
     chi2_(0),
     ndof_(0),
     validHits_(0),
+    pixelHits_(0),
+    trackerLayers_(0),
+    dz_(0),
     isGlobal_(0),
     isTracker_(0),
     isCalo_(0),
@@ -587,9 +522,6 @@ public:
   float px() const {return px_;}
   float py() const {return py_;}
   float pz() const {return pz_;}
-  float pt() const {return pt_;}
-  float eta() const {return eta_;}
-  float phi() const {return phi_;}
   int charge() const {return charge_;}
   float chargedIso() const {return chargedIso_;}
   float neutralIso() const {return neutralIso_;}
@@ -599,10 +531,14 @@ public:
   float HCalEnergy() const {return HCalEnergy_;}
   int numChambers() const {return numChambers_;}
   int numMatchedStations() const {return numMatchedStations_;}
+  float dB() const {return dB_;}
   float ptErr() const {return ptErr_;}
   float chi2() const {return chi2_;}
   int ndof() const {return ndof_;}
   float validHits() const {return validHits_;}
+  float pixelHits() const {return pixelHits_;}
+  float trackerLayers() const {return trackerLayers_;}
+  float dz() const {return dz_;}
   bool isGlobal() const {return isGlobal_;}
   bool isTracker() const {return isTracker_;}
   bool isCalo() const {return isCalo_;}
@@ -614,13 +550,11 @@ public:
   bool IsoMu24_eta2p1() const {return IsoMu24_eta2p1_;}
   bool IsoMu30() const {return IsoMu30_;}
   bool IsoMu30_eta2p1() const {return IsoMu30_eta2p1_;}
+  ClassDef(Muon, 1);
 private:
   float px_;
   float py_;
   float pz_;
-  float pt_;
-  float eta_;
-  float phi_;
   int charge_;
   float chargedIso_;
   float neutralIso_;
@@ -630,10 +564,14 @@ private:
   float HCalEnergy_;
   int numChambers_;
   int numMatchedStations_;
+  float dB_;
   float ptErr_;
   float chi2_;
   int ndof_;
   float validHits_;
+  float pixelHits_;
+  float trackerLayers_;
+  float dz_;
   bool isGlobal_;
   bool isTracker_;
   bool isCalo_;
@@ -648,9 +586,6 @@ private:
   void setpx(const float value) {px_ = value;}
   void setpy(const float value) {py_ = value;}
   void setpz(const float value) {pz_ = value;}
-  void setpt(const float value) {pt_ = value;}
-  void seteta(const float value) {eta_ = value;}
-  void setphi(const float value) {phi_ = value;}
   void setcharge(const int value) {charge_ = value;}
   void setchargedIso(const float value) {chargedIso_ = value;}
   void setneutralIso(const float value) {neutralIso_ = value;}
@@ -660,10 +595,14 @@ private:
   void setHCalEnergy(const float value) {HCalEnergy_ = value;}
   void setnumChambers(const int value) {numChambers_ = value;}
   void setnumMatchedStations(const int value) {numMatchedStations_ = value;}
+  void setdB(const float value) {dB_ = value;}
   void setptErr(const float value) {ptErr_ = value;}
   void setchi2(const float value) {chi2_ = value;}
   void setndof(const int value) {ndof_ = value;}
   void setvalidHits(const float value) {validHits_ = value;}
+  void setpixelHits(const float value) {pixelHits_ = value;}
+  void settrackerLayers(const float value) {trackerLayers_ = value;}
+  void setdz(const float value) {dz_ = value;}
   void setisGlobal(const bool value) {isGlobal_ = value;}
   void setisTracker(const bool value) {isTracker_ = value;}
   void setisCalo(const bool value) {isCalo_ = value;}
@@ -675,21 +614,20 @@ private:
   void setIsoMu24_eta2p1(const bool value) {IsoMu24_eta2p1_ = value;}
   void setIsoMu30(const bool value) {IsoMu30_ = value;}
   void setIsoMu30_eta2p1(const bool value) {IsoMu30_eta2p1_ = value;}
+  void setLotentzVector(float pt, float eta, float phi){SetPtEtaPhiM(pt, eta, phi, 0.);}
 };
 
-class Genparticle{
+class Genparticle: public TLorentzVector{
 friend class URStreamer;
 public:
-//  Genparticle(const float &i_px_,const float &i_py_,const float &i_pz_,const float &i_pt_,const float &i_eta_,const float &i_phi_,const int &i_charge_,const float &i_e_,const float &i_vx_,const float &i_vy_,const float &i_vz_,const int &i_pdgId_,const int &i_status_,const int &i_idx_,const vector<int> &i_momIdx_,const int &i_nDaught_,const int &i_firstDaughtIdx_):
+//  Genparticle(const float &i_px_,const float &i_py_,const float &i_pz_,const int &i_charge_,const float &i_e_,const float &i_vx_,const float &i_vy_,const float &i_vz_,const int &i_pdgId_,const int &i_status_,const int &i_idx_,const vector<int> &i_momIdx_,const int &i_nDaught_,const int &i_firstDaughtIdx_):
 //    
 //  {}
   Genparticle():
+    TLorentzVector(),
     px_(0),
     py_(0),
     pz_(0),
-    pt_(0),
-    eta_(0),
-    phi_(0),
     charge_(0),
     e_(0),
     vx_(0),
@@ -705,9 +643,6 @@ public:
   float px() const {return px_;}
   float py() const {return py_;}
   float pz() const {return pz_;}
-  float pt() const {return pt_;}
-  float eta() const {return eta_;}
-  float phi() const {return phi_;}
   int charge() const {return charge_;}
   float e() const {return e_;}
   float vx() const {return vx_;}
@@ -719,13 +654,11 @@ public:
   vector<int> momIdx() const {return momIdx_;}
   int nDaught() const {return nDaught_;}
   int firstDaughtIdx() const {return firstDaughtIdx_;}
+  ClassDef(Genparticle, 1);
 private:
   float px_;
   float py_;
   float pz_;
-  float pt_;
-  float eta_;
-  float phi_;
   int charge_;
   float e_;
   float vx_;
@@ -740,9 +673,6 @@ private:
   void setpx(const float value) {px_ = value;}
   void setpy(const float value) {py_ = value;}
   void setpz(const float value) {pz_ = value;}
-  void setpt(const float value) {pt_ = value;}
-  void seteta(const float value) {eta_ = value;}
-  void setphi(const float value) {phi_ = value;}
   void setcharge(const int value) {charge_ = value;}
   void sete(const float value) {e_ = value;}
   void setvx(const float value) {vx_ = value;}
@@ -754,6 +684,7 @@ private:
   void setmomIdx(const vector<int> value) {momIdx_ = value;}
   void setnDaught(const int value) {nDaught_ = value;}
   void setfirstDaughtIdx(const int value) {firstDaughtIdx_ = value;}
+  void setLotentzVector(float pt, float eta, float phi){SetPtEtaPhiM(pt, eta, phi, 0.);}
 };
 
 class Vertex{
@@ -825,14 +756,6 @@ public:
     run(0),
     lumi(0),
     evt(0),
-    trigger_IsoMu20_eta2p1_(0),
-    trigger_IsoMu24_(0),
-    trigger_IsoMu24_eta2p1_(0),
-    trigger_IsoMu30_(0),
-    trigger_IsoMu30_eta2p1_(0),
-    trigger_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_(0),
-    trigger_Ele27_WP80_(0),
-    trigger_Ele30_CaloIdVT_TrkIdT_(0),
     muons_px_(0),
     muons_py_(0),
     muons_pz_(0),
@@ -848,10 +771,14 @@ public:
     muons_HCalEnergy_(0),
     muons_numChambers_(0),
     muons_numMatchedStations_(0),
+    muons_dB_(0),
     muons_ptErr_(0),
     muons_chi2_(0),
     muons_ndof_(0),
     muons_validHits_(0),
+    muons_pixelHits_(0),
+    muons_trackerLayers_(0),
+    muons_dz_(0),
     muons_isGlobal_(0),
     muons_isTracker_(0),
     muons_isCalo_(0),
@@ -916,6 +843,9 @@ public:
     electrons_DEtaSCTrk_(0),
     electrons_DPhiSCTrk_(0),
     electrons_ecalEnergy_(0),
+    electrons_dB_(0),
+    electrons_dz_(0),
+    electrons_passConversionVeto_(0),
     electrons_isEB_(0),
     electrons_isEE_(0),
     electrons_isEBGap_(0),
@@ -1002,7 +932,6 @@ public:
     are_METs_loaded_(0), METs_(),
     are_genInfo_loaded_(0), genInfo_(),
     are_photons_loaded_(0), photons_(),
-    are_trigger_loaded_(0), trigger_(),
     are_electrons_loaded_(0), electrons_(),
     are_jets_loaded_(0), jets_(),
     are_muons_loaded_(0), muons_(),
@@ -1028,7 +957,6 @@ public:
     METs_.clear();
     
     photons_.clear();
-    
     electrons_.clear();
     jets_.clear();
     muons_.clear();
@@ -1090,20 +1018,6 @@ public:
     }
   }
   
-  void loadTrigger(){
-    if(!are_trigger_loaded_){
-      tree_->SetBranchStatus("trigger.IsoMu20_eta2p1/O", 1); tree_->SetBranchAddress("trigger.IsoMu20_eta2p1/O", &trigger_IsoMu20_eta2p1_);
-      tree_->SetBranchStatus("trigger.IsoMu24/O", 1); tree_->SetBranchAddress("trigger.IsoMu24/O", &trigger_IsoMu24_);
-      tree_->SetBranchStatus("trigger.IsoMu24_eta2p1/O", 1); tree_->SetBranchAddress("trigger.IsoMu24_eta2p1/O", &trigger_IsoMu24_eta2p1_);
-      tree_->SetBranchStatus("trigger.IsoMu30/O", 1); tree_->SetBranchAddress("trigger.IsoMu30/O", &trigger_IsoMu30_);
-      tree_->SetBranchStatus("trigger.IsoMu30_eta2p1/O", 1); tree_->SetBranchAddress("trigger.IsoMu30_eta2p1/O", &trigger_IsoMu30_eta2p1_);
-      tree_->SetBranchStatus("trigger.Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL/O", 1); tree_->SetBranchAddress("trigger.Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL/O", &trigger_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_);
-      tree_->SetBranchStatus("trigger.Ele27_WP80/O", 1); tree_->SetBranchAddress("trigger.Ele27_WP80/O", &trigger_Ele27_WP80_);
-      tree_->SetBranchStatus("trigger.Ele30_CaloIdVT_TrkIdT/O", 1); tree_->SetBranchAddress("trigger.Ele30_CaloIdVT_TrkIdT/O", &trigger_Ele30_CaloIdVT_TrkIdT_);
-      are_trigger_loaded_ = true;
-    }
-  }
-  
   void loadElectrons(){
     if(!are_electrons_loaded_){
       tree_->SetBranchStatus("electrons.px", 1); tree_->SetBranchAddress("electrons.px", &electrons_px_);
@@ -1122,6 +1036,9 @@ public:
       tree_->SetBranchStatus("electrons.DEtaSCTrk", 1); tree_->SetBranchAddress("electrons.DEtaSCTrk", &electrons_DEtaSCTrk_);
       tree_->SetBranchStatus("electrons.DPhiSCTrk", 1); tree_->SetBranchAddress("electrons.DPhiSCTrk", &electrons_DPhiSCTrk_);
       tree_->SetBranchStatus("electrons.ecalEnergy", 1); tree_->SetBranchAddress("electrons.ecalEnergy", &electrons_ecalEnergy_);
+      tree_->SetBranchStatus("electrons.dB", 1); tree_->SetBranchAddress("electrons.dB", &electrons_dB_);
+      tree_->SetBranchStatus("electrons.dz", 1); tree_->SetBranchAddress("electrons.dz", &electrons_dz_);
+      tree_->SetBranchStatus("electrons.passConversionVeto", 1); tree_->SetBranchAddress("electrons.passConversionVeto", &electrons_passConversionVeto_);
       tree_->SetBranchStatus("electrons.isEB", 1); tree_->SetBranchAddress("electrons.isEB", &electrons_isEB_);
       tree_->SetBranchStatus("electrons.isEE", 1); tree_->SetBranchAddress("electrons.isEE", &electrons_isEE_);
       tree_->SetBranchStatus("electrons.isEBGap", 1); tree_->SetBranchAddress("electrons.isEBGap", &electrons_isEBGap_);
@@ -1214,10 +1131,14 @@ public:
       tree_->SetBranchStatus("muons.HCalEnergy", 1); tree_->SetBranchAddress("muons.HCalEnergy", &muons_HCalEnergy_);
       tree_->SetBranchStatus("muons.numChambers", 1); tree_->SetBranchAddress("muons.numChambers", &muons_numChambers_);
       tree_->SetBranchStatus("muons.numMatchedStations", 1); tree_->SetBranchAddress("muons.numMatchedStations", &muons_numMatchedStations_);
+      tree_->SetBranchStatus("muons.dB", 1); tree_->SetBranchAddress("muons.dB", &muons_dB_);
       tree_->SetBranchStatus("muons.ptErr", 1); tree_->SetBranchAddress("muons.ptErr", &muons_ptErr_);
       tree_->SetBranchStatus("muons.chi2", 1); tree_->SetBranchAddress("muons.chi2", &muons_chi2_);
       tree_->SetBranchStatus("muons.ndof", 1); tree_->SetBranchAddress("muons.ndof", &muons_ndof_);
       tree_->SetBranchStatus("muons.validHits", 1); tree_->SetBranchAddress("muons.validHits", &muons_validHits_);
+      tree_->SetBranchStatus("muons.pixelHits", 1); tree_->SetBranchAddress("muons.pixelHits", &muons_pixelHits_);
+      tree_->SetBranchStatus("muons.trackerLayers", 1); tree_->SetBranchAddress("muons.trackerLayers", &muons_trackerLayers_);
+      tree_->SetBranchStatus("muons.dz", 1); tree_->SetBranchAddress("muons.dz", &muons_dz_);
       tree_->SetBranchStatus("muons.isGlobal", 1); tree_->SetBranchAddress("muons.isGlobal", &muons_isGlobal_);
       tree_->SetBranchStatus("muons.isTracker", 1); tree_->SetBranchAddress("muons.isTracker", &muons_isTracker_);
       tree_->SetBranchStatus("muons.isCalo", 1); tree_->SetBranchAddress("muons.isCalo", &muons_isCalo_);
@@ -1289,8 +1210,7 @@ public:
       Met obj;
       obj.setpx(*it_METs_px_);
       obj.setpy(*it_METs_py_);
-      obj.setet(*it_METs_et_);
-      obj.setphi(*it_METs_phi_);
+      obj.setLotentzVector(*it_METs_et_, *it_METs_phi_);
       METs_.push_back( obj );
       ++it_METs_px_;
       ++it_METs_py_;
@@ -1300,6 +1220,19 @@ public:
     return METs_;
   }
   
+  const Geninfo genInfo(){
+    //non-vectorial objects are recomputed every
+    //time for simplicity 
+    loadGeninfo();
+  
+    Geninfo obj;
+    obj.setweight(genInfo_weight_);
+    obj.setpdfid1(genInfo_pdfid1_);
+    obj.setpdfid2(genInfo_pdfid2_);
+    obj.setrenScale(genInfo_renScale_);
+  
+    return obj;
+  }
   
   const vector<Photon>& photons(){
     if(photons_.size() > 0) return photons_;
@@ -1330,9 +1263,6 @@ public:
       obj.setpx(*it_photons_px_);
       obj.setpy(*it_photons_py_);
       obj.setpz(*it_photons_pz_);
-      obj.setpt(*it_photons_pt_);
-      obj.seteta(*it_photons_eta_);
-      obj.setphi(*it_photons_phi_);
       obj.setcharge(*it_photons_charge_);
       obj.setx(*it_photons_x_);
       obj.sety(*it_photons_y_);
@@ -1348,6 +1278,7 @@ public:
       obj.setisPFlowPhoton(*it_photons_isPFlowPhoton_);
       obj.sethasConversionTracks(*it_photons_hasConversionTracks_);
       obj.sethasPixelSeed(*it_photons_hasPixelSeed_);
+      obj.setLotentzVector(*it_photons_pt_, *it_photons_eta_, *it_photons_phi_);
       photons_.push_back( obj );
       ++it_photons_px_;
       ++it_photons_py_;
@@ -1374,7 +1305,6 @@ public:
     return photons_;
   }
   
-  
   const vector<Electron>& electrons(){
     if(electrons_.size() > 0) return electrons_;
     loadElectrons();
@@ -1394,6 +1324,9 @@ public:
     auto it_electrons_DEtaSCTrk_ = electrons_DEtaSCTrk_->cbegin();
     auto it_electrons_DPhiSCTrk_ = electrons_DPhiSCTrk_->cbegin();
     auto it_electrons_ecalEnergy_ = electrons_ecalEnergy_->cbegin();
+    auto it_electrons_dB_ = electrons_dB_->cbegin();
+    auto it_electrons_dz_ = electrons_dz_->cbegin();
+    auto it_electrons_passConversionVeto_ = electrons_passConversionVeto_->cbegin();
     auto it_electrons_isEB_ = electrons_isEB_->cbegin();
     auto it_electrons_isEE_ = electrons_isEE_->cbegin();
     auto it_electrons_isEBGap_ = electrons_isEBGap_->cbegin();
@@ -1427,9 +1360,6 @@ public:
       obj.setpx(*it_electrons_px_);
       obj.setpy(*it_electrons_py_);
       obj.setpz(*it_electrons_pz_);
-      obj.setpt(*it_electrons_pt_);
-      obj.seteta(*it_electrons_eta_);
-      obj.setphi(*it_electrons_phi_);
       obj.setcharge(*it_electrons_charge_);
       obj.setchargedIso(*it_electrons_chargedIso_);
       obj.setneutralIso(*it_electrons_neutralIso_);
@@ -1440,6 +1370,9 @@ public:
       obj.setDEtaSCTrk(*it_electrons_DEtaSCTrk_);
       obj.setDPhiSCTrk(*it_electrons_DPhiSCTrk_);
       obj.setecalEnergy(*it_electrons_ecalEnergy_);
+      obj.setdB(*it_electrons_dB_);
+      obj.setdz(*it_electrons_dz_);
+      obj.setpassConversionVeto(*it_electrons_passConversionVeto_);
       obj.setisEB(*it_electrons_isEB_);
       obj.setisEE(*it_electrons_isEE_);
       obj.setisEBGap(*it_electrons_isEBGap_);
@@ -1468,6 +1401,7 @@ public:
       obj.setrawEnergy(*it_electrons_rawEnergy_);
       obj.setphiWidth(*it_electrons_phiWidth_);
       obj.setetaWidth(*it_electrons_etaWidth_);
+      obj.setLotentzVector(*it_electrons_pt_, *it_electrons_eta_, *it_electrons_phi_);
       electrons_.push_back( obj );
       ++it_electrons_px_;
       ++it_electrons_py_;
@@ -1485,6 +1419,9 @@ public:
       ++it_electrons_DEtaSCTrk_;
       ++it_electrons_DPhiSCTrk_;
       ++it_electrons_ecalEnergy_;
+      ++it_electrons_dB_;
+      ++it_electrons_dz_;
+      ++it_electrons_passConversionVeto_;
       ++it_electrons_isEB_;
       ++it_electrons_isEE_;
       ++it_electrons_isEBGap_;
@@ -1562,13 +1499,9 @@ public:
       obj.setpx(*it_jets_px_);
       obj.setpy(*it_jets_py_);
       obj.setpz(*it_jets_pz_);
-      obj.setpt(*it_jets_pt_);
-      obj.seteta(*it_jets_eta_);
-      obj.setphi(*it_jets_phi_);
       obj.setcharge(*it_jets_charge_);
       obj.sete(*it_jets_e_);
       obj.setarea(*it_jets_area_);
-      obj.setmass(*it_jets_mass_);
       obj.setchargedHadronEnergy(*it_jets_chargedHadronEnergy_);
       obj.setneutralHadronEnergy(*it_jets_neutralHadronEnergy_);
       obj.setphotonEnergy(*it_jets_photonEnergy_);
@@ -1596,6 +1529,7 @@ public:
       obj.setvtxNtracks(*it_jets_vtxNtracks_);
       obj.setvtx3DVal(*it_jets_vtx3DVal_);
       obj.setvtx3DSig(*it_jets_vtx3DSig_);
+      obj.setLotentzVector(*it_jets_pt_, *it_jets_eta_, *it_jets_phi_, *it_jets_mass_);
       jets_.push_back( obj );
       ++it_jets_px_;
       ++it_jets_py_;
@@ -1656,10 +1590,14 @@ public:
     auto it_muons_HCalEnergy_ = muons_HCalEnergy_->cbegin();
     auto it_muons_numChambers_ = muons_numChambers_->cbegin();
     auto it_muons_numMatchedStations_ = muons_numMatchedStations_->cbegin();
+    auto it_muons_dB_ = muons_dB_->cbegin();
     auto it_muons_ptErr_ = muons_ptErr_->cbegin();
     auto it_muons_chi2_ = muons_chi2_->cbegin();
     auto it_muons_ndof_ = muons_ndof_->cbegin();
     auto it_muons_validHits_ = muons_validHits_->cbegin();
+    auto it_muons_pixelHits_ = muons_pixelHits_->cbegin();
+    auto it_muons_trackerLayers_ = muons_trackerLayers_->cbegin();
+    auto it_muons_dz_ = muons_dz_->cbegin();
     auto it_muons_isGlobal_ = muons_isGlobal_->cbegin();
     auto it_muons_isTracker_ = muons_isTracker_->cbegin();
     auto it_muons_isCalo_ = muons_isCalo_->cbegin();
@@ -1676,9 +1614,6 @@ public:
       obj.setpx(*it_muons_px_);
       obj.setpy(*it_muons_py_);
       obj.setpz(*it_muons_pz_);
-      obj.setpt(*it_muons_pt_);
-      obj.seteta(*it_muons_eta_);
-      obj.setphi(*it_muons_phi_);
       obj.setcharge(*it_muons_charge_);
       obj.setchargedIso(*it_muons_chargedIso_);
       obj.setneutralIso(*it_muons_neutralIso_);
@@ -1688,10 +1623,14 @@ public:
       obj.setHCalEnergy(*it_muons_HCalEnergy_);
       obj.setnumChambers(*it_muons_numChambers_);
       obj.setnumMatchedStations(*it_muons_numMatchedStations_);
+      obj.setdB(*it_muons_dB_);
       obj.setptErr(*it_muons_ptErr_);
       obj.setchi2(*it_muons_chi2_);
       obj.setndof(*it_muons_ndof_);
       obj.setvalidHits(*it_muons_validHits_);
+      obj.setpixelHits(*it_muons_pixelHits_);
+      obj.settrackerLayers(*it_muons_trackerLayers_);
+      obj.setdz(*it_muons_dz_);
       obj.setisGlobal(*it_muons_isGlobal_);
       obj.setisTracker(*it_muons_isTracker_);
       obj.setisCalo(*it_muons_isCalo_);
@@ -1703,6 +1642,7 @@ public:
       obj.setIsoMu24_eta2p1(*it_muons_IsoMu24_eta2p1_);
       obj.setIsoMu30(*it_muons_IsoMu30_);
       obj.setIsoMu30_eta2p1(*it_muons_IsoMu30_eta2p1_);
+      obj.setLotentzVector(*it_muons_pt_, *it_muons_eta_, *it_muons_phi_);
       muons_.push_back( obj );
       ++it_muons_px_;
       ++it_muons_py_;
@@ -1719,10 +1659,14 @@ public:
       ++it_muons_HCalEnergy_;
       ++it_muons_numChambers_;
       ++it_muons_numMatchedStations_;
+      ++it_muons_dB_;
       ++it_muons_ptErr_;
       ++it_muons_chi2_;
       ++it_muons_ndof_;
       ++it_muons_validHits_;
+      ++it_muons_pixelHits_;
+      ++it_muons_trackerLayers_;
+      ++it_muons_dz_;
       ++it_muons_isGlobal_;
       ++it_muons_isTracker_;
       ++it_muons_isCalo_;
@@ -1763,9 +1707,6 @@ public:
       obj.setpx(*it_genParticles_px_);
       obj.setpy(*it_genParticles_py_);
       obj.setpz(*it_genParticles_pz_);
-      obj.setpt(*it_genParticles_pt_);
-      obj.seteta(*it_genParticles_eta_);
-      obj.setphi(*it_genParticles_phi_);
       obj.setcharge(*it_genParticles_charge_);
       obj.sete(*it_genParticles_e_);
       obj.setvx(*it_genParticles_vx_);
@@ -1777,6 +1718,7 @@ public:
       obj.setmomIdx(*it_genParticles_momIdx_);
       obj.setnDaught(*it_genParticles_nDaught_);
       obj.setfirstDaughtIdx(*it_genParticles_firstDaughtIdx_);
+      obj.setLotentzVector(*it_genParticles_pt_, *it_genParticles_eta_, *it_genParticles_phi_);
       genParticles_.push_back( obj );
       ++it_genParticles_px_;
       ++it_genParticles_py_;
@@ -1816,6 +1758,7 @@ public:
       obj.setchi2(*it_vertexs_chi2_);
       obj.setndof(*it_vertexs_ndof_);
       obj.setnTracks(*it_vertexs_nTracks_);
+      
       vertexs_.push_back( obj );
       ++it_vertexs_x_;
       ++it_vertexs_y_;
@@ -1838,6 +1781,7 @@ public:
       obj.setbx(*it_PUInfos_bx_);
       obj.setnPU(*it_PUInfos_nPU_);
       obj.setnInteractions(*it_PUInfos_nInteractions_);
+      
       PUInfos_.push_back( obj );
       ++it_PUInfos_bx_;
       ++it_PUInfos_nPU_;
@@ -1851,14 +1795,6 @@ private:
   TTree *tree_;
   Long64_t entries_;
   Long64_t current_entry_;
-  Bool_t trigger_IsoMu20_eta2p1_;
-  Bool_t trigger_IsoMu24_;
-  Bool_t trigger_IsoMu24_eta2p1_;
-  Bool_t trigger_IsoMu30_;
-  Bool_t trigger_IsoMu30_eta2p1_;
-  Bool_t trigger_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_;
-  Bool_t trigger_Ele27_WP80_;
-  Bool_t trigger_Ele30_CaloIdVT_TrkIdT_;
   vector<float> *muons_px_;
   vector<float> *muons_py_;
   vector<float> *muons_pz_;
@@ -1874,10 +1810,14 @@ private:
   vector<float> *muons_HCalEnergy_;
   vector<int> *muons_numChambers_;
   vector<int> *muons_numMatchedStations_;
+  vector<float> *muons_dB_;
   vector<float> *muons_ptErr_;
   vector<float> *muons_chi2_;
   vector<int> *muons_ndof_;
   vector<float> *muons_validHits_;
+  vector<float> *muons_pixelHits_;
+  vector<float> *muons_trackerLayers_;
+  vector<float> *muons_dz_;
   vector<bool> *muons_isGlobal_;
   vector<bool> *muons_isTracker_;
   vector<bool> *muons_isCalo_;
@@ -1942,6 +1882,9 @@ private:
   vector<float> *electrons_DEtaSCTrk_;
   vector<float> *electrons_DPhiSCTrk_;
   vector<float> *electrons_ecalEnergy_;
+  vector<float> *electrons_dB_;
+  vector<float> *electrons_dz_;
+  vector<bool> *electrons_passConversionVeto_;
   vector<bool> *electrons_isEB_;
   vector<bool> *electrons_isEE_;
   vector<bool> *electrons_isEBGap_;
@@ -2031,8 +1974,6 @@ private:
   Geninfo genInfo_;
   bool are_photons_loaded_;
   vector<Photon> photons_;
-  bool are_trigger_loaded_;
-  Trigger trigger_;
   bool are_electrons_loaded_;
   vector<Electron> electrons_;
   bool are_jets_loaded_;

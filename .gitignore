@@ -1,0 +1,6 @@
+*.exe
+*.o
+*.so
+*.root
+*.swp
+lib/.lib_timestamp

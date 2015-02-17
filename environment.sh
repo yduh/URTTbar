@@ -1,7 +1,7 @@
 # Project-related environment variables 
 
 #This part should be changed by the user(s)
-export jobid="Some tag for the Ntuples"
+export jobid="MYJOBID"
 #export URA_PROJECT_LIBS='-lwhatever_you_need_to_make_it_compile' #<-- Add here needed libraries for the project compilation
 
 
