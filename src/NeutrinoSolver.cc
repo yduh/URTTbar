@@ -60,7 +60,8 @@ NeutrinoSolver::NeutrinoSolver(TLorentzVector* lep, TLorentzVector* bjet, double
 	//Mb = 4.2;
 	//Mn = 0.;
 	Ml = 0.;
-	Mb = 0.;
+	//Mb = 0.;
+	Mb = bjet->M();
 	Mn = 0.;
 	TVector3 l(lep->Vect());
 	TVector3 b(bjet->Vect());
