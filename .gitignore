@@ -4,3 +4,8 @@
 *.root
 *.swp
 lib/.lib_timestamp
+inputs/*
+results/*
+plots/*
+URStreamer.h
+Dict.h
