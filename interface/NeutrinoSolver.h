@@ -32,7 +32,7 @@ class NeutrinoSolver
 		double Chi2(double t);
 		pair<double, double> Extrem(double t, bool MIN = true);
 	public:
-		NeutrinoSolver(TLorentzVector* lep, TLorentzVector* bjet, double MW = 80, double MT = 173);
+		NeutrinoSolver(const TLorentzVector* lep, const TLorentzVector* bjet, double MW = 80, double MT = 173);
 		TLorentzVector GetBest(double metx, double mety, double metxerr, double metyerr, double metxyrho, double& test);
 
 };
