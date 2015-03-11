@@ -88,6 +88,30 @@ TH2D* TH2DCollection::Get(string name)
 	cerr << "TH2DCollection: Request for unknown hist: " << prefix << " " << name << endl;
 	return 0;
 }
+TH2D* TH2DCollection::AddHist(string name, Int_t xbins, Double_t xmin, Double_t xmax, const vector<Double_t>& ybins, string xlabel, string ylabel)
+{
+    hmap[name] = new TH2D((prefix+"_"+name).c_str(), (prefix+"_"+name).c_str(), xbins, xmin, xmax, ybins.size()-1, ybins.data());
+    hmap[name]->Sumw2();
+    hmap[name]->GetXaxis()->SetTitle(xlabel.c_str());
+    hmap[name]->GetYaxis()->SetTitle(ylabel.c_str());
+    return hmap[name];
+}
+TH2D* TH2DCollection::AddHist(string name, const vector<Double_t>& xbins, Int_t ybins, Double_t ymin, Double_t ymax, string xlabel, string ylabel);
+{
+    hmap[name] = new TH2D((prefix+"_"+name).c_str(), (prefix+"_"+name).c_str(), xbins.size()-1, xbins.data(), ybins, ymin, ymax);
+    hmap[name]->Sumw2();
+    hmap[name]->GetXaxis()->SetTitle(xlabel.c_str());
+    hmap[name]->GetYaxis()->SetTitle(ylabel.c_str());
+    return hmap[name];
+}
+TH2D* TH2DCollection::AddHist(string name, const vector<Double_t>& xbins, const vector<Double_t>& ybins, string xlabel, string ylabel);
+{
+    hmap[name] = new TH2D((prefix+"_"+name).c_str(), (prefix+"_"+name).c_str(), xbins.size()-1, xbins.data(), ybins.size()-1, ybins.data());
+    hmap[name]->Sumw2();
+    hmap[name]->GetXaxis()->SetTitle(xlabel.c_str());
+    hmap[name]->GetYaxis()->SetTitle(ylabel.c_str());
+    return hmap[name];
+}
 
 TH2D* TH2DCollection::operator[](string name)
 {

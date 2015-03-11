@@ -1,6 +1,7 @@
 #ifndef RECOPLOTTTBAR
 #define RECOPLOTTTBAR
 #include <helper.h>
+#include <Permutation.h>
 #include <string>
 #include <iostream>
 #include <TLorentzVector.h>
@@ -19,6 +20,7 @@ class TTBarPlots
 		~TTBarPlots();
 		void Init();
 		void Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge);
+		void Fill(Permutation* per, int lepcharge);
 };
 
 #endif

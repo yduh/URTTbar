@@ -9,11 +9,15 @@
 
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
+#include "Permutation.h"
 
 using namespace std;
 
+
+
 class ttbar : public AnalyzerBase
 {
+	friend class Permutation;
 	private:
 		//Collections
 		//Gen:
@@ -28,7 +32,7 @@ class ttbar : public AnalyzerBase
 		Genparticle* genbbar;
 		Genparticle* genbl;
 		Genparticle* genbh;
-		
+
 		//matched
 		vector<Jet*> recbjets;
 		vector<Jet*> recwjets;
@@ -68,9 +72,19 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_semi_imp;
 		TTBarPlots ttp_other_imp;
 		TTBarPlots ttp_all_imp;
-		
+
 		//ttbar solver
 		TTBarSolver ttsolver;
+
+		//configuration
+		int cnbtag;
+		double cwjetptsoft;
+		double cwjetpthard;
+		double cbjetpt;
+		double cjetetamax;
+		double clptmin;
+		//
+		double jetptmin;
 
 	public:
 		ttbar(const std::string output_filename):
@@ -91,8 +105,16 @@ class ttbar : public AnalyzerBase
 			ttp_wrong_imp("wrong_imp"),
 			ttp_semi_imp("semi_imp"),
 			ttp_other_imp("other_imp"),
-			ttp_all_imp("all_imp")
-	{};
+			ttp_all_imp("all_imp"),
+			cnbtag(1),
+			cwjetptsoft(25.),
+			cwjetpthard(30.),
+			cbjetpt(30.),
+			cjetetamax(2.4),
+			clptmin(30.)
+	{
+		jetptmin = min(cwjetptsoft, cbjetpt);
+	};
 
 		//This method is called once per job at the beginning of the analysis
 		//book here your histograms/tree and run every initialization needed
@@ -112,11 +134,6 @@ class ttbar : public AnalyzerBase
 
 			TDirectory* dir_truth = outFile_.mkdir("TRUTH");
 			dir_truth->cd();
-			truth1d.AddHist("test", 100, 0., 500., "min chi2", "Events");
-			truth1d.AddHist("test_right", 200, -100, 100., "min chi2", "Events");
-			truth1d.AddHist("test_wrong", 200, -100., 100., "min chi2", "Events");
-			truth1d.AddHist("test_other", 200, -100., 100., "min chi2", "Events");
-			truth1d.AddHist("test_semilep", 200, -100., 100., "min chi2", "Events");
 			truth2d.AddHist("btag2d_true", 100, 0., 1., 100, 0., 1., "btag", "btag");
 			truth1d.AddHist("btag_true", 100, 0., 1., "btag", "Events");
 			truth1d.AddHist("btag_wrong", 100, 0., 1., "btag", "Events");
@@ -159,7 +176,7 @@ class ttbar : public AnalyzerBase
 			truth1d.AddHist("nstest_right", 200, 0, 20., "neutrino-test", "Events");
 			truth1d.AddHist("nschi_right", 200, 0, 20., "#chi2 neutrino-test", "Events");
 			truth1d.AddHist("comtest_right", 1000, -100, 100., "-Log(p)", "Events");
-			
+
 			ttp_right.Init();
 			ttp_wrong.Init();
 			ttp_semi.Init();
@@ -169,12 +186,12 @@ class ttbar : public AnalyzerBase
 			ttp_semi_imp.Init();
 			ttp_other_imp.Init();
 			ttp_truth.Init();
-			
+
 			TDirectory* dir_reco = outFile_.mkdir("RECO");
 			dir_reco->cd();
 			ttp_all.Init();
 			ttp_all_imp.Init();
-			
+
 			ttsolver.Init("Prob.root");
 		}
 
@@ -186,13 +203,13 @@ class ttbar : public AnalyzerBase
 			int lepdecays = 0;
 			for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
 			{
-			//	if(Abs(gp->pdgId()) > 10 && Abs(gp->pdgId()) < 18)
-			//	{
-			//		cout << "P:"  << " " << gp->status() << " " << gp->pdgId() << ":";
-			//		for(size_t m = 0 ; m < gp->momIdx().size() ; ++m) cout << " " << gps[gp->momIdx()[m]].pdgId();
-			//		cout << endl;
-			//	}
-				if(gp->status() == 23)
+				//	if(Abs(gp->pdgId()) > 10 && Abs(gp->pdgId()) < 18)
+				//	{
+				//		cout << "P:"  << " " << gp->status() << " " << gp->pdgId() << ":";
+				//		for(size_t m = 0 ; m < gp->momIdx().size() ; ++m) cout << " " << gps[gp->momIdx()[m]].pdgId();
+				//		cout << endl;
+				//	}
+				if(gp->status() == 23 && gp->momIdx().size() != 0)
 				{
 					if(gp->pdgId() == 5 && gps[gp->momIdx()[0]].pdgId() != 24)
 					{
@@ -211,7 +228,7 @@ class ttbar : public AnalyzerBase
 						genwpartons.push_back(&(sgenparticles.back()));
 					}
 				}
-				if(gp->status() == 1 && (Abs(gps[gp->momIdx()[0]].pdgId()) == 24 || gp->pdgId() == gps[gp->momIdx()[0]].pdgId()))
+				if(gp->status() == 1 && gp->momIdx().size() != 0 && (Abs(gps[gp->momIdx()[0]].pdgId()) == 24 || gp->pdgId() == gps[gp->momIdx()[0]].pdgId()))
 				{
 					if(Abs(gp->pdgId()) == 11 || Abs(gp->pdgId()) == 13)
 					{
@@ -274,11 +291,11 @@ class ttbar : public AnalyzerBase
 			for(vector<Muon>::const_iterator muon = muons.begin(); muon != muons.end(); ++muon)
 			{
 				IDMuon mu(*muon);
-				if(mu.ID(IDMuon::LOOSE_12) && mu.Pt() > 15.)
+				if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 15.)
 				{
 					smuons.push_back(mu);
 					loosemuons.push_back(&(smuons.back()));
-					if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 30.)
+					if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > clptmin)
 					{
 						tightmuons.push_back(&(smuons.back()));
 					}
@@ -289,11 +306,11 @@ class ttbar : public AnalyzerBase
 			for(vector<Electron>::const_iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
 			{
 				IDElectron el(*electron);
-				if(el.ID(IDElectron::LOOSE_12) && el.Pt() > 15.)
+				if(el.ID(IDElectron::MEDIUM_12) && el.Pt() > 15.)
 				{
 					selectrons.push_back(el);
 					looseelectrons.push_back(&(selectrons.back()));
-					if(el.ID(IDElectron::MEDIUM_12) && el.Pt() > 30.)
+					if(el.ID(IDElectron::MEDIUM_12) && el.Pt() > clptmin)
 					{
 						mediumelectrons.push_back(&(selectrons.back()));
 					}
@@ -303,7 +320,7 @@ class ttbar : public AnalyzerBase
 			const vector<Jet>& jets = event.jets();
 			for(vector<Jet>::const_iterator jet = jets.begin(); jet != jets.end(); ++jet)
 			{
-				if(jet->Pt() < 20 || Abs(jet->Eta()) > 2.4) {continue;}
+				if(jet->Pt() < jetptmin || Abs(jet->Eta()) > cjetetamax) {continue;}
 
 				for(IDMuon* mu : loosemuons)
 				{
@@ -332,14 +349,18 @@ nextjetA: continue;
 				met = mets[0];
 			}
 
-//Jet-Parton matching
+			//Jet-Parton matching
 			if(SEMILEP)
 			{
+				double ptbmax = 0.;
+				double ptbbarmax = 0.;
+				vector<double> wjptmax(genwpartons.size(), 0.);
 				for(size_t j = 0 ; j < cleanedjets.size() ; ++j)
 				{
 					Jet* jet = cleanedjets[j];
-					if(jet->DeltaR(*genb) < 0.3)
+					if(jet->DeltaR(*genb) < 0.3 && jet->Pt() > ptbmax)
 					{
+						ptbmax = jet->Pt();
 						recbjet = jet;
 						recbjets.push_back(jet);
 						if(gencls[0]->pdgId() < 0)
@@ -352,8 +373,9 @@ nextjetA: continue;
 						}
 						continue;
 					}
-					if(jet->DeltaR(*genbbar) < 0.3)
+					if(jet->DeltaR(*genbbar) < 0.3 && jet->Pt() > ptbbarmax)
 					{
+						ptbbarmax = jet->Pt();
 						recbbarjet = jet;
 						recbjets.push_back(jet);
 						if(gencls[0]->pdgId() < 0)
@@ -368,15 +390,16 @@ nextjetA: continue;
 					}
 					for(size_t wp = 0 ; wp < genwpartons.size() ; ++wp)
 					{
-						if(jet->DeltaR(*genwpartons[wp]) < 0.3)
+						if(jet->DeltaR(*genwpartons[wp]) < 0.3 && jet->Pt() > wjptmax[wp])
 						{
+							wjptmax[wp] = jet->Pt();
 							recwjets.push_back(jet);
 							break;
 						}
 					}
 					recotherjets.push_back(jet);
 				}
-				nttjets = (recbjet != 0 ? 1 : 0) + (recbbarjet != 0 ? 1 : 0) + Min((size_t)2., recwjets.size());
+				nttjets = (recbjet != 0 ? 1 : 0) + (recbbarjet != 0 ? 1 : 0) + recwjets.size();
 			}
 
 
@@ -404,17 +427,17 @@ nextjetA: continue;
 
 			//keeping only the 5 leading jets
 			sort(cleanedjets.begin(), cleanedjets.end(), [](Jet* A, Jet* B){return(A->Pt() > B->Pt());});
-			int reducedsize = Min(cleanedjets.size(), (size_t)5);
+			int reducedsize = Min(cleanedjets.size(), (size_t)5000);
 			vector<Jet*> reducedjets(reducedsize);
 			copy(cleanedjets.begin(), cleanedjets.begin()+reducedsize, reducedjets.begin());
 
 			//check for 2 b-jets
 			sort(reducedjets.begin(), reducedjets.end(), [](Jet* A, Jet* B){return(A->csvIncl() > B->csvIncl());});
-			if(reducedjets[1]->csvIncl() < 0.814){return;} //not two bjets
+			if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && reducedjets[1]->csvIncl() < 0.814)){return;}
 
 			//check what we have reconstructed
-			if(SEMILEP){
-				if(recwjets.size() > 2) cout << "WJets: " << recwjets.size() << endl;//W jets are split.
+			if(SEMILEP)
+			{
 				truth2d["Jetstt_JetsAll"]->Fill(nttjets+0.5, cleanedjets.size()+0.5);
 				int nb = 0;
 				if(recbljet != 0){nb++;}
@@ -423,43 +446,39 @@ nextjetA: continue;
 			}
 
 			//reconstruction
-			Jet* rwja = 0;
-			Jet* rwjb = 0;
-			Jet* rbjh = 0;
-			Jet* rbjl = 0;
-			TLorentzVector ImpBHad;
-			TLorentzVector ImpWja;
-			TLorentzVector ImpWjb;
-			TLorentzVector ImpBLep;
-			TLorentzVector ImpL;
-			TLorentzVector ImpNu;
-			double rtest = 1E10;
-
-			for(size_t i = 0 ; i < reducedjets.size() ; ++i)
+			Permutation rightper(0,0,0,0,0,0);
+			if(nttjets == 4)
 			{
-				for(size_t j = 0 ; j < i ; ++j)
+				rightper = Permutation(recwjets[0], recwjets[1], recbhjet, recbljet, lep, &met);
+			}
+			Permutation* bestper = 0;
+
+			for(size_t i = cnbtag ; i < reducedjets.size() ; ++i)
+			{
+				for(size_t j = cnbtag ; j < i ; ++j)
 				{
-					for(size_t k = 0 ; k < 2 ; ++k)
+					for(size_t k = 0 ; k < (cnbtag == 2 ? 2 : reducedjets.size()) ; ++k)
 					{
 						if(i == k || j == k) continue;
-						for(size_t l = 0 ; l < 2 ; ++l)
+						for(size_t l = 0 ; l < (cnbtag == 2 ? 2 : reducedjets.size()) ; ++l)
 						{
 							if(i == l || j == l || k == l) continue;
 							Jet* wja = reducedjets[i];
 							Jet* wjb = reducedjets[j];
 							Jet* bjh = reducedjets[k];
 							Jet* bjl = reducedjets[l];
-							if(wja->Pt() < 30. && wjb->Pt() < 30.) continue;
-							if(bjh->Pt() < 30. || bjl->Pt() < 30.) continue;
+							if(wja->Pt() < cwjetpthard && wjb->Pt() < cwjetpthard) continue;
+							if(wja->Pt() < cwjetptsoft || wjb->Pt() < cwjetptsoft) continue;
+							if(bjh->Pt() < cbjetpt || bjl->Pt() < cbjetpt) continue;
+							Permutation testper = new Permutation(wja, wjb, bjh, bjl, lep, &met);
+							testper.Solve(ttsolver);
 
-							ttsolver.Solve(bjh, wjb, wja, bjl, lep, &met);
-							TLorentzVector whad = (*wja + *wjb);
-							TLorentzVector thad = (whad + *bjh);
-							double res = ttsolver.Res();
+							TLorentzVector whad(testper.WHad());
+							TLorentzVector thad(testper.THad());
 
 							if(nttjets == 4)
 							{
-								if(bjl == recbljet)
+								if(rightper.IsBLepCorrect(testper))
 								{
 									truth1d["nstest_right"]->Fill(ttsolver.NSRes());
 									truth1d["nschi_right"]->Fill(ttsolver.NSChi2());
@@ -470,7 +489,7 @@ nextjetA: continue;
 									truth1d["nschi_wrong"]->Fill(ttsolver.NSChi2());
 								}
 
-								if((recbhjet == bjh && recbljet == bjl) || (recbhjet == bjl && recbljet == bjh))
+								if(rightper.IsBCorrect(testper))
 								{
 									truth1d["btagtest_right"]->Fill(ttsolver.BTagRes());
 								}
@@ -479,7 +498,7 @@ nextjetA: continue;
 									truth1d["btagtest_wrong"]->Fill(ttsolver.BTagRes());
 								}
 
-								if(bjh == recbhjet && bjl == recbljet && ((wja == recwjets[0] && wjb == recwjets[1]) || (wja == recwjets[1] && wjb == recwjets[0])))
+								if(rightper.IsCorrect(testper))
 								{
 									truth2d["Wmasshad_tmasshad_right"]->Fill(whad.M(), thad.M());
 									truth1d["masstest_right"]->Fill(ttsolver.MassRes());
@@ -487,7 +506,7 @@ nextjetA: continue;
 								}
 								else
 								{
-									if(((wja == recwjets[0] && wjb == recwjets[1]) || (wja == recwjets[1] && wjb == recwjets[0])))
+									if(rightper.IsWHadCorrect(testper))
 									{
 										truth2d["Wmasshad_tmasshad_rightw"]->Fill(whad.M(), thad.M());
 									}
@@ -501,102 +520,76 @@ nextjetA: continue;
 								}
 
 							}
+							if(bestper == 0) {bestper = testper; continue;}
 
-							if(res < rtest && ttsolver.Nu().Pt() > 0.5)
+							if(*testper < *bestper)
 							{
-								rtest = res;
-								rwja = wja;
-								rwjb = wjb;
-								rbjh = bjh;
-								rbjl = bjl;
-								ImpBHad = ttsolver.BHad();
-								ImpWja = ttsolver.Wja();
-								ImpWjb = ttsolver.Wjb();
-								ImpBLep = ttsolver.BLep();
-								ImpL = ttsolver.L();
-								ImpNu = ttsolver.Nu();
+								delete bestper;
+								bestper = testper;
 							}
+							else
+							{
+								delete testper;
+							}
+							
 
 						}
 					}
 				}
 			}
-			if(rtest > 1E9){return;}
+			if(testper->Prob() > 1E9){return;}
 			//Fill reconstructed hists
-			ttp_all.Fill(rbjh, rwja, rwjb, rbjl, lep, &ImpNu, lepcharge);
-			ttp_all_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
+			ttp_all.Fill(bestper, lepcharge);
+			//ttp_all_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 
 			//Fill reconstructed hists with matching information
-			if(nttjets == 4 && rbjl == recbljet && rbjh == recbhjet && ((rwja == recwjets[0] && rwjb == recwjets[1]) || (rwja == recwjets[1] && rwjb == recwjets[2])))
+			if(rightper.IsCorrect(bestper))
 			{
-				ttp_right.Fill(rbjh, rwja, rwjb, rbjl, lep, &ImpNu, lepcharge);
-				ttp_right_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
+				ttp_right.Fill(bestper, lepcharge);
+				//ttp_right_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 				//Neutrino reconstruction plots
-				truth1d["dRNu_right"]->Fill(ImpNu.DeltaR(*gennls[0]));
-				truth1d["dPtNu_right"]->Fill((ImpNu.Pt() - gennls[0]->Pt())/gennls[0]->Pt());
-				truth1d["dRNuMet_right"]->Fill(met.DeltaR(*gennls[0]));
-				truth1d["dPtNuMet_right"]->Fill((met.Pt() - gennls[0]->Pt())/gennls[0]->Pt());
-
-				truth1d["test_right"]->Fill(rtest);
+				//truth1d["dRNu_right"]->Fill(ImpNu.DeltaR(*gennls[0]));
+				//truth1d["dPtNu_right"]->Fill((ImpNu.Pt() - gennls[0]->Pt())/gennls[0]->Pt());
+				//truth1d["dRNuMet_right"]->Fill(met.DeltaR(*gennls[0]));
+				//truth1d["dPtNuMet_right"]->Fill((met.Pt() - gennls[0]->Pt())/gennls[0]->Pt());
 			}
 			else if(nttjets == 4)
 			{
-				ttp_wrong.Fill(rbjh, rwja, rwjb, rbjl, lep, &ImpNu, lepcharge);
-				ttp_wrong_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
+				ttp_wrong.Fill(bestper, lepcharge);
+				//ttp_wrong_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 				//Neutrino reconstruction plots
-				truth1d["dRNu_wrong"]->Fill(ImpNu.DeltaR(*gennls[0]));
-				truth1d["dPtNu_wrong"]->Fill((ImpNu.Pt() - gennls[0]->Pt())/gennls[0]->Pt());
-
-				truth1d["test_wrong"]->Fill(rtest);
+				//truth1d["dRNu_wrong"]->Fill(ImpNu.DeltaR(*gennls[0]));
+				//truth1d["dPtNu_wrong"]->Fill((ImpNu.Pt() - gennls[0]->Pt())/gennls[0]->Pt());
 			}
 			else if(SEMILEP)
 			{
-				ttp_semi.Fill(rbjh, rwja, rwjb, rbjl, lep, &ImpNu, lepcharge);
-				ttp_semi_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
-				truth1d["test_semilep"]->Fill(rtest);
+				ttp_semi.Fill(bestper, lepcharge);
+				//ttp_semi_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 			}
 			else
 			{
-				ttp_other.Fill(rbjh, rwja, rwjb, rbjl, lep, &ImpNu, lepcharge);
-				ttp_other_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
-				truth1d["test_other"]->Fill(rtest);
+				ttp_other.Fill(bestper, lepcharge);
+				//ttp_other_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 			}
 
 			//plot true tt 
-			if(nttjets != 4){return;}
-			ttp_truth.Fill(recbhjet, recwjets[0], recwjets[1], recbljet, lep, gennls[0], lepcharge);
-			for(size_t oj = 0 ; oj < recotherjets.size() ; ++oj)
-			{
-				truth1d["otherjets_pt"]->Fill(recotherjets[oj]->Pt());
-				//truth2d["jetquality_other"]->Fill(recotherjets[oj]->GetMCPt()/recotherjets[oj]->Pt(), recotherjets[oj]->PtFractionWrongPrimaryVertex());
-				//truth2d["jetnconst_other"]->Fill(recotherjets[oj]->GetMCPt()/recotherjets[oj]->Pt(), recotherjets[oj]->NumChargedHadrons());
-				//double iso = 100.;
-				//for_each(cleanedjets.begin(), cleanedjets.end(), [&](Jet* j){double dr = recotherjets[oj]->DeltaR(*j); if(dr > 0.05 && dr < iso){iso = dr;}});
-				//truth1d["otherjets_sep"]->Fill(iso);
-			}
-			//double isoa = 100.;
-			//for_each(cleanedjets.begin(), cleanedjets.end(), [&](Jet* j){double dr = recwjets[0]->DeltaR(*j); if(dr > 0.05 && dr < isoa){isoa = dr;}});
-			//truth2d["wjets_sep"]->Fill(isoa, (recwjets[0]->GetMCPt()-recwjets[0]->Pt())/recwjets[0]->GetMCPt());
-			//double isob = 100.;
-			//for_each(cleanedjets.begin(), cleanedjets.end(), [&](Jet* j){double dr = recwjets[1]->DeltaR(*j); if(dr > 0.05 && dr < isob){isob = dr;}});
-			//truth2d["wjets_sep"]->Fill(isob, (recwjets[1]->GetMCPt()-recwjets[1]->Pt())/recwjets[1]->GetMCPt());
-			//if(isoa < 1. && isob < 1) {truth1d["wmass_lowsep"]->Fill((*recwjets[1] + *recwjets[0]).M());}
-			//if(isoa > 1. && isob > 1) {truth1d["wmass_highsep"]->Fill((*recwjets[1] + *recwjets[0]).M());}
-			//truth2d["jetquality_signal"]->Fill(recbjet->GetMCPt()/recbjet->Pt(), recbjet->PtFractionWrongPrimaryVertex());
-			//truth2d["jetquality_signal"]->Fill(recbbarjet->GetMCPt()/recbbarjet->Pt(), recbbarjet->PtFractionWrongPrimaryVertex());
-			//truth2d["jetquality_signal"]->Fill(recwjets[0]->GetMCPt()/recwjets[0]->Pt(), recwjets[0]->PtFractionWrongPrimaryVertex());
-			//truth2d["jetquality_signal"]->Fill(recwjets[1]->GetMCPt()/recwjets[1]->Pt(), recwjets[1]->PtFractionWrongPrimaryVertex());
+	//		if(nttjets != 4){return;}
+	//		ttp_truth.Fill(recbhjet, recwjets[0], recwjets[1], recbljet, lep, gennls[0], lepcharge);
+	//		for(size_t oj = 0 ; oj < recotherjets.size() ; ++oj)
+	//		{
+	//			truth1d["otherjets_pt"]->Fill(recotherjets[oj]->Pt());
+	//		}
 
-			vector<Jet*> ttjets = {recbjet, recbbarjet, recwjets[0], recwjets[1]};
-			Jet* ttjmin = *min_element(ttjets.begin(), ttjets.end(), [](Jet* a, Jet* b){return(a->Pt() < b->Pt());});
-			int numhigherpt = count_if(cleanedjets.begin(), cleanedjets.end(), [&](Jet* a){return(a->Pt() > ttjmin->Pt());});
-			truth2d["jetnum_highptjets"]->Fill(cleanedjets.size(), numhigherpt);
+	//		vector<Jet*> ttjets = {recbjet, recbbarjet, recwjets[0], recwjets[1]};
+	//		Jet* ttjmin = *min_element(ttjets.begin(), ttjets.end(), [](Jet* a, Jet* b){return(a->Pt() < b->Pt());});
+	//		int numhigherpt = count_if(cleanedjets.begin(), cleanedjets.end(), [&](Jet* a){return(a->Pt() > ttjmin->Pt());});
+	//		truth2d["jetnum_highptjets"]->Fill(cleanedjets.size(), numhigherpt);
 
-			truth2d["btag2d_true"]->Fill(Min(recbjet->csvIncl(), recbbarjet->csvIncl()), Max(recbjet->csvIncl(), recbbarjet->csvIncl()));
-			truth1d["btag_true"]->Fill(recbjet->csvIncl());
-			truth1d["btag_true"]->Fill(recbbarjet->csvIncl());
-			truth1d["btag_wrong"]->Fill(recwjets[0]->csvIncl());
-			truth1d["btag_wrong"]->Fill(recwjets[1]->csvIncl());
+	//		truth2d["btag2d_true"]->Fill(Min(recbjet->csvIncl(), recbbarjet->csvIncl()), Max(recbjet->csvIncl(), recbbarjet->csvIncl()));
+	//		truth1d["btag_true"]->Fill(recbjet->csvIncl());
+	//		truth1d["btag_true"]->Fill(recbbarjet->csvIncl());
+	//		truth1d["btag_wrong"]->Fill(recwjets[0]->csvIncl());
+	//		truth1d["btag_wrong"]->Fill(recwjets[1]->csvIncl());
 
 
 		}

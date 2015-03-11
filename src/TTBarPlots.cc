@@ -60,3 +60,8 @@ void TTBarPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* H
 	plot1d["wj_dphi"]->Fill(Hwa->DeltaPhi(*Hwb));
 	
 	}
+
+void TTBarPlots::Fill(Permutation* per, int lepcharge)
+{
+Fill(per->BHad(), per->WJa(), per->WJb(), per->BLep(), per->L(), *per->Nu(), lepcharge);
+}

@@ -45,6 +45,9 @@ class TH2DCollection
 	public:
 		TH2DCollection(string _prefix);
 		TH2D* AddHist(string name, Int_t xbins, Double_t xmin, Double_t xmax, Int_t ybins, Double_t ymin, Double_t ymax, string xlabel, string ylabel);
+		TH2D* AddHist(string name, Int_t xbins, Double_t xmin, Double_t xmax, const vector<Double_t>& ybins, string xlabel, string ylabel);
+		TH2D* AddHist(string name, const vector<Double_t>& xbins, Int_t ybins, Double_t ymin, Double_t ymax, string xlabel, string ylabel);
+		TH2D* AddHist(string name, const vector<Double_t>& xbins, const vector<Double_t>& ybins, string xlabel, string ylabel);
 
 		TH2D* Get(string name);
 		TH2D* operator[](string name);

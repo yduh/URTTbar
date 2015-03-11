@@ -20,7 +20,6 @@ TTBarSolver::~TTBarSolver()
 
 void TTBarSolver::Init(string filename)
 {
-	TTBS = this;
 	TDirectory* dir = gDirectory;
 	probfile = new TFile(filename.c_str(), "READ");
 	WTmass_right = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_right"));
@@ -56,6 +55,7 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	//btagtest -= Log(BTag_wrong->Interpolate(j1had->csvIncl())/BTag_right->Interpolate(j1had->csvIncl()));
 	//btagtest -= Log(BTag_wrong->Interpolate(j2had->csvIncl())/BTag_right->Interpolate(j2had->csvIncl()));
 	
+	TTBS = this;
 	minuit.SetFCN(myfuncln);
 	minuit.SetPrintLevel(-1);
 	Int_t flags = 0;
