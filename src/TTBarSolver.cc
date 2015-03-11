@@ -46,9 +46,14 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	uj2had_ = 0.05;
 	ublep_ = 0.05;
 	ullep_ = 0.01;
-	umetx_ = 1.;//Sqrt(met_->pxUnc());
-	umety_ = 1.;//Sqrt(met_->pyUnc());
+	umetx_ = 0.05*met->Px();//Sqrt(met_->pxUnc());
+	umety_ = 0.05*met->Py();//Sqrt(met_->pyUnc());
 	rhomet_ = 0.;//met_->pxpyUnc()/(umetx_*umety_);
+
+	nschi = -1;
+	res = 1.E10;
+	nstest = 1.E10;
+	masstest = 1.E10;
 
 	btagtest = -1.*Log(BTag_right->Interpolate(bhad->csvIncl())/BTag_wrong->Interpolate(bhad->csvIncl()));
 	btagtest -= Log(BTag_right->Interpolate(blep->csvIncl())/BTag_wrong->Interpolate(blep->csvIncl()));
@@ -88,8 +93,8 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	if(!LEPMASS && !SMEAR)
 	{
 		double par[9];
-		par[0] = 163.;
-		par[1] = 77.;
+		par[0] = 173.;
+		par[1] = 80.;
 		par[2] = 1.;
 		par[3] = 1.;
 		par[4] = 1.;
@@ -108,33 +113,28 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 
 double TTBarSolver::Test(double* par)
 {
-	bhadT_ = TLorentzVector(bhad_->Px()*par[2], bhad_->Py()*par[2], bhad_->Pz()*par[2], bhad_->P()*par[2]);
-	j1hadT_ = TLorentzVector(j1had_->Px()*par[3], j1had_->Py()*par[3], j1had_->Pz()*par[3], j1had_->P()*par[3]);
-	j2hadT_ = TLorentzVector(j2had_->Px()*par[4], j2had_->Py()*par[4], j2had_->Pz()*par[4], j2had_->P()*par[4]);
-	blepT_ = TLorentzVector(blep_->Px()*par[5], blep_->Py()*par[5], blep_->Pz()*par[5], blep_->P()*par[5]);
-	llepT_ = TLorentzVector(llep_->Px()*par[6], llep_->Py()*par[6], llep_->Pz()*par[6], llep_->P()*par[6]);
-	NeutrinoSolver NS(llep_, blep_, par[1], par[0]);
-
-	//if(metT_.Pt() < 1) {cout << metT_.Px() << " " << metT_.Py() << " " << met_->px()*par[7] << " " << met_->py()*par[8] << " " << umetx_ << " " << umety_ << " " << rhomet_ << endl;}
+	bhadT_ = TLorentzVector(bhad_->Px()*par[2], bhad_->Py()*par[2], bhad_->Pz()*par[2], bhad_->E()*par[2]);
+	j1hadT_ = TLorentzVector(j1had_->Px()*par[3], j1had_->Py()*par[3], j1had_->Pz()*par[3], j1had_->E()*par[3]);
+	j2hadT_ = TLorentzVector(j2had_->Px()*par[4], j2had_->Py()*par[4], j2had_->Pz()*par[4], j2had_->E()*par[4]);
+	blepT_ = TLorentzVector(blep_->Px()*par[5], blep_->Py()*par[5], blep_->Pz()*par[5], blep_->E()*par[5]);
+	llepT_ = TLorentzVector(llep_->Px()*par[6], llep_->Py()*par[6], llep_->Pz()*par[6], llep_->E()*par[6]);
+	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0]);
+	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
+	cout << nschi << " " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
+	if(nschi > -0.1 && nschi < 50.)
+	{
+		nstest = -1.*Log(N_right->Interpolate(nschi)/N_wrong->Interpolate(nschi));
+	}
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
-	if(mthad > 490. || mwhad > 490. || mthad != mthad || mwhad != mwhad || WTmass_right->Interpolate(mwhad, mthad) < 1.)
+	if(mthad > 490. || mwhad > 490. || WTmass_right->Interpolate(mwhad, mthad) < 1.)
 	{
-		return(1.E10);
 	}
 	else
 	{
 		masstest = -1.*Log(WTmass_right->Interpolate(mwhad, mthad)/Max(1., WTmass_wrong->Interpolate(mwhad, mthad)));
 	}
-
-	nschi = -1;
-	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
-	if(nschi < -0.1 || nschi > 20.)
-	{
-		return(1.E10);
-	}
-	nstest = -1.*Log(N_right->Interpolate(nschi)/N_wrong->Interpolate(nschi));
 
 	res = 0.;
 	double sqrt2 = Sqrt(2);
@@ -148,7 +148,7 @@ double TTBarSolver::Test(double* par)
 	res += Power((par[7]-1.)/umetx_/sqrt2 , 2);
 	res += Power((par[8]-1.)/umety_/sqrt2 , 2);
 	res += nstest;
-	//res += btagtest;
+	res += btagtest;
 	res += masstest;
 
 	return(res);

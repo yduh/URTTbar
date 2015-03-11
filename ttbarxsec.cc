@@ -601,6 +601,15 @@ nextjetA: continue;
 			URStreamer event(tree_);
 			while(event.next())
 			{
+				
+				//TLorentzVector tl(20., 10., 10., Sqrt(600));
+				//TLorentzVector tb(10., -30., -10., Sqrt(1200));
+				//NeutrinoSolver NS(&tl, &tb, 80., 173.);
+				//double chi;
+				//TLorentzVector met(NS.GetBest(-20., 10., 1.,1.,0, chi));
+				//cout << chi << " " << (tl+met).M() << " " << (tl+tb+met).M() << endl; 
+
+
 				sgenparticles.clear();
 				genwpartons.clear();
 				gencls.clear();
