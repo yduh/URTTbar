@@ -26,8 +26,8 @@ void TTBarSolver::Init(string filename)
 	WTmass_wrong = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_wrong"));
 	BTag_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_true"));
 	BTag_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_wrong"));
-	N_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nstest_right"));
-	N_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nstest_wrong"));
+	N_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_right"));
+	N_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_wrong"));
 	dir->cd();
 }
 
@@ -120,7 +120,7 @@ double TTBarSolver::Test(double* par)
 	llepT_ = TLorentzVector(llep_->Px()*par[6], llep_->Py()*par[6], llep_->Pz()*par[6], llep_->E()*par[6]);
 	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0]);
 	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
-	cout << nschi << " " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
+	//cout << nschi << " " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
 	if(nschi > -0.1 && nschi < 50.)
 	{
 		nstest = -1.*Log(N_right->Interpolate(nschi)/N_wrong->Interpolate(nschi));

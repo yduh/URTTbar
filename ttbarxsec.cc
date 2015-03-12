@@ -6,6 +6,7 @@
 #include "IDMuon.h"
 #include "IDElectron.h"
 #include "TH1F.h"
+#include "TRandom3.h"
 
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
@@ -107,7 +108,7 @@ class ttbar : public AnalyzerBase
 			ttp_other_imp("other_imp"),
 			ttp_all_imp("all_imp"),
 			cnbtag(1),
-			cwjetptsoft(25.),
+			cwjetptsoft(30.),
 			cwjetpthard(30.),
 			cbjetpt(30.),
 			cjetetamax(2.4),
@@ -136,6 +137,7 @@ class ttbar : public AnalyzerBase
 			dir_truth->cd();
 			truth2d.AddHist("btag2d_true", 100, 0., 1., 100, 0., 1., "btag", "btag");
 			truth1d.AddHist("btag_true", 100, 0., 1., "btag", "Events");
+			truth1d.AddHist("counter", 10, 0., 10., "counter", "Events");
 			truth1d.AddHist("btag_wrong", 100, 0., 1., "btag", "Events");
 			truth1d.AddHist("btagtest", 10, 0., 10., "btagtest", "Events");
 			truth2d.AddHist("test_dPhi", 100, 0., 10000., 100, -2., 2., "min chi2", "#Delta#Phi");
@@ -247,7 +249,6 @@ class ttbar : public AnalyzerBase
 					}
 				}
 			}
-
 			FULLHAD = false;
 			SEMILEP = false;
 			FULLLEP = false;
@@ -407,7 +408,9 @@ nextjetA: continue;
 
 		void ttanalysis()
 		{
+			if(SEMILEP) truth1d["counter"]->Fill(1.5);
 			if(cleanedjets.size() < 4){return;}
+			if(SEMILEP) truth1d["counter"]->Fill(2.5);
 
 			//check for lepton:
 			TLorentzVector* lep = 0;
@@ -423,6 +426,7 @@ nextjetA: continue;
 				lepcharge = mediumelectrons[0]->charge();
 			}
 			if(lep == 0){return;}
+			if(SEMILEP) truth1d["counter"]->Fill(3.5);
 			if(SEMILEP && lep->DeltaR(*gencls[0]) > 0.2) {cout << "Wrong Lep" << endl;}
 
 			//keeping only the 5 leading jets
@@ -434,6 +438,7 @@ nextjetA: continue;
 			//check for 2 b-jets
 			sort(reducedjets.begin(), reducedjets.end(), [](Jet* A, Jet* B){return(A->csvIncl() > B->csvIncl());});
 			if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && reducedjets[1]->csvIncl() < 0.814)){return;}
+			if(SEMILEP) truth1d["counter"]->Fill(4.5);
 
 			//check what we have reconstructed
 			if(SEMILEP)
@@ -446,12 +451,12 @@ nextjetA: continue;
 			}
 
 			//reconstruction
-			Permutation rightper(0,0,0,0,0,0);
+			Permutation rightper;
 			if(nttjets == 4)
 			{
 				rightper = Permutation(recwjets[0], recwjets[1], recbhjet, recbljet, lep, &met);
 			}
-			Permutation* bestper = 0;
+			Permutation bestper;
 
 			for(size_t i = cnbtag ; i < reducedjets.size() ; ++i)
 			{
@@ -470,7 +475,7 @@ nextjetA: continue;
 							if(wja->Pt() < cwjetpthard && wjb->Pt() < cwjetpthard) continue;
 							if(wja->Pt() < cwjetptsoft || wjb->Pt() < cwjetptsoft) continue;
 							if(bjh->Pt() < cbjetpt || bjl->Pt() < cbjetpt) continue;
-							Permutation testper = new Permutation(wja, wjb, bjh, bjl, lep, &met);
+							Permutation testper(wja, wjb, bjh, bjl, lep, &met);
 							testper.Solve(ttsolver);
 
 							TLorentzVector whad(testper.WHad());
@@ -520,32 +525,40 @@ nextjetA: continue;
 								}
 
 							}
-							if(bestper == 0) {bestper = testper; continue;}
+							if(bestper.BLep() == 0) {bestper = testper; continue;}
 
-							if(*testper < *bestper)
+							if(testper < bestper)
 							{
-								delete bestper;
 								bestper = testper;
 							}
-							else
-							{
-								delete testper;
-							}
-							
-
 						}
 					}
 				}
 			}
-			if(testper->Prob() > 1E9){return;}
+			if(bestper.Prob() > 1E9){return;}
+			if(SEMILEP) truth1d["counter"]->Fill(5.5);
 			//Fill reconstructed hists
 			ttp_all.Fill(bestper, lepcharge);
 			//ttp_all_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
+			//
+		
+			bool coin = (gRandom->Uniform() < 0.5);
+			Jet* bjet = 0;
+			if(coin)
+			{
+				if(bestper.BLep()->csvIncl() > 0.941) bjet = bestper.BHad();
+			}
+			else
+			{
+				if(bestper.BHad()->csvIncl() > 0.941) bjet = bestper.BLep();
+			}
+
 
 			//Fill reconstructed hists with matching information
 			if(rightper.IsCorrect(bestper))
 			{
-				ttp_right.Fill(bestper, lepcharge);
+				ttp_right.Fill(bestper, lepcharge, bjet);
+				if(SEMILEP) truth1d["counter"]->Fill(6.5);
 				//ttp_right_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 				//Neutrino reconstruction plots
 				//truth1d["dRNu_right"]->Fill(ImpNu.DeltaR(*gennls[0]));
@@ -555,7 +568,8 @@ nextjetA: continue;
 			}
 			else if(nttjets == 4)
 			{
-				ttp_wrong.Fill(bestper, lepcharge);
+				ttp_wrong.Fill(bestper, lepcharge, bjet);
+				if(SEMILEP) truth1d["counter"]->Fill(7.5);
 				//ttp_wrong_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 				//Neutrino reconstruction plots
 				//truth1d["dRNu_wrong"]->Fill(ImpNu.DeltaR(*gennls[0]));
@@ -563,12 +577,12 @@ nextjetA: continue;
 			}
 			else if(SEMILEP)
 			{
-				ttp_semi.Fill(bestper, lepcharge);
+				ttp_semi.Fill(bestper, lepcharge, bjet);
 				//ttp_semi_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 			}
 			else
 			{
-				ttp_other.Fill(bestper, lepcharge);
+				ttp_other.Fill(bestper, lepcharge, bjet);
 				//ttp_other_imp.Fill(&ImpBHad, &ImpWja, &ImpWjb, &ImpBLep, &ImpL, &ImpNu, lepcharge);
 			}
 
@@ -598,10 +612,14 @@ nextjetA: continue;
 		//run your proper analysis here
 		virtual void analyze()
 		{
+
+			int nevent = 0;
 			URStreamer event(tree_);
 			while(event.next())
 			{
-				
+				nevent++;
+				if(nevent % 1000 == 0)cout << "Event:" << nevent << endl;
+				truth1d["counter"]->Fill(0.5);	
 				//TLorentzVector tl(20., 10., 10., Sqrt(600));
 				//TLorentzVector tb(10., -30., -10., Sqrt(1200));
 				//NeutrinoSolver NS(&tl, &tb, 80., 173.);
