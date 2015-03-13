@@ -8,4 +8,42 @@
 # matches are found the longest key is used.
 
 styles = {
-}
+   'ZJets*' : {
+      'legendstyle' : 'f',
+      'drawstyle' : 'hist',
+      'fillcolor' : '#FFCC66',
+      'linecolor' : '#FFCC66',
+      'name' : "Z + jets",
+      'fillstyle': 'solid',
+      },
+   'WJets*' : {
+      'legendstyle' : 'f',
+      'drawstyle' : 'hist',
+      'fillcolor' : '#990000',
+      'name' : "W + jets",
+      'fillstyle': 'solid',
+      },
+   'single*' : {
+      'legendstyle' : 'f',
+      'drawstyle' : 'hist',
+      'fillcolor' : '#2aa198',
+      'linecolor' : '#2aa198',
+      'name' : "single top",
+      'fillstyle': 'solid',
+      },
+   'data*' : {
+      'legendstyle' : 'pe',
+      'drawstyle' : 'pe',
+      'markerstyle' : 20,
+      #'markersize'  : 2,
+      'name' : "Observed",
+    },
+   'tt*' : {
+      'legendstyle' : 'f',
+      'drawstyle' : 'hist',
+      'fillcolor' : '#9999CC',
+      'linecolor' : '#9999CC',
+      'name' : "ttbar",
+      'fillstyle': 'solid',
+      },
+   }
