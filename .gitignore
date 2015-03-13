@@ -9,3 +9,6 @@ results/*
 plots/*
 URStreamer.h
 Dict.h
+*.pyc
+\#*\#
+*~
