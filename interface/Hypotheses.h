@@ -2,15 +2,19 @@
 #define Hypotheses_h
 
 #include "TLorentzVector.h"
+#include "TTBarSolver.h"
+#include "URStreamer.h"
 
 struct WHypothesis {
-WHypothesis():
-	first(0), 
-		second(0){}
+	WHypothesis():
+		first(0), 
+		second(0),
+		isLeptonic(false)
+	{}
 	const TLorentzVector *first, *second;
 	bool isLeptonic;
 	bool hasMissingProng() const { return (!first || !second);	}
-	//bool hasNeutrino() const {return second && (s)}
+
 	bool matches(const WHypothesis &other, float threshold=0.3) const {
 		bool have_first = first && other.first;
 		bool have_second = second && other.second;
@@ -42,18 +46,71 @@ WHypothesis():
 
 enum DecayType {NOTSET, INVALID, FULLHAD, SEMILEP, FULLLEP};
 struct TTbarHypothesis {
-	TTbarHypothesis():
-		b(0), 
-		chisq(-1),
-		bbar(0),
-		wplus(), 
-		wminus(),
-		decay(NOTSET)
-	{}
 	const TLorentzVector *b, *bbar;
+	TLorentzVector nu_;
 	WHypothesis wplus, wminus;
 	DecayType decay;
-	double chisq;
+	double nu_chisq;
+	double full_discriminant;
+	double nu_discriminant;
+	double btag_discriminant;
+	double mass_discriminant;
+
+	TTbarHypothesis():
+		b(0), 
+		bbar(0),
+		nu_(),
+		wplus(), 
+		wminus(),
+		decay(NOTSET),
+		nu_chisq(-1),
+		full_discriminant(-1),
+		nu_discriminant(-1),
+		btag_discriminant(-1),
+		mass_discriminant(-1)
+	{}
+
+	void solve(TTBarSolver &solver, Met &met) {
+		Jet *bhad = const_cast<Jet*>((const Jet*) (wplus.isLeptonic ? bbar : b));
+		Jet *blep = const_cast<Jet*>((const Jet*) (wplus.isLeptonic ? b : bbar));
+		Jet *wh1  = const_cast<Jet*>((const Jet*) whad()->first );
+		Jet *wh2  = const_cast<Jet*>((const Jet*) whad()->second);
+		TLorentzVector *l = const_cast<TLorentzVector*>(wlep()->first);
+		solver.Solve(bhad, wh1, wh2, blep, l, &met);
+
+		nu_chisq           = solver.NSChi2() ;
+		full_discriminant  = solver.Res()		 ;
+		nu_discriminant    = solver.NSRes()	 ;
+		btag_discriminant  = solver.BTagRes();
+		mass_discriminant  = solver.MassRes();
+		nu_ = solver.Nu();
+		wlep()->second = &nu_;
+	}
+
+	WHypothesis * whad() {
+		if(!wplus.isLeptonic) return &wplus;
+		else if(!wminus.isLeptonic) return &wminus;
+		return NULL;
+	}
+
+	WHypothesis * wlep() {
+		if(wplus.isLeptonic) return &wplus;
+		else if(wminus.isLeptonic) return &wminus;
+		return NULL;
+	}
+
+	const TLorentzVector *blep() {
+		if(wplus.isLeptonic) return b;
+		else if(wminus.isLeptonic) return bbar;
+		return NULL;
+	}
+
+	const TLorentzVector *bhad() {
+		if(!wplus.isLeptonic) return b;
+		else if(!wminus.isLeptonic) return bbar;
+		return NULL;
+	}
+
 	bool hasMissingProng() const {
 		return (!b || !bbar || wplus.hasMissingProng() || wminus.hasMissingProng());
 	}
