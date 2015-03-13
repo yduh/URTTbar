@@ -1,7 +1,13 @@
 # Project-related environment variables 
 
 #This part should be changed by the user(s)
-export jobid=2015Mar04
+export jobid=NOTSET
+if [ -e jobid.sh ] 
+then
+		source jobid.sh
+else
+		echo "I did not find jobid.sh, are you sure you do not want to set the jobid and leave it to $jobid?"
+fi
 export URA_NTHREADS=1
 #export URA_PROJECT_LIBS='-lwhatever_you_need_to_make_it_compile' #<-- Add here needed libraries for the project compilation
 

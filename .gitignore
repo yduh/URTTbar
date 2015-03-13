@@ -12,3 +12,4 @@ Dict.h
 *.pyc
 \#*\#
 *~
+jobid.sh
