@@ -1,5 +1,7 @@
-#include "TTBarPlots.h"
-#include "URStreamer.h"
+#include <TTBarPlots.h>
+#include <URStreamer.h>
+#include <Permutation.h>
+#include <ttbarxsec.h>
 
 using namespace std;
 using namespace TMath;
@@ -14,7 +16,7 @@ TTBarPlots::~TTBarPlots()
 
 }
 
-void TTBarPlots::Init()
+void TTBarPlots::Init(ttbar* analysis)
 {
     vector<double> etabins = {-2.4, -1.5, -0.5, 0.5, 1.5, 2.4};
     vector<double> bptbins = {30., 50., 70, 90., 130., 500.};
@@ -23,8 +25,8 @@ void TTBarPlots::Init()
     plot2d.AddHist("Whad_M_thad_M", 500, 0., 500., 500, 0., 500., "M(W_{had}) (GeV)", "M(t_{had}) (GeV)");
     plot2d.AddHist("Wlep_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(W_{lep}) (GeV)", "M(t_{lep}) (GeV)");
     plot2d.AddHist("thad_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(t_{had}) (GeV)", "M(t_{lep}) (GeV)");
-    plot2d.AddHist("test_ptthad", 96, -12., 12., 100, 0., 500., "test", "p_{T}(t_{had}) (GeV)");
-    plot2d.AddHist("test_pttlep", 96, -12., 12., 100, 0., 500., "test", "p_{T}(t_{lep}) (GeV)");
+    plot2d.AddHist("test_ptthad", 96, -12., 12., analysis->topptbins, "test", "p_{T}(t_{had}) (GeV)");
+    plot2d.AddHist("test_pttlep", 96, -12., 12., analysis->topptbins, "test", "p_{T}(t_{lep}) (GeV)");
     plot2d.AddHist("test_ptbtight_fail", 192, -12., 12., bptbins, "test", "p_{T}(b_{fail}) (GeV)");
     plot2d.AddHist("test_ptbtight_pass", 192, -12., 12., bptbins, "test", "p_{T}(b_{pass}) (GeV)");
     plot2d.AddHist("test_ptbmedium_fail", 192, -12., 12., bptbins, "test", "p_{T}(b_{fail}) (GeV)");

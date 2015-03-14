@@ -56,11 +56,7 @@ NeutrinoSolver::NeutrinoSolver(const TLorentzVector* lep, const TLorentzVector* 
 {
 	Mt = MT;
 	Mw = MW;
-	//Ml = 0.105;
-	//Mb = 4.2;
-	//Mn = 0.;
 	Ml = lep->M();
-	//Mb = 0.;
 	Mb = bjet->M();
 	Mn = 0.;
 	TVector3 l(lep->Vect());
@@ -172,7 +168,7 @@ void NeutrinoSolver::Solve(double t)
 TLorentzVector NeutrinoSolver::GetSolution(double t)
 {
 	Solve(t);
-	return TLorentzVector(T(0,0), T(1,0), T(2,0), Sqrt(T(0,0)*T(0,0) + T(1,0)*T(1,0) + T(2,0)*T(2,0)));
+	return TLorentzVector(T(0,0), T(1,0), T(2,0), Sqrt(T(0,0)*T(0,0) + T(1,0)*T(1,0) + T(2,0)*T(2,0) + Mn*Mn));
 }
 
 TMatrixD NeutrinoSolver::GetPtSolution(double t)
@@ -226,7 +222,7 @@ pair<double, double> NeutrinoSolver::Extrem(double t, bool MIN)
 
 TLorentzVector NeutrinoSolver::GetBest(double metx, double mety, double metxerr, double metyerr, double metxyrho, double& test)
 {
-	if(ERROR){return(TLorentzVector(0.,0.,0.,0.));}
+	if(ERROR){ test = -1; return(TLorentzVector(0.,0.,0.,0.));}
 
 	MET(0,0) = metx;
 	MET(1,0) = mety;

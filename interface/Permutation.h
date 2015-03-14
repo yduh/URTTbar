@@ -25,12 +25,25 @@ class Permutation
 	public:
 		Permutation() {}
 		Permutation(Jet* wja, Jet* wjb, Jet* bjh, Jet* bjl, TLorentzVector* lep, Met* met);
+		void Reset();
+		bool IsComplete() const {return(wja_ != 0 && wjb_ != 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && met_ != 0);}
+		int NumBJets() const {return((bjl_ != 0 ? 1 : 0) + (bjh_ != 0 ? 1 : 0));}
+		int NumWJets() const {return((wja_ != 0 ? 1 : 0) + (wjb_ != 0 ? 1 : 0));}
+		int NumTTBarJets() const {return(NumBJets() + NumWJets());}
 		double Solve(TTBarSolver& ttsolver, bool kinfit = false);
 		Jet* WJa() const {return(wja_);}
 		Jet* WJb() const {return(wjb_);}
 		Jet* BHad() const {return(bjh_);}
 		Jet* BLep() const {return(bjl_);}
 		TLorentzVector* L() const {return(lep_);}
+		Met* MET() const {return(met_);}
+		void WJa(Jet* wja){wja_=wja;}
+		void WJb(Jet* wjb){wjb_=wjb;}
+		void BHad(Jet* bjh){bjh_=bjh;}
+		void BLep(Jet* bjl){bjl_=bjl;}
+		void L(TLorentzVector* lep){lep_=lep;}
+		void MET(Met* met){met_=met;}
+
 		TLorentzVector Nu() {return(nu_);}
 		TLorentzVector WHad() const {return((*wja_ + *wjb_));}
 		TLorentzVector THad() const {return((WHad() + *bjh_));}

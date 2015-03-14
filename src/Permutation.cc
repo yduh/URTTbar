@@ -13,6 +13,19 @@ Permutation::Permutation(Jet* wja, Jet* wjb, Jet* bjh, Jet* bjl, TLorentzVector*
 {
 }
 
+void Permutation::Reset()
+{
+	prob_ = numeric_limits<double>::max();
+	wja_ = 0;
+	wjb_ = 0;
+	bjh_ = 0;
+	bjl_ = 0;
+	lep_ = 0;
+	met_ = 0;
+	kinfit_ = false;
+	improvedobjects.clear();
+}
+
 double Permutation::Solve(TTBarSolver& ttsolver, bool kinfit)
 {
 	kinfit_ = kinfit;

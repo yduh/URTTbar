@@ -18,8 +18,10 @@ TTBarSolver::~TTBarSolver()
 	if(probfile != 0) {probfile->Close();}
 }
 
-void TTBarSolver::Init(string filename)
+void TTBarSolver::Init(string filename, bool usebtag, bool usens)
 {
+	USEBTAG = usebtag;
+	USENS = usens;
 	TDirectory* dir = gDirectory;
 	probfile = new TFile(filename.c_str(), "READ");
 	WTmass_right = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_right"));
@@ -46,8 +48,10 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	uj2had_ = 0.05;
 	ublep_ = 0.05;
 	ullep_ = 0.01;
-	umetx_ = 0.05*met->Px();//Sqrt(met_->pxUnc());
-	umety_ = 0.05*met->Py();//Sqrt(met_->pyUnc());
+	//umetx_ = 0.05*met->Px();//Sqrt(met_->pxUnc());
+	//umety_ = 0.05*met->Py();//Sqrt(met_->pyUnc());
+	umetx_ = 25;//Sqrt(met_->pxUnc());
+	umety_ = 25;//Sqrt(met_->pyUnc());
 	rhomet_ = 0.;//met_->pxpyUnc()/(umetx_*umety_);
 
 	nschi = -1;
@@ -120,7 +124,7 @@ double TTBarSolver::Test(double* par)
 	llepT_ = TLorentzVector(llep_->Px()*par[6], llep_->Py()*par[6], llep_->Pz()*par[6], llep_->E()*par[6]);
 	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0]);
 	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
-	//cout << nschi << " " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
+	//cout << nschi << " NS " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
 	if(nschi > -0.1 && nschi < 50.)
 	{
 		nstest = -1.*Log(N_right->Interpolate(nschi)/N_wrong->Interpolate(nschi));
@@ -147,9 +151,9 @@ double TTBarSolver::Test(double* par)
 	res += Power((par[6]-1.)/ullep_/sqrt2 , 2);
 	res += Power((par[7]-1.)/umetx_/sqrt2 , 2);
 	res += Power((par[8]-1.)/umety_/sqrt2 , 2);
-	res += nstest;
-	res += btagtest;
 	res += masstest;
+	if(USENS) res += nstest;
+	if(USEBTAG) res += btagtest;
 
 	return(res);
 }

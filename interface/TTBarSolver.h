@@ -56,19 +56,25 @@ class TTBarSolver
 		double nstest;
 		double masstest;
 		double res;
+		bool USEBTAG;
+		bool USENS;
 	public:
+		double Test(double* par);
 		static TTBarSolver* TTBS; 
 		TTBarSolver();
 		~TTBarSolver();
-		void Init(string filename);
+		void Init(string filename, bool usebtag = true, bool usens = true);//provide root file with probability distribution, switches if btag and neutrino solver information should be used for final discriminant Res()
 		void Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVector* llep, Met* met);
 
-		double Test(double* par);
-		double Res() const {return res;}
-		double NSRes() const {return nstest;}
-		double BTagRes() const {return btagtest;}
-		double MassRes() const {return masstest;}
-		double NSChi2() const {return nschi;}
+		//extrem unlikely hypothesis will return a value >= 1E10
+		double Res() const {return res;}//final discriminant
+		double NSRes() const {return nstest;}//-log(l) of neutriosolver 
+		double BTagRes() const {return btagtest;} //-log(l) of btagging
+		double MassRes() const {return masstest;} //-log(l) of 2d-mass test
+	
+		double NSChi2() const {return nschi;}//chi2 of neutrinosolver
+
+		//improved objects: currently only usefull for neutrino
 		TLorentzVector BHad() const {return bhadT_;}
 		TLorentzVector Wja() const {return j1hadT_;}
 		TLorentzVector Wjb() const {return j2hadT_;}
