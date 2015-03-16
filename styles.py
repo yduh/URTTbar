@@ -8,19 +8,12 @@
 # matches are found the longest key is used.
 
 styles = {
-   'ZJets*' : {
+   '[WZ]Jets*' : {
       'legendstyle' : 'f',
       'drawstyle' : 'hist',
       'fillcolor' : '#FFCC66',
       'linecolor' : '#FFCC66',
-      'name' : "Z + jets",
-      'fillstyle': 'solid',
-      },
-   'WJets*' : {
-      'legendstyle' : 'f',
-      'drawstyle' : 'hist',
-      'fillcolor' : '#990000',
-      'name' : "W + jets",
+      'name' : "V + jets",
       'fillstyle': 'solid',
       },
    'single*' : {
