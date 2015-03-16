@@ -20,6 +20,7 @@
 class btag_efficiency : public AnalyzerBase
 {
 public:
+	enum TTNaming {RIGHT, RIGHT_THAD, RIGHT_WHAD, RIGHT_TLEP, WRONG, OTHER};
   btag_efficiency(const std::string output_filename):
     AnalyzerBase("btag_efficiency", output_filename), 
 		tracker_(),
@@ -43,6 +44,13 @@ public:
 		ordering_["btag_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.btag_discriminant < two.btag_discriminant;};
 		ordering_["mass_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.mass_discriminant < two.mass_discriminant;}; 
 		ordering_["full_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.full_discriminant < two.full_discriminant;};
+
+		naming_[TTNaming::RIGHT ] = "semilep_visible_right";
+		naming_[TTNaming::RIGHT_THAD ] = "semilep_right_thad" 	 ;
+		naming_[TTNaming::RIGHT_WHAD ] = "semilep_right_whad" 	 ;
+		naming_[TTNaming::RIGHT_TLEP ] = "semilep_right_tlep" 	 ;
+		naming_[TTNaming::WRONG ] = "semilep_wrong" 			 ;
+		naming_[TTNaming::OTHER ] = 	"other"              ;
 	}
   
 	TDirectory* getDir(string path){
@@ -62,11 +70,14 @@ public:
   //This method is called once per job at the beginning of the analysis
   //book here your histograms/tree and run every initialization needed
 	void book_combo_plots(string folder){
-			book<TH1F>(folder, "nu_chisq"         , "", 300,   0., 30.);
-			book<TH1F>(folder, "nu_discriminant"	, "", 110,  -1., 10.);
-			book<TH1F>(folder, "btag_discriminant", "", 300, -30.,  0.);
-			book<TH1F>(folder, "mass_discriminant", "", 100,   0., 10.);
-			book<TH1F>(folder, "full_discriminant", "", 200, -10., 10.);
+		book<TH1F>(folder, "nu_chisq"         , "", 520,  -2., 50.);
+		book<TH1F>(folder, "nu_discriminant"	, "", 110,  -1., 10.);
+		book<TH1F>(folder, "btag_discriminant", "", 300, -30.,  0.);
+		book<TH1F>(folder, "mass_discriminant", "", 100,   0., 10.);
+		book<TH1F>(folder, "full_discriminant", "", 200, -10., 10.);
+		
+		book<TH1F>(folder, "btag_value", "", 100, 0., 1.);
+		book<TH2F>(folder, "Wmasshad_tmasshad", "", 500, 0., 500., 500, 0., 500);			
 	}
 
 	void book_hyp_plots(string folder){
@@ -78,6 +89,7 @@ public:
 		book<TH1F>(folder, "Wlep_mass", ";m_{W}(lep) (GeV)", 140, 0., 140.);
 		book<TH1F>(folder, "Wlep_char", ";charge_{W}(lep) (GeV)", 2, -1, 1);
 		book<TH1F>(folder, "Whad_mass", ";m_{W}(had) (GeV)", 140, 0., 140.);
+		book<TH1F>(folder, "Whad_DR"  , ";m_{W}(had) (GeV)", 100, 0., 10.);
 		book<TH1F>(folder, "tlep_mass", ";m_{t}(lep) (GeV)", 300, 100., 400.);
 		book<TH1F>(folder, "thad_mass", ";m_{t}(had) (GeV)", 300, 100., 400.);
 		book<TH1F>(folder, "hjet_pt"  , ";m_{t}(lep) (GeV)", 500, 0., 500.);
@@ -115,6 +127,7 @@ public:
 						book<TH1F>(current, "pt" 	,"pt" 	, 500, 0 , 500);
 						book<TH1F>(current, "phi"	,"phi"	, 400, -4, 4);
 						book<TH1F>(current, "pflav","pflav", 49, -24.5, 24.5);
+						book<TH1F>(current, "pflav_smart","pflav", 49, -24.5, 24.5);
 						book<TH1F>(current, "hflav","hflav", 49, -24.5, 24.5);
 						book<TH1F>(current, "energy", ";E_{jet} (GeV)", 500, 0., 500.);
 					}
@@ -153,7 +166,8 @@ public:
 		dir->second["nu_DE"].fill(reco_wlep.second->E() - gen_wlep.second->E());
 	}
 
-	void fill_jet_info(string folder, const Jet* jet){
+	void fill_jet_info(string folder, const Jet* jet, const Genparticle* genp=0){
+		Logger::log().debug() << folder <<" "<< genp << endl;
 		auto dir = histos_.find(folder);
 		dir->second["eta"	 ].fill(jet->Eta());
 		dir->second["pt" 	 ].fill(jet->Pt() );
@@ -161,6 +175,11 @@ public:
 		dir->second["pflav"].fill(jet->partonFlavour());
 		dir->second["hflav"].fill(jet->hadronFlavour());
 		dir->second["energy"].fill(jet->E());
+
+		Logger::log().debug() << folder << " " << genp << endl;
+		int pflav = (genp) ? genp->pdgId() : jet->partonFlavour();
+		Logger::log().debug() << pflav << " " << jet->partonFlavour() << endl;
+		dir->second["pflav_smart"].fill(pflav);
 	}
 
 	void fill_discriminator_info(string folder, const TTbarHypothesis &hyp){
@@ -171,9 +190,16 @@ public:
 		dir->second["btag_discriminant"].fill(hyp.btag_discriminant);
 		dir->second["mass_discriminant"].fill(hyp.mass_discriminant);
 		dir->second["full_discriminant"].fill(hyp.full_discriminant);
+
+		const Jet* b = (const Jet*) hyp.b;
+		const Jet* bbar = (const Jet*) hyp.bbar;
+		double whad_mass = (hyp.wplus.isLeptonic) ? hyp.wminus.mass() : hyp.wplus.mass();
+		dir->second["btag_value"       ].fill((b->*btag_id_)());
+		dir->second["btag_value"       ].fill((bbar->*btag_id_)());
+		dir->second["Wmasshad_tmasshad"].fill(whad_mass, hyp.thad_mass());
 	}
 
-	void fill(string folder, const TTbarHypothesis &hyp, size_t njets, size_t nbjets) {
+	void fill(string folder, const TTbarHypothesis &hyp, size_t njets, size_t nbjets, TTbarHypothesis *genHyp=0) {
 		auto dir = histos_.find(folder);
 		if(dir == histos_.end()) {
 			Logger::log().error() << "histogram folder: " << folder <<
@@ -198,6 +224,7 @@ public:
 		dir->second["lep_pt"   ].fill(wlep.first->Pt());
 		dir->second["Wlep_mass"].fill(wlep.mass());
 		dir->second["Whad_mass"].fill(whad.mass());
+		dir->second["Whad_DR"  ].fill(whad.first->DeltaR(*whad.second));
 		dir->second["tlep_mass"].fill(tlep_m);
 		dir->second["thad_mass"].fill(thad_m);
 		dir->second["hjet_pt"  ].fill(whad.first->Pt());
@@ -206,53 +233,51 @@ public:
 		float sub  = (whad.first->Pt() > whad.second->Pt()) ? whad.second->Pt() : whad.first->Pt();
 		dir->second["hjet_pts" ].fill(lead, sub);//*/
 
+		if(folder == "gen") return;
+		Logger::log().debug() << folder << " " << genHyp << endl;
 		const Jet *leading    = (const Jet*)((whad.first->E() > whad.second->E()) ? whad.first  : whad.second);
 		const Jet *subleading = (const Jet*)((whad.first->E() > whad.second->E()) ? whad.second : whad.first );
 		
+		const Genparticle *gen_leading = 0;
+		const Genparticle *gen_subleading = 0;
+		if(genHyp){
+			gen_leading = (const Genparticle*) ((leading->DeltaR(*(genHyp->whad()->first)) < DR_match_to_gen_) ? genHyp->whad()->first : genHyp->whad()->second);
+			gen_subleading = (const Genparticle*) ((subleading->DeltaR(*(genHyp->whad()->first)) < DR_match_to_gen_) ? genHyp->whad()->first : genHyp->whad()->second);
+		}
+
 		//FILL JET INFORMATION
-		fill_jet_info(folder + "/leading/all", leading);
-		if((leading->*btag_id_)() > btag_cut_) fill_jet_info(folder + "/leading/tagged", leading);
-		fill_jet_info(folder + "/subleading/all", subleading);
-		if((subleading->*btag_id_)() > btag_cut_) fill_jet_info(folder + "/subleading/tagged", subleading);
+		fill_jet_info(folder + "/leading/all", leading, gen_leading);
+		if((leading->*btag_id_)() > btag_cut_) fill_jet_info(folder + "/leading/tagged", leading, gen_leading);
+		fill_jet_info(folder + "/subleading/all", subleading, gen_subleading);
+		if((subleading->*btag_id_)() > btag_cut_) fill_jet_info(folder + "/subleading/tagged", subleading, gen_subleading);
 
 		dir->second["hjet_es"  ].fill(leading->E(), subleading->E());
 	}
 
-	string get_ttdir_name(TTbarHypothesis &gen, TTbarHypothesis &reco){
+	TTNaming get_ttdir_name(TTbarHypothesis &gen, TTbarHypothesis &reco){
 		// Logger::log().warning() << "fcn called: " << gen.decay << " (SEMI = "<< DecayType::SEMILEP <<")" << endl;
 		if(gen.decay == DecayType::SEMILEP){
 			//if(!gen.hasMissingProng()){
-			Logger::log().debug() << "--------------------------------------" << endl;
-			Logger::log().debug() << "RECO: wh " << reco.whad()->first << " " << reco.whad()->second << " wl " <<
-				reco.wlep()->first << " b " << reco.b << " bb " << reco.bbar << endl;
-			Logger::log().debug() << "GEN: wh " << gen.whad()->first << " " << gen.whad()->second << " wl " <<
-				gen.wlep()->first << " b " << gen.b << " bb " << gen.bbar << endl;
+			// Logger::log().debug() << "--------------------------------------" << endl;
+			// Logger::log().debug() << "RECO: wh " << reco.whad()->first << " " << reco.whad()->second << " wl " <<
+			// 	reco.wlep()->first << " b " << reco.b << " bb " << reco.bbar << endl;
+			// Logger::log().debug() << "GEN: wh " << gen.whad()->first << " " << gen.whad()->second << " wl " <<
+			// 	gen.wlep()->first << " b " << gen.b << " bb " << gen.bbar << endl;
 				//}
 			bool whad_matches = (reco.whad()->first == gen.whad()->first && reco.whad()->second == gen.whad()->second) ||
 				(reco.whad()->first == gen.whad()->second && reco.whad()->second == gen.whad()->first);
 			bool b_matches    = (reco.bhad() == gen.bhad());
 			bool lepb_matches = (reco.blep() == gen.blep());
 			bool lep_matches  = (reco.wlep()->first == gen.wlep()->first);
-			if(lepb_matches && lep_matches && whad_matches && b_matches) return "semilep_visible_right";
-			else if(whad_matches && b_matches) return "semilep_right_thad";
-			else if(whad_matches) return "semilep_right_whad";
-			else if(lep_matches && lepb_matches) return "semilep_right_tlep";
-			else return "semilep_wrong";
+			if(lepb_matches && lep_matches && whad_matches && b_matches) return TTNaming::RIGHT;//"semilep_visible_right";
+			else if(whad_matches && b_matches) return TTNaming::RIGHT_THAD; //"semilep_right_thad";
+			else if(whad_matches) return TTNaming::RIGHT_WHAD; //"semilep_right_whad";
+			else if(lep_matches && lepb_matches) return TTNaming::RIGHT_TLEP; //"semilep_right_tlep";
+			else return TTNaming::WRONG; //"semilep_wrong";
 		}
 		else {
-			return "other";
+			return TTNaming::OTHER; //"other";
 		}
-		// if(gen.decay == DecayType::SEMILEP){
-		// 	bool whad_matches = reco.wplus.isLeptonic ? reco.wminus.matches(gen.wminus, DR_match_to_gen_) : reco.wplus.matches(gen.wplus, DR_match_to_gen_);
-		// 	bool b_matches    = reco.wplus.isLeptonic ? (reco.bbar->DeltaR(*gen.bbar) < DR_match_to_gen_) : (reco.b->DeltaR(*gen.b) < DR_match_to_gen_);
-		// 	bool lepb_matches = reco.wplus.isLeptonic ? (reco.b->DeltaR(*gen.b) < DR_match_to_gen_) : (reco.bbar->DeltaR(*gen.bbar) < DR_match_to_gen_);
-		// 	bool lep_matches  = reco.wplus.isLeptonic ? (reco.wplus.first->DeltaR(*gen.wplus.first) < DR_match_to_gen_) : (reco.wminus.first->DeltaR(*gen.wminus.first) < DR_match_to_gen_);
-		// 	if(lepb_matches && lep_matches && whad_matches && b_matches) return "semilep_visible_right";
-		// 	else if(whad_matches && b_matches) return "semilep_right_thad";
-		// 	else if(whad_matches) return "semilep_right_whad";
-		// 	else return "semilep_wrong";
-		// }
-		// else return "other";
 	}
 		
 
@@ -403,34 +428,12 @@ public:
 					hyp.wplus.first   = lepton;
 					hyp.wminus.first  = leading_jets[2];
 					hyp.wminus.second = leading_jets[3];
-					// TLorentzVector b;
-					// b.SetPtEtaPhiM(
-					// 	hyp.b->Pt(), 
-					// 	hyp.b->Eta(),
-					// 	hyp.b->Phi(),
-					// 	0.);
-					// NeutrinoSolver solver(lepton, hyp.b);
-					// TLorentzVector nu = solver.GetBest(
-					// 	met.Px(),
-					// 	met.Py(),
-					// 	met.Px() * 0.1, //fake error to 10% until met unc matrix is available
-					// 	met.Py() * 0.1,
-					// 	0.,
-					// 	hyp.chisq);
-					// i_wish_it_was_python.push_back(nu);
-					// hyp.wplus.second = &(i_wish_it_was_python.back());
 				} else {
 					hyp.wplus.isLeptonic  = false;
 					hyp.wminus.isLeptonic = true;
 					hyp.wminus.first = lepton;
 					hyp.wplus.first  = leading_jets[2];
 					hyp.wplus.second = leading_jets[3];
-					// TLorentzVector b;
-					// b.SetPtEtaPhiM(
-					// 	hyp.bbar->Pt(), 
-					// 	hyp.bbar->Eta(),
-					// 	hyp.bbar->Phi(),
-					// 	0.);
 				}
 
 				hyp.solve(solver_, met);
@@ -440,6 +443,7 @@ public:
 				if(fabs(hyp.top_mass() - 173) > 50) continue;
 				if(fabs(hyp.tbar_mass() - 173) > 50) continue;
 				if(hyp.nu_chisq < 0) continue;
+				//if(hyp.mass_discriminant > 4) continue;
 
 				combinations.push_back(hyp);
 			} while(std::next_permutation(leading_jets.begin(), leading_jets.end()));
@@ -469,7 +473,9 @@ public:
 				Logger::log().debug() << endl;
 				for(auto& combo : combinations){
 					Logger::log().debug() << "#Combo: " << combinations.size() << endl;
-					fill_discriminator_info(get_ttdir_name(matched_hyp, combo)+"/discriminators", combo);
+					TTNaming dir_id = get_ttdir_name(matched_hyp, combo);
+					string dirname  = naming_[dir_id];
+					fill_discriminator_info(dirname+"/discriminators", combo);
 				}
 			}
 			
@@ -480,9 +486,15 @@ public:
 					fill("all/"+item->first, best, selected_jets.size(), bjets.size());
 				} else {
 					//define which subdir we fall in
-					string ttsubdir = get_ttdir_name(matched_hyp, best);
-					fill(ttsubdir+"/"+item->first, best, selected_jets.size(), bjets.size());
-					if(ttsubdir == "semilep_visible_right") fill_gen_info("semilep_visible_right/"+item->first, best, gen_hyp);
+					TTNaming dir_id = get_ttdir_name(matched_hyp, best);
+					string ttsubdir = naming_[dir_id];
+					TTbarHypothesis *gen = 0;
+
+					Logger::log().debug() << ttsubdir << " " << dir_id << " " << TTNaming::RIGHT_WHAD << endl;
+					if(dir_id <= TTNaming::RIGHT_WHAD) gen = &gen_hyp;
+
+					fill(ttsubdir+"/"+item->first, best, selected_jets.size(), bjets.size(), gen);
+					if(dir_id == TTNaming::RIGHT) fill_gen_info("semilep_visible_right/"+item->first, best, gen_hyp);
 				} //if(!isTTbar_)
 			} // for(auto item = ordering_.begin(); item != ordering_.end(); ++item)
 		} //while(event.next())
@@ -508,6 +520,7 @@ public:
 	}
 private:
 	map<string, map<string, RObject> > histos_;
+	map<TTNaming, string> naming_;
 	CutFlowTracker tracker_;
 	bool isData_, isTTbar_;
 
