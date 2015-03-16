@@ -14,7 +14,7 @@ export URA_NTHREADS=1
 #HERE ARE LIONS!
 #This part should be handled automatically by the scripts,
 #touch it carefully
-export URA_PROJECT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+export URA_PROJECT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)
 #source URA env
 ura_dir=`dirname $URA_PROJECT`
 source $ura_dir/URAnalysis/environment.sh
