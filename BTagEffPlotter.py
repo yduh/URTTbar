@@ -8,10 +8,9 @@ import logging
 #import rootpy.plotting.views as views
 import rootpy.plotting as plotting
 views = plotting.views
-#import rootpy
-#logging.getLogger('root').setLevel(logging.WARNING)
-#set_trace()
-#rootpy.log.setLevel(logging.INFO)
+from array import array
+import ROOT
+from pdb import set_trace
 
 class BTagPlotter(Plotter):
    def __init__(self):
@@ -27,14 +26,14 @@ class BTagPlotter(Plotter):
       self.views['ttJets_allRight'] = {
          'view' : self.create_tt_subsample(
             'semilep_visible_right', 
-            'tt, right combination'
+            'tt, right combination',
+            '#6666b3'
             )
          }
       self.views['ttJets_rightHad'] = {
          'view' : self.create_tt_subsample(
             'semilep_right_thad', 
             'tt, right had top',
-            '#6666b3'
             ),
          }
       self.views['ttJets_rightWHad'] = {
@@ -44,11 +43,18 @@ class BTagPlotter(Plotter):
             '#cccce6'
             )
          }
+      self.views['ttJets_rightWLep'] = {
+         'view' : self.create_tt_subsample(
+            'semilep_right_tlep', 
+            'tt, right lep W',
+            '#aac0d5'
+            )
+         }
       self.views['ttJets_semiWrong'] = {
          'view' : self.create_tt_subsample(
             'semilep_wrong', 
             'tt, wrong combination',
-            '#aac0d5'
+            '#88a7c4'
             )
          }
       self.views['ttJets_other'] = {
@@ -60,12 +66,12 @@ class BTagPlotter(Plotter):
          }
 
       self.mc_samples = [
-         'WJets',
-         'ZJets',
+         '[WZ]Jets',
          'single*',
          'ttJets_allRight',
          'ttJets_rightHad',
          'ttJets_rightWHad',
+         'ttJets_rightWLep',
          'ttJets_semiWrong',
          'ttJets_other'
          ]
@@ -82,6 +88,65 @@ class BTagPlotter(Plotter):
          fillcolor = color,
          linecolor = color
          )
+
+   def bake_pie(self, var):
+      var = 'all/%s/leading/all/pflav_smart' % var
+      mc_views = self.mc_views()
+      mc_histos = [i.Get(var) for i in mc_views]
+      integrals = [i.Integral() for i in mc_histos]
+      total = sum(integrals)
+      ratios = [i/total for i in integrals]
+      names = [i.GetTitle() for i in mc_histos]
+      colors = [i.GetFillColor('root') for i in mc_histos]
+      #set_trace()
+      format = '%30s %10s %10s\n'
+      with open(os.path.join(self.outputdir, 'yields.raw_txt'), 'w') as f:
+         f.write('Total events: %.0f\n' % total)
+         header = format % ('process', 'yield', 'relative')
+         f.write(header)
+         f.write('-'*len(header)+'\n')
+         for name, entries, ratio in zip(names, integrals, ratios):
+            f.write(format % (name, '%.0f' % entries, '%.0f%%' % (ratio*100)))
+
+      with open(os.path.join(self.outputdir, 'flavors.raw_txt'), 'w') as f:
+         f.write('Total events: %.0f' % total)
+         header = format % ('quanks', 'yield', 'relative')
+         f.write(header)
+         f.write('-'*len(header)+'\n')
+         htotal = sum(mc_histos)
+         ids = {
+            0 : 'pile-up',
+            1 : 'down',
+            2 : 'up',
+            3 : 'strange',
+            4 : 'charm',
+            5 : 'beauty',
+            6 : 'top',
+            21: 'gluon',
+            }
+
+         for idx, name in ids.iteritems():
+            entries  = htotal.GetBinContent(htotal.FindBin(idx))
+            entries += htotal.GetBinContent(htotal.FindBin(-idx))
+            f.write(format % (name, '%.0f' % entries, '%.0f%%' % ((entries/total)*100)))
+      ## pie = ROOT.TPie('pie','', len(ratios), array('d', ratios), array('i', colors))
+      ## #pie.SetRadius(.15)
+      ## self.pad.Divide(2)
+      ## p1 = self.pad.cd(1)
+      ## p1.Draw()
+      ## self.keep.append(p1)
+      ## for idx, _ in enumerate(ratios):
+      ##    pie.SetEntryLabel(idx, '')
+      ## self.keep.append(pie)
+      ## pie.Draw('nol')
+      ## 
+      ## p2 = self.pad.cd(2)
+      ## p2.Draw()
+      ## self.keep.append(p2)
+      ## for h, ratio in zip(mc_histos, ratios):
+      ##    h.title += ' (%.0f%%)' % ratio
+      ## self.add_legend(mc_histos, False)
+      
    
 plotter = BTagPlotter()
 
@@ -91,7 +156,8 @@ jet_variables = [
    ('pt' ,  10, '%s jet p_{T}'),
    ('eta',   1, '%s jet #eta'),
    ('phi',  10, '%s jet #varphi'),
-   ('pflav', 1, '%s jet parton flavour')
+   ('pflav', 1, '%s jet parton flavour'),
+   ('pflav_smart', 1, '%s jet parton flavour'),
 ]
 
 variables = [
@@ -144,6 +210,7 @@ additional_opts = {
       },
    'nbjets' : { 'xrange' : [0, 12] },
    'njets' : { 'xrange' : [0, 12] },
+   'nu_chisq' : {'xrange' : [0, 20]},
 }
 
 for order in orders:
@@ -157,12 +224,16 @@ for order in orders:
                folder, var, rebin, sort=True,
                xaxis=axis % m, leftside=False, 
                **additional_opts.get(var,{}))
-            if var == 'pflav':
+            if 'pflav' in var:
                for h in plotter.keep:
                   if isinstance(h, plotting.HistStack):
                      set_pdg_bins(h)
             plotter.save('_'.join((m,s,var)), pdf=False)
    plotter.set_subdir(order)
+   
+   plotter.bake_pie(order)
+   #plotter.save('contributions', pdf=False)
+
    for var, axis, rebin in variables:
       plotter.plot_mc_vs_data(
          base, var, rebin, sort=True,
