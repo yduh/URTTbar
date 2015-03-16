@@ -1,3 +1,5 @@
+#ifndef IDMUON_H
+#define IDMUON_H
 #include "URStreamer.h"
 #include <TMath.h>
 
@@ -40,4 +42,4 @@ public:
 	}
 
 };
-
+#endif

@@ -1,3 +1,5 @@
+#ifndef IDELECTRON_H
+#define IDELECTRON_H
 #include "URStreamer.h"
 #include <TMath.h>
 
@@ -95,4 +97,4 @@ public:
 	}
 
 };
-
+#endif
