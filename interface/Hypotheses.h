@@ -127,9 +127,16 @@ struct TTbarHypothesis {
 		if(wplus.hasMissingProng()) return -1;
 		return (wplus.p4() + *b).M();
 	}
+
 	double tbar_mass() const {
 		if(wminus.hasMissingProng()) return -1;
 		return (wminus.p4() + *bbar).M();
+	}
+
+	double thad_mass() const {
+		if(!wplus.isLeptonic) return top_mass();
+		else if(!wminus.isLeptonic) return tbar_mass();
+		else return -1;
 	}
 };
 
