@@ -30,7 +30,7 @@ transferfiles = [os.path.join(transferdir, tf) for tf in transferfiles]
 transferfiles_config = ', '.join(transferfiles)
 
 
-filesperjob = 20
+filesperjob = 50
 
 for sf in samplefiles:
 	infile = os.path.join(inputdir, sf)
@@ -40,6 +40,8 @@ for sf in samplefiles:
 	numrootfiles = infiledes.read().count('.root')
 	infiledes.close()
 	numjobs = max(numrootfiles/filesperjob, 1)
+	if 'pu30' in sf:
+		numjobs = 60
 	print sf, numjobs
 
 	condorfile ="""universe = vanilla

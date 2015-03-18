@@ -44,9 +44,11 @@ class Permutation
 		void L(TLorentzVector* lep){lep_=lep;}
 		void MET(Met* met){met_=met;}
 
-		TLorentzVector Nu() {return(nu_);}
-		TLorentzVector WHad() const {return((*wja_ + *wjb_));}
-		TLorentzVector THad() const {return((WHad() + *bjh_));}
+		TLorentzVector Nu() const {return(nu_);}
+		TLorentzVector WHad() const {return((*WJa() + *WJb()));}
+		TLorentzVector WLep() const {return((*L() + Nu()));}
+		TLorentzVector THad() const {return((WHad() + *BHad()));}
+		TLorentzVector TLep() const {return((WLep() + *BLep()));}
 		double Prob() const {return(prob_);}
 
 		bool IsBCorrect(const Permutation& other) const //bjets are selected correct, but not necessarily at the right position!!!!!!!!!!

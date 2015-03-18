@@ -27,7 +27,8 @@ public:
 			if(TMath::Abs(dB()) > 0.2) return(false);
 			//if(TMath::Abs(InnerTrack(0).Dz()) > 0.5) return(false); //todo: needs vertex for correct calculation
 			if(chi2()/ndof() > 10.) return(false);
-			if((chargedIso() + neutralIso() + photonIso())/Pt() > 0.12) return(false);
+			//if((chargedIso() + neutralIso() + photonIso())/Pt() > 0.12) return(false);
+			if((chargedIso())/Pt() > 0.1) return(false);
 			return(true);
 		}
 		else if(idtyp == LOOSE_12)

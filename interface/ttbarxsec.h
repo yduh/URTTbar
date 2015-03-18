@@ -10,8 +10,10 @@
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
 #include "Permutation.h"
+#include "BtagEff.h"
 
 using namespace std;
+
 
 class ttbar : public AnalyzerBase
 {
@@ -73,6 +75,8 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_other_imp;
 		TTBarPlots ttp_all_imp;
 
+		BtagEff btageff;
+
 		//ttbar solver
 		TTBarSolver ttsolver;
 
@@ -81,12 +85,15 @@ class ttbar : public AnalyzerBase
 		size_t cnusedjets;
 		double cwjetptsoft;
 		double cwjetpthard;
-		double cbjetpt;
+		double cbjetptsoft;
+		double cbjetpthard;
 		double cjetetamax;
 		double clptmin;
 		double cletamax;
 		//
 		double jetptmin;
+	
+		double weight;
 
 	public:
 		//binning vectors
