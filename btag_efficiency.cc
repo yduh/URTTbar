@@ -16,6 +16,9 @@
 #include "CutFlowTracker.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include "PDGID.h"
+#include "TMath.h"
+
+using namespace TMath;
 
 class btag_efficiency : public AnalyzerBase
 {
@@ -39,9 +42,9 @@ public:
 		btag_cut_ = 0.941;
 		bjet_pt_cut_ = 30;
 		DR_match_to_gen_ = 0.3;
-		ordering_["nu_chisq"         ] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.nu_chisq          < two.nu_chisq;};
-		ordering_["nu_discriminant"	 ] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.nu_discriminant   < two.nu_discriminant;};
-		ordering_["btag_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.btag_discriminant < two.btag_discriminant;};
+		//ordering_["nu_chisq"         ] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.nu_chisq          < two.nu_chisq;};
+		//ordering_["nu_discriminant"	 ] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.nu_discriminant   < two.nu_discriminant;};
+		//ordering_["btag_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.btag_discriminant < two.btag_discriminant;};
 		ordering_["mass_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.mass_discriminant < two.mass_discriminant;}; 
 		ordering_["full_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.full_discriminant < two.full_discriminant;};
 
@@ -78,6 +81,8 @@ public:
 		
 		book<TH1F>(folder, "btag_value", "", 100, 0., 1.);
 		book<TH2F>(folder, "Wmasshad_tmasshad", "", 500, 0., 500., 500, 0., 500);			
+		book<TH2F>(folder, "WtMass_special", "", 500, 0., 500., 500, 0., 500);			
+		book<TH2F>(folder, "WtMass_rphi", "", 500, 0., 500., 500,  0, 5);
 	}
 
 	void book_hyp_plots(string folder){
@@ -90,10 +95,15 @@ public:
 		book<TH1F>(folder, "Wlep_char", ";charge_{W}(lep) (GeV)", 2, -1, 1);
 		book<TH1F>(folder, "Whad_mass", ";m_{W}(had) (GeV)", 140, 0., 140.);
 		book<TH1F>(folder, "Whad_DR"  , ";m_{W}(had) (GeV)", 100, 0., 10.);
+		book<TH1F>(folder, "Whad_pt"  , ";m_{W}(had) (GeV)", 500, 0., 500.);
+		book<TH1F>(folder, "Whad_leading_DR", "", 100, 0., 10.);
+		book<TH1F>(folder, "Whad_sublead_DR", "", 100, 0., 10.);
+		book<TH2F>(folder, "Whad_lead_sub_DR", ";#DeltaR(leading jet, WHad); #DeltaR(subleading jet, WHad)", 100, 0., 10., 100, 0., 10.);
 		book<TH1F>(folder, "tlep_mass", ";m_{t}(lep) (GeV)", 300, 100., 400.);
 		book<TH1F>(folder, "thad_mass", ";m_{t}(had) (GeV)", 300, 100., 400.);
 		book<TH1F>(folder, "hjet_pt"  , ";m_{t}(lep) (GeV)", 500, 0., 500.);
 		book<TH2F>(folder, "hjet_pts" , ";m_{t}(had) (GeV)", 500, 0., 500., 500, 0., 500.);
+		book<TH2F>(folder, "Whad_pt_lead_pt" , "", 500, 0., 500., 500, 0., 500.);
 		book<TH2F>(folder, "hjet_es"  , ";m_{t}(had) (GeV)", 500, 0., 500., 500, 0., 500.);
 	}
 
@@ -104,42 +114,46 @@ public:
   {
     outFile_.cd();
 		
-		string criteria[] = {"nu_chisq", "nu_discriminant", "btag_discriminant", "mass_discriminant", "full_discriminant"};
 		string folders[] = {"all", "semilep_visible_right", "semilep_right_thad", 
 												"semilep_right_tlep", "semilep_right_whad", "semilep_wrong", "other"};
 		string wjet_folders[] = {"leading", "subleading"};
-		string subf[] = {"tagged", "all"};
+		string tagging[] = {"all", "lead_tagged", "sublead_tagged", "both_tagged", "both_untagged"};
 
 		if(isTTbar_) book_hyp_plots("gen");
 		for(auto& genCategory : folders){			
+			if(isTTbar_ && genCategory == "all") continue;
 			book_combo_plots(genCategory+"/discriminators");
-			for(auto& criterion : criteria){
-				string folder = genCategory + "/" + criterion;
-				Logger::log().debug() << "creating plots for folder: " << folder << std::endl;
+			for(auto& item : ordering_) {
+				string criterion = item.first;
+				for(auto& tag : tagging){
+					string folder = genCategory + "/" + criterion + "/" + tag;
+					Logger::log().debug() << "creating plots for folder: " << folder << std::endl;
 
-				book_combo_plots(folder);
-				book_hyp_plots(folder);
+					book_combo_plots(folder);
+					book_hyp_plots(folder);
 
-				for(auto& w_folder : wjet_folders){
-					for(auto& j_folder : subf){
-						string current = folder + "/" + w_folder + "/" + j_folder;
+					for(auto& w_folder : wjet_folders){
+						string current = folder + "/" + w_folder;
 						book<TH1F>(current, "eta"	,"eta"	, 100, -5, 5);
 						book<TH1F>(current, "pt" 	,"pt" 	, 500, 0 , 500);
 						book<TH1F>(current, "phi"	,"phi"	, 400, -4, 4);
-						book<TH1F>(current, "pflav","pflav", 49, -24.5, 24.5);
-						book<TH1F>(current, "pflav_smart","pflav", 49, -24.5, 24.5);
-						book<TH1F>(current, "hflav","hflav", 49, -24.5, 24.5);
+						book<TH1F>(current, "pflav","pflav", 55, -27.5, 27.5);
+						book<TH1F>(current, "pflav_smart","pflav", 55, -27.5, 27.5);
+						book<TH1F>(current, "hflav","hflav", 55, -27.5, 27.5);
 						book<TH1F>(current, "energy", ";E_{jet} (GeV)", 500, 0., 500.);
+						book<TH1F>(current, "ncharged", "", 50, 0., 50.);						
+						book<TH1F>(current, "nneutral", "", 50, 0., 50.);						
+						book<TH1F>(current, "ntotal"  , "", 50, 0., 50.);						
 					}
-				}
 
-				if(folder == "semilep_visible_right"){
-					book<TH1F>(folder, "nu_DR"    , "#DeltaR between gen and reco #nu;#DeltaR;counts", 140, 0., 7.);
-					book<TH1F>(folder, "nu_DE"    , "#DeltaE between gen and reco #nu;#DeltaE (GeV);counts", 250, -250, 250.);
-				}
-			}//*/
+					if(genCategory == "semilep_visible_right"){
+						book<TH1F>(folder, "nu_DR"    , "#DeltaR between gen and reco #nu;#DeltaR;counts", 140, 0., 7.);
+						book<TH1F>(folder, "nu_DE"    , "#DeltaE between gen and reco #nu;#DeltaE (GeV);counts", 250, -250, 250.);
+					}
+				}//for(auto& tag : tagging)
+			}//for(auto& criterion : criteria)
 			if(!isTTbar_) break;
-		}
+		}//for(auto& genCategory : folders)
 
 		string folder = "preselection";
 		book<TH1F>(folder, "njets"    , "", 50, 0., 50.);
@@ -176,6 +190,10 @@ public:
 		dir->second["hflav"].fill(jet->hadronFlavour());
 		dir->second["energy"].fill(jet->E());
 
+		dir->second["ncharged"].fill(jet->numChargedHadrons());
+		dir->second["nneutral"].fill(jet->numNeutralHadrons());
+		dir->second["ntotal"  ].fill(jet->numChargedHadrons()+jet->numNeutralHadrons());
+
 		Logger::log().debug() << folder << " " << genp << endl;
 		int pflav = (genp) ? genp->pdgId() : jet->partonFlavour();
 		Logger::log().debug() << pflav << " " << jet->partonFlavour() << endl;
@@ -197,6 +215,10 @@ public:
 		dir->second["btag_value"       ].fill((b->*btag_id_)());
 		dir->second["btag_value"       ].fill((bbar->*btag_id_)());
 		dir->second["Wmasshad_tmasshad"].fill(whad_mass, hyp.thad_mass());
+		dir->second["WtMass_special"   ].fill(whad_mass + hyp.thad_mass(), hyp.thad_mass() - whad_mass);
+		double r = Sqrt(pow(whad_mass,2) + pow(hyp.thad_mass(),2));
+		double phi = ATan(hyp.thad_mass()/whad_mass);
+		dir->second["WtMass_rphi"      ].fill(r, phi);
 	}
 
 	void fill(string folder, const TTbarHypothesis &hyp, size_t njets, size_t nbjets, TTbarHypothesis *genHyp=0) {
@@ -225,6 +247,7 @@ public:
 		dir->second["Wlep_mass"].fill(wlep.mass());
 		dir->second["Whad_mass"].fill(whad.mass());
 		dir->second["Whad_DR"  ].fill(whad.first->DeltaR(*whad.second));
+		dir->second["Whad_pt"  ].fill(whad.p4().Pt());
 		dir->second["tlep_mass"].fill(tlep_m);
 		dir->second["thad_mass"].fill(thad_m);
 		dir->second["hjet_pt"  ].fill(whad.first->Pt());
@@ -237,7 +260,12 @@ public:
 		Logger::log().debug() << folder << " " << genHyp << endl;
 		const Jet *leading    = (const Jet*)((whad.first->E() > whad.second->E()) ? whad.first  : whad.second);
 		const Jet *subleading = (const Jet*)((whad.first->E() > whad.second->E()) ? whad.second : whad.first );
-		
+
+		dir->second["Whad_leading_DR" ].fill(whad.p4().DeltaR(*leading));
+		dir->second["Whad_sublead_DR" ].fill(whad.p4().DeltaR(*subleading));
+		dir->second["Whad_lead_sub_DR"].fill(whad.p4().DeltaR(*leading), whad.p4().DeltaR(*subleading));
+		dir->second["Whad_pt_lead_pt" ].fill(whad.p4().Pt(), leading->Pt());		
+
 		const Genparticle *gen_leading = 0;
 		const Genparticle *gen_subleading = 0;
 		if(genHyp){
@@ -246,12 +274,23 @@ public:
 		}
 
 		//FILL JET INFORMATION
-		fill_jet_info(folder + "/leading/all", leading, gen_leading);
-		if((leading->*btag_id_)() > btag_cut_) fill_jet_info(folder + "/leading/tagged", leading, gen_leading);
-		fill_jet_info(folder + "/subleading/all", subleading, gen_subleading);
-		if((subleading->*btag_id_)() > btag_cut_) fill_jet_info(folder + "/subleading/tagged", subleading, gen_subleading);
+		fill_jet_info(folder + "/leading", leading, gen_leading);
+		fill_jet_info(folder + "/subleading", subleading, gen_subleading);
+		//if((subleading->*btag_id_)() > btag_cut_) fill_jet_info(folder + "/subleading/tagged", subleading, gen_subleading);
 
 		dir->second["hjet_es"  ].fill(leading->E(), subleading->E());
+	}
+
+	string get_wjet_category(TTbarHypothesis &reco) {
+		WHypothesis *whad = reco.whad(); 
+		const Jet *leading    = (const Jet*)((whad->first->E() > whad->second->E()) ? whad->first  : whad->second);
+		const Jet *subleading = (const Jet*)((whad->first->E() > whad->second->E()) ? whad->second : whad->first );
+		bool lead_tag = ((leading->*btag_id_)() > btag_cut_);
+		bool sub_tag  = ((subleading->*btag_id_)() > btag_cut_);
+		if(lead_tag && sub_tag) return "/both_tagged";
+		else if(lead_tag) return "/lead_tagged";
+		else if(sub_tag)  return "/sublead_tagged";
+		return "/both_untagged";
 	}
 
 	TTNaming get_ttdir_name(TTbarHypothesis &gen, TTbarHypothesis &reco){
@@ -480,10 +519,12 @@ public:
 			}
 			
 			for(auto item = ordering_.begin(); item != ordering_.end(); ++item){
-				sort(combinations.begin(), combinations.end(), item->second);
-				TTbarHypothesis best = *combinations.begin();
+				//sort(combinations.begin(), combinations.end(), item->second);
+				TTbarHypothesis best = *min_element(combinations.begin(), combinations.end(), item->second);// *combinations.begin();
 				if(!isTTbar_){
-					fill("all/"+item->first, best, selected_jets.size(), bjets.size());
+					fill("all/"+item->first+"/all", best, selected_jets.size(), bjets.size());
+					string jet_category = get_wjet_category(best);
+					fill("all/"+item->first+jet_category, best, selected_jets.size(), bjets.size());
 				} else {
 					//define which subdir we fall in
 					TTNaming dir_id = get_ttdir_name(matched_hyp, best);
@@ -493,8 +534,10 @@ public:
 					Logger::log().debug() << ttsubdir << " " << dir_id << " " << TTNaming::RIGHT_WHAD << endl;
 					if(dir_id <= TTNaming::RIGHT_WHAD) gen = &gen_hyp;
 
-					fill(ttsubdir+"/"+item->first, best, selected_jets.size(), bjets.size(), gen);
-					if(dir_id == TTNaming::RIGHT) fill_gen_info("semilep_visible_right/"+item->first, best, gen_hyp);
+					fill(ttsubdir+"/"+item->first+"/all", best, selected_jets.size(), bjets.size(), gen);
+					string jet_category = get_wjet_category(best);
+					fill(ttsubdir+"/"+item->first+jet_category, best, selected_jets.size(), bjets.size());
+					if(dir_id == TTNaming::RIGHT) fill_gen_info("semilep_visible_right/"+item->first+"/all", best, gen_hyp);
 				} //if(!isTTbar_)
 			} // for(auto item = ordering_.begin(); item != ordering_.end(); ++item)
 		} //while(event.next())
