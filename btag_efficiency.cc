@@ -194,9 +194,9 @@ public:
 		dir->second["nneutral"].fill(jet->numNeutralHadrons());
 		dir->second["ntotal"  ].fill(jet->numChargedHadrons()+jet->numNeutralHadrons());
 
-		Logger::log().debug() << folder << " " << genp << endl;
+		Logger::log().debug() << "fill_jet_info " << folder << " " << genp << endl;
 		int pflav = (genp) ? genp->pdgId() : jet->partonFlavour();
-		Logger::log().debug() << pflav << " " << jet->partonFlavour() << endl;
+		Logger::log().debug() << "fill_jet_info " << pflav << " " << jet->partonFlavour() << endl;
 		dir->second["pflav_smart"].fill(pflav);
 	}
 
@@ -257,7 +257,7 @@ public:
 		dir->second["hjet_pts" ].fill(lead, sub);//*/
 
 		if(folder == "gen") return;
-		Logger::log().debug() << folder << " " << genHyp << endl;
+		Logger::log().debug() <<"analyzer::fill " << folder << " " << genHyp << endl;
 		const Jet *leading    = (const Jet*)((whad.first->E() > whad.second->E()) ? whad.first  : whad.second);
 		const Jet *subleading = (const Jet*)((whad.first->E() > whad.second->E()) ? whad.second : whad.first );
 
@@ -536,7 +536,7 @@ public:
 
 					fill(ttsubdir+"/"+item->first+"/all", best, selected_jets.size(), bjets.size(), gen);
 					string jet_category = get_wjet_category(best);
-					fill(ttsubdir+"/"+item->first+jet_category, best, selected_jets.size(), bjets.size());
+					fill(ttsubdir+"/"+item->first+jet_category, best, selected_jets.size(), bjets.size(), gen);
 					if(dir_id == TTNaming::RIGHT) fill_gen_info("semilep_visible_right/"+item->first+"/all", best, gen_hyp);
 				} //if(!isTTbar_)
 			} // for(auto item = ordering_.begin(); item != ordering_.end(); ++item)
