@@ -69,11 +69,11 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_other;
 		TTBarPlots ttp_truth;
 		TTBarPlots ttp_all;
-		TTBarPlots ttp_right_imp;
-		TTBarPlots ttp_wrong_imp;
-		TTBarPlots ttp_semi_imp;
-		TTBarPlots ttp_other_imp;
-		TTBarPlots ttp_all_imp;
+		TTBarPlots ttp_right_incl;
+		TTBarPlots ttp_wrong_incl;
+		TTBarPlots ttp_semi_incl;
+		TTBarPlots ttp_other_incl;
+		TTBarPlots ttp_all_incl;
 
 		BtagEff btageff;
 
@@ -81,6 +81,7 @@ class ttbar : public AnalyzerBase
 		TTBarSolver ttsolver;
 
 		//configuration
+		bool BTAGMODE;
 		int cnbtag;
 		size_t cnusedjets;
 		double cwjetptsoft;

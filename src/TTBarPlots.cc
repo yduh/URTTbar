@@ -27,6 +27,8 @@ void TTBarPlots::Init(ttbar* analysis)
     plot2d.AddHist("test_pttlep", 96, -12., 12., analysis->topptbins, "test", "p_{T}(t_{lep}) (GeV)");
     plot2d.AddHist("test_mtt", 96, -12., 12., analysis->ttmbins, "test", "M_{tt} (GeV)");
     plot1d.AddHist("lep_pt", 500, 0., 500., "p_{T}(l) (GeV)", "Events");
+    plot1d.AddHist("nu_pt", 500, 0., 500., "p_{T}(#nu) (GeV)", "Events");
+    plot1d.AddHist("nu_eta", 200, -5, 5., "#eta(#nu)", "Events");
     plot1d.AddHist("lepp_eta", 200, -5, 5., "#eta(l+)", "Events");
     plot1d.AddHist("lepm_eta", 200, -5, 5., "#eta(l-)", "Events");
     plot1d.AddHist("thad_pt", 200, 0, 400, "p_{T}(t_{had}) (GeV)", "Events");
@@ -36,16 +38,14 @@ void TTBarPlots::Init(ttbar* analysis)
     plot1d.AddHist("thad_y", 200, -5, 5, "y(t_{had})", "Events");
     plot1d.AddHist("tlep_y", 200, -5, 5, "y(t_{lep})", "Events");
     plot1d.AddHist("tt_M", 500, 0, 1000, "M(t#bar{t}) (GeV)", "Events");
+    plot1d.AddHist("tt_DeltaPhi", 200, -Pi(), Pi(), "#Delta#Phi(t#bar{t})", "Events");
     plot1d.AddHist("whad_pt", 100, 0, 200, "p_{T}(W_{had}) (GeV)", "Events");
     plot1d.AddHist("wj_dphi", 100, -4, 4, "#Delta#phi(j_{whad}) (GeV)", "Events");
-    plot1d.AddHist("res_Mtt", 100, -4, 4, "#DeltaM_{t#bar{t}}/M_{t#bar{t}}", "Events");
-    plot1d.AddHist("res_ptt", 100, -4, 4, "#Deltap_{T}(t)/p_{T}(t)", "Events");
-    plot1d.AddHist("res_wjets", 100, -4, 4, "#Deltap_{T}(t)/p_{T}(t)", "Events");
+    plot1d.AddHist("t_costhetastar", 20, -1., 1., "cos(#Theta*)", "Events");
 }
 
 void TTBarPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double test, double weight)
 {
-
 	TLorentzVector whad(*Hwa + *Hwb);
 	TLorentzVector thad(whad + *Hb);
 	TLorentzVector tlep(*Ll + *Ln + *Lb);
@@ -60,6 +60,8 @@ void TTBarPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* H
 	plot1d["lep_pt"]->Fill(Ll->Pt(), weight);
 	if(lepcharge > 0) {plot1d["lepp_eta"]->Fill(Ll->Eta(), weight);}
 	if(lepcharge < 0) {plot1d["lepm_eta"]->Fill(Ll->Eta(), weight);}
+	plot1d["nu_pt"]->Fill(Ln->Pt(), weight);
+	plot1d["nu_eta"]->Fill(Ln->Eta(), weight);
 	plot1d["thad_pt"]->Fill(thad.Pt(), weight);
 	plot1d["tlep_pt"]->Fill(tlep.Pt(), weight);
 	plot1d["thad_eta"]->Fill(thad.Eta(), weight);
@@ -69,8 +71,19 @@ void TTBarPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* H
 	plot1d["tt_M"]->Fill((thad+tlep).M(), weight);
 	plot1d["whad_pt"]->Fill(whad.Pt(), weight);
 	plot1d["wj_dphi"]->Fill(Hwa->DeltaPhi(*Hwb), weight);
-	
+	TLorentzVector tt(thad + tlep);
+	TVector3 bv(-1.*tt.BoostVector());
+	TLorentzVector t(tlep);	
+	//TLorentzVector tbar(thad);
+	if(lepcharge == -1)
+	{
+		t = thad;	
+		//tbar = tlep;
 	}
+	t.Boost(bv);
+	plot1d["t_costhetastar"]->Fill(t.CosTheta());
+
+}
 
 void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 {
