@@ -16,6 +16,14 @@ from fnmatch import fnmatch
 rootpy.log["/"].setLevel(rootpy.log.INFO)
 ROOT.gStyle.SetOptTitle(0)
 ROOT.gStyle.SetOptStat(0)
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument('--noplots', dest='noplots', action='store_true',
+                    help='skip plot making')
+parser.add_argument('--noshapes', dest='noshapes', action='store_true',
+                    help='skip shape making')
+args = parser.parse_args()
 
 class BTagPlotter(Plotter):
    def __init__(self):
@@ -51,7 +59,7 @@ class BTagPlotter(Plotter):
       self.views['ttJets_rightWLep'] = {
          'view' : self.create_tt_subsample(
             'semilep_right_tlep', 
-            'tt, right W_{l}',
+            'tt, right t_{l}',
             '#aac0d5'
             )
          }
@@ -81,12 +89,18 @@ class BTagPlotter(Plotter):
          'ttJets_other'
          ]
 
+   @staticmethod
+   def ttsub(inpath, subdir):
+      outpath = inpath.replace('all', subdir, 1)
+      logging.debug("%s --> %s" % (inpath, outpath))
+      return outpath
+
    def create_tt_subsample(self, subdir, title, color='#9999CC'):
       return views.StyleView(
          views.TitleView(
             views.PathModifierView(
                self.views['ttJets_pu30']['view'],
-               lambda x: x.replace('all', subdir, 1)
+               lambda x: self.ttsub(x, subdir)
                ),
             title
             ),
@@ -94,8 +108,8 @@ class BTagPlotter(Plotter):
          linecolor = color
          )
 
-   def write_mass_discriminant_shapes(self, folder, rebin=1, preprocess=None):
-      folder.cd()
+   def write_mass_discriminant_shapes(self, tfolder, folder, rebin=1, preprocess=None):
+      tfolder.cd()
       path = os.path.join(folder, 'mass_discriminant')
       ritghtW_view = views.SumView(
          self.get_view('ttJets_allRight'),
@@ -117,10 +131,17 @@ class BTagPlotter(Plotter):
 
       shape_views = [ritghtW_view, wrongW_view,
                      other_view, singlet_view]
-      shape_names = ['right_whad', 'wrong_whad'
+      shape_names = ['right_whad', 'wrong_whad',
                      'nonsemi_tt', 'single_top']
+      fake_data = ritghtW_view.Get(path).Clone()
+      fake_data.Reset()
+      fake_data.SetName('data_obs')
+      fake_data.Write()
+
       for view, name in zip(shape_views, shape_names):
          histo = view.Get(path)
+         if name == 'right_whad':
+            histo.Scale(1./histo.Integral())
          histo.SetName(name)
          histo.Write()
 
@@ -235,7 +256,6 @@ jet_variables = [
    ('pt' ,  10, '%s jet p_{T} (GeV)', None),
    ('eta',   1, '%s jet #eta', None),
    ('phi',  10, '%s jet #varphi', None),
-   ('pflav', 1, '%s jet parton flavour', [-7, 22]),
    ('pflav_smart', 1, '%s jet parton flavour', [-7, 22]),
    ("ncharged", 1, "%s jet charged constituents", None),
    ("nneutral", 1, "%s jet neutral constituents", None),
@@ -305,81 +325,99 @@ additional_opts = {
    'nu_chisq' : {'xrange' : [0, 20]},
 }
 
-for order in orders:
-   for jet_cat in jet_categories:
-      base = os.path.join('all', order, jet_cat)
-      for jtype in jet_types:
-         folder = os.path.join(base, jtype)
-         plotter.set_subdir(os.path.join(order, jet_cat, jtype))
-         for var, rebin, axis, x_range in jet_variables:
-            plotter.plot_mc_vs_data(
-               folder, var, rebin, sort=True,
-               xaxis=axis % jtype, leftside=False, 
-               xrange=x_range)
-            if 'pflav' in var:
-               for h in plotter.keep:
-                  if isinstance(h, plotting.HistStack):
-                     set_pdg_bins(h)
-            plotter.save('_'.join((jtype,var)), pdf=False)
-            if var in shapes:
-               plotter.plot_mc_shapes(
-                  folder, var, rebin,
-                  xaxis=axis % jtype, leftside=False,
-                  xrange=x_range)
-               plotter.save('shape_'+'_'.join((jtype,var)), pdf=False)
-         plotter.bake_pie(folder)
+if not args.noplots:
+   for order in orders:
+      for jet_cat in jet_categories:
+        base = os.path.join('all', order, jet_cat)
+        for jtype in jet_types:
+           folder = os.path.join(base, jtype)
+           plotter.set_subdir(os.path.join(order, jet_cat, jtype))
+           for var, rebin, axis, x_range in jet_variables:
+              plotter.plot_mc_vs_data(
+                 folder, var, rebin, sort=True,
+                 xaxis=axis % jtype, leftside=False, 
+                 xrange=x_range)
+              if 'pflav' in var:
+                 for h in plotter.keep:
+                    if isinstance(h, plotting.HistStack):
+                       set_pdg_bins(h)
+              plotter.save('_'.join((jtype,var)), pdf=False)
+              if var in shapes:
+                 plotter.plot_mc_shapes(
+                    folder, var, rebin,
+                    xaxis=axis % jtype, leftside=False,
+                    xrange=x_range)
+                 plotter.save('shape_'+'_'.join((jtype,var)), pdf=False)
+           plotter.bake_pie(folder)
 
-      plotter.set_subdir(os.path.join(order, jet_cat))
-      for var, axis, rebin, x_range in variables:
-         plotter.plot_mc_vs_data(
-            base, var, rebin, sort=True,
-            xaxis=axis, leftside=False,
-            xrange=x_range)
-         plotter.save(var, pdf=False)
-         if var in shapes:
-            if var == "mass_discriminant" and "_tagged" in jet_cat: rebin = 4
-            plotter.plot_mc_shapes(
-               base, var, rebin,
-               xaxis=axis, leftside=False,
-               xrange=x_range)
-            plotter.save('shape_%s' % var, pdf=False)
-            if var <> "mass_discriminant": continue
-            plotter.plot_mc_shapes(
-               base, var, rebin, normalize=True,
-               xaxis=order.replace('_', ' '), leftside=False,
-               xrange=x_range)
-            plotter.save('normshape_%s' % order, pdf=False)
+        plotter.set_subdir(os.path.join(order, jet_cat))
+        for var, axis, rebin, x_range in variables:
+           plotter.plot_mc_vs_data(
+              base, var, rebin, sort=True,
+              xaxis=axis, leftside=False,
+              xrange=x_range)
+           plotter.save(var, pdf=False)
+           if var in shapes:
+              if var == "mass_discriminant" and "_tagged" in jet_cat: rebin = 4
+              plotter.plot_mc_shapes(
+                 base, var, rebin,
+                 xaxis=axis, leftside=False,
+                 xrange=x_range)
+              plotter.save('shape_%s' % var, pdf=False)
+              if var <> "mass_discriminant": continue
+              plotter.plot_mc_shapes(
+                 base, var, rebin, normalize=True,
+                 xaxis=order.replace('_', ' '), leftside=False,
+                 xrange=x_range)
+              plotter.save('normshape_%s' % order, pdf=False)
 
-            plotter.plot_mc_shapes(
-               base, var, rebin, normalize=True, show_err=True,
-               xaxis=order.replace('_', ' '), leftside=False,
-               xrange=x_range, filt=['ttJets_allRight', 'ttJets_rightHad', 'ttJets_rightWHad'])
-            plotter.save('normshape_rightwhad_%s' % order, pdf=False)
+              plotter.plot_mc_shapes(
+                 base, var, rebin, normalize=True, show_err=True,
+                 xaxis=order.replace('_', ' '), leftside=False,
+                 xrange=x_range, filt=['ttJets_allRight', 'ttJets_rightHad', 'ttJets_rightWHad'])
+              plotter.save('normshape_rightwhad_%s' % order, pdf=False)
 
-            plotter.plot_mc_shapes(
-               base, var, rebin, normalize=True, show_err=True,
-               xaxis=order.replace('_', ' '), leftside=False,
-               xrange=x_range, filt=['ttJets_rightWLep', 'ttJets_semiWrong'])
-            plotter.save('normshape_wrongwhad_%s' % order, pdf=False)
+              plotter.plot_mc_shapes(
+                 base, var, rebin, normalize=True, show_err=True,
+                 xaxis=order.replace('_', ' '), leftside=False,
+                 xrange=x_range, filt=['ttJets_rightWLep', 'ttJets_semiWrong'])
+              plotter.save('normshape_wrongwhad_%s' % order, pdf=False)
 
-   plotter.set_subdir("discriminants")
-   ## plotter.plot_mc_vs_data(
-   ##    'all/discriminators', order, 1, sort=True,
-   ##    xaxis=order.replace('_', ' '), leftside=False,
-   ##    **additional_opts.get(order,{}))
-   ## plotter.save(order, pdf=False)
-   plotter.plot_mc_shapes(
-      'all/discriminators', order, 1,
-      xaxis=order.replace('_', ' '), leftside=False,
-      **additional_opts.get(order,{}))
-   plotter.save('shape_%s' % order, pdf=False)
+      plotter.set_subdir("discriminants")
+      ## plotter.plot_mc_vs_data(
+      ##    'all/discriminators', order, 1, sort=True,
+      ##    xaxis=order.replace('_', ' '), leftside=False,
+      ##    **additional_opts.get(order,{}))
+      ## plotter.save(order, pdf=False)
+      plotter.plot_mc_shapes(
+         'all/discriminators', order, 1,
+         xaxis=order.replace('_', ' '), leftside=False,
+         **additional_opts.get(order,{}))
+      plotter.save('shape_%s' % order, pdf=False)
 
-   plotter.plot_mc_shapes(
-      'all/discriminators', order, 1, normalize=True,
-      xaxis=order.replace('_', ' '), leftside=False,
-      **additional_opts.get(order,{}))
-   plotter.save('normshape_%s' % order, pdf=False)
+      plotter.plot_mc_shapes(
+         'all/discriminators', order, 1, normalize=True,
+         xaxis=order.replace('_', ' '), leftside=False,
+         **additional_opts.get(order,{}))
+      plotter.save('normshape_%s' % order, pdf=False)
 
-      
-
-#write_mass_discriminant_shapes(self, folder, rebin=1, preprocess=None):
+if not args.noshapes:
+   fname = os.path.join(plotter.base_out_dir, 'shapes.root')
+   shape_file = ROOT.TFile(fname, 'RECREATE')
+   plotter.write_mass_discriminant_shapes(
+      shape_file.mkdir('notag'),
+      os.path.join('all', 'mass_discriminant', 'both_untagged'), 
+      rebin=2
+   )
+   plotter.write_mass_discriminant_shapes(
+      shape_file.mkdir('leadtag'),
+      os.path.join('all', 'mass_discriminant', 'lead_tagged'), 
+      rebin=4
+   )
+   plotter.write_mass_discriminant_shapes(
+      shape_file.mkdir('subtag'),
+      os.path.join('all', 'mass_discriminant', 'sublead_tagged'), 
+      rebin=4
+      )
+   shape_file.Close()
+   logging.info("%s created" % fname)
