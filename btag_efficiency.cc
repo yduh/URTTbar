@@ -24,11 +24,30 @@ class btag_efficiency : public AnalyzerBase
 {
 public:
 	enum TTNaming {RIGHT, RIGHT_THAD, RIGHT_WHAD, RIGHT_TLEP, WRONG, OTHER};
+private:
+	map<string, map<string, RObject> > histos_;
+	map<TTNaming, string> naming_;
+	CutFlowTracker tracker_;
+	bool isData_, isTTbar_;
+
+	float (Jet::*btag_id_)() const; // = &Jet::csvIncl;
+	float btag_cut_ ;//= 0.941;
+	float bjet_pt_cut_ ;//= 30;
+	float DR_match_to_gen_ ;//= 0.3;
+	map<string, std::function<bool(const TTbarHypothesis &, const TTbarHypothesis &)> > ordering_;
+	map<string, std::function<bool(const Jet*)> > working_points_;
+
+	TTBarSolver solver_;
+  // Nothing by default
+  // Add your private variables/methods here
+
+public:
   btag_efficiency(const std::string output_filename):
     AnalyzerBase("btag_efficiency", output_filename), 
 		tracker_(),
-		solver_(),
-		ordering_()
+		ordering_(),
+		working_points_(),
+		solver_()
 	{
 		solver_.Init("Prob.root");
 		opts::variables_map &values = URParser::instance().values();
@@ -46,7 +65,7 @@ public:
 		//ordering_["nu_discriminant"	 ] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.nu_discriminant   < two.nu_discriminant;};
 		//ordering_["btag_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.btag_discriminant < two.btag_discriminant;};
 		ordering_["mass_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.mass_discriminant < two.mass_discriminant;}; 
-		ordering_["full_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.full_discriminant < two.full_discriminant;};
+		//ordering_["full_discriminant"] = [](const TTbarHypothesis &one, const TTbarHypothesis &two) {return  one.full_discriminant < two.full_discriminant;};
 
 		naming_[TTNaming::RIGHT ] = "semilep_visible_right";
 		naming_[TTNaming::RIGHT_THAD ] = "semilep_right_thad" 	 ;
@@ -54,6 +73,16 @@ public:
 		naming_[TTNaming::RIGHT_TLEP ] = "semilep_right_tlep" 	 ;
 		naming_[TTNaming::WRONG ] = "semilep_wrong" 			 ;
 		naming_[TTNaming::OTHER ] = 	"other"              ;
+
+		working_points_["notag"]     = [](const Jet* jet) {return false;};
+		working_points_["csvTight"]  = [](const Jet* jet) {return jet->csvIncl() > 0.941;};
+		working_points_["csvMedium"] = [](const Jet* jet) {return jet->csvIncl() > 0.814;};
+		working_points_["csvLoose"]  = [](const Jet* jet) {return jet->csvIncl() > 0.423;};
+		// working_points_["ssvHiPur"] = [](const Jet* jet) {return (bool) jet->ssvHiPur()};
+		// working_points_["ssvHiEff"] = [](const Jet* jet) {return (bool) jet->ssvHiEff()};
+		// working_points_["trkHiPur"] = [](const Jet* jet) {return (bool) jet->trkHiPur()};
+		// working_points_["trkHiEff"] = [](const Jet* jet) {return (bool) jet->trkHiEff()};
+		// // working_points_[] = [](const Jet* jet) {};
 	}
   
 	TDirectory* getDir(string path){
@@ -117,7 +146,7 @@ public:
 		string folders[] = {"all", "semilep_visible_right", "semilep_right_thad", 
 												"semilep_right_tlep", "semilep_right_whad", "semilep_wrong", "other"};
 		string wjet_folders[] = {"leading", "subleading"};
-		string tagging[] = {"all", "lead_tagged", "sublead_tagged", "both_tagged", "both_untagged"};
+		string tagging[] = {"lead_tagged", "sublead_tagged", "both_tagged", "both_untagged"};
 
 		if(isTTbar_) book_hyp_plots("gen");
 		for(auto& genCategory : folders){			
@@ -125,32 +154,35 @@ public:
 			book_combo_plots(genCategory+"/discriminators");
 			for(auto& item : ordering_) {
 				string criterion = item.first;
-				for(auto& tag : tagging){
-					string folder = genCategory + "/" + criterion + "/" + tag;
-					Logger::log().debug() << "creating plots for folder: " << folder << std::endl;
+				for(auto& wp_item : working_points_) {
+					string working_point = wp_item.first;
+					for(auto& tag : tagging){
+						string folder = genCategory + "/" + criterion + "/" + working_point + "/" + tag;
+						Logger::log().debug() << "creating plots for folder: " << folder << std::endl;
+						
+						book_combo_plots(folder);
+						book_hyp_plots(folder);
 
-					book_combo_plots(folder);
-					book_hyp_plots(folder);
+						for(auto& w_folder : wjet_folders){
+							string current = folder + "/" + w_folder;
+							book<TH1F>(current, "eta"	,"eta"	, 100, -5, 5);
+							book<TH1F>(current, "pt" 	,"pt" 	, 500, 0 , 500);
+							book<TH1F>(current, "phi"	,"phi"	, 400, -4, 4);
+							book<TH1F>(current, "pflav","pflav", 55, -27.5, 27.5);
+							book<TH1F>(current, "pflav_smart","pflav", 55, -27.5, 27.5);
+							book<TH1F>(current, "hflav","hflav", 55, -27.5, 27.5);
+							book<TH1F>(current, "energy", ";E_{jet} (GeV)", 500, 0., 500.);
+							book<TH1F>(current, "ncharged", "", 50, 0., 50.);						
+							book<TH1F>(current, "nneutral", "", 50, 0., 50.);						
+							book<TH1F>(current, "ntotal"  , "", 50, 0., 50.);						
+						}
 
-					for(auto& w_folder : wjet_folders){
-						string current = folder + "/" + w_folder;
-						book<TH1F>(current, "eta"	,"eta"	, 100, -5, 5);
-						book<TH1F>(current, "pt" 	,"pt" 	, 500, 0 , 500);
-						book<TH1F>(current, "phi"	,"phi"	, 400, -4, 4);
-						book<TH1F>(current, "pflav","pflav", 55, -27.5, 27.5);
-						book<TH1F>(current, "pflav_smart","pflav", 55, -27.5, 27.5);
-						book<TH1F>(current, "hflav","hflav", 55, -27.5, 27.5);
-						book<TH1F>(current, "energy", ";E_{jet} (GeV)", 500, 0., 500.);
-						book<TH1F>(current, "ncharged", "", 50, 0., 50.);						
-						book<TH1F>(current, "nneutral", "", 50, 0., 50.);						
-						book<TH1F>(current, "ntotal"  , "", 50, 0., 50.);						
-					}
-
-					if(genCategory == "semilep_visible_right"){
-						book<TH1F>(folder, "nu_DR"    , "#DeltaR between gen and reco #nu;#DeltaR;counts", 140, 0., 7.);
-						book<TH1F>(folder, "nu_DE"    , "#DeltaE between gen and reco #nu;#DeltaE (GeV);counts", 250, -250, 250.);
-					}
-				}//for(auto& tag : tagging)
+						if(genCategory == "semilep_visible_right"){
+							book<TH1F>(folder, "nu_DR"    , "#DeltaR between gen and reco #nu;#DeltaR;counts", 140, 0., 7.);
+							book<TH1F>(folder, "nu_DE"    , "#DeltaE between gen and reco #nu;#DeltaE (GeV);counts", 250, -250, 250.);
+						}
+					}//for(auto& tag : tagging)
+				}//for(auto& wp_item : working_points_)
 			}//for(auto& criterion : criteria)
 			if(!isTTbar_) break;
 		}//for(auto& genCategory : folders)
@@ -281,12 +313,12 @@ public:
 		dir->second["hjet_es"  ].fill(leading->E(), subleading->E());
 	}
 
-	string get_wjet_category(TTbarHypothesis &reco) {
+	string get_wjet_category(TTbarHypothesis &reco, std::function<bool(const Jet*)>& fcn) {
 		WHypothesis *whad = reco.whad(); 
 		const Jet *leading    = (const Jet*)((whad->first->E() > whad->second->E()) ? whad->first  : whad->second);
 		const Jet *subleading = (const Jet*)((whad->first->E() > whad->second->E()) ? whad->second : whad->first );
-		bool lead_tag = ((leading->*btag_id_)() > btag_cut_);
-		bool sub_tag  = ((subleading->*btag_id_)() > btag_cut_);
+		bool lead_tag = fcn(leading   );
+		bool sub_tag  = fcn(subleading);
 		if(lead_tag && sub_tag) return "/both_tagged";
 		else if(lead_tag) return "/lead_tagged";
 		else if(sub_tag)  return "/sublead_tagged";
@@ -350,6 +382,7 @@ public:
 			Logger::log().debug() << "Beginning event" << endl;
 
 			const vector<Muon>& muons = event.muons();
+			//list<Muon> keep_muons;
 			vector<const Muon*> tight_muons; tight_muons.reserve(muons.size());
 			vector<const Muon*> loose_muons; loose_muons.reserve(muons.size());
 			for(vector<Muon>::const_iterator muon = muons.begin(); muon != muons.end(); ++muon){
@@ -522,9 +555,11 @@ public:
 				//sort(combinations.begin(), combinations.end(), item->second);
 				TTbarHypothesis best = *min_element(combinations.begin(), combinations.end(), item->second);// *combinations.begin();
 				if(!isTTbar_){
-					fill("all/"+item->first+"/all", best, selected_jets.size(), bjets.size());
-					string jet_category = get_wjet_category(best);
-					fill("all/"+item->first+jet_category, best, selected_jets.size(), bjets.size());
+					//fill("all/"+item->first+"/all", best, selected_jets.size(), bjets.size());
+					for(auto& wpoint : working_points_){
+						string jet_category = get_wjet_category(best, wpoint.second);
+						fill("all/"+item->first+"/"+wpoint.first+jet_category, best, selected_jets.size(), bjets.size());
+					}
 				} else {
 					//define which subdir we fall in
 					TTNaming dir_id = get_ttdir_name(matched_hyp, best);
@@ -534,10 +569,12 @@ public:
 					Logger::log().debug() << ttsubdir << " " << dir_id << " " << TTNaming::RIGHT_WHAD << endl;
 					if(dir_id <= TTNaming::RIGHT_WHAD) gen = &gen_hyp;
 
-					fill(ttsubdir+"/"+item->first+"/all", best, selected_jets.size(), bjets.size(), gen);
-					string jet_category = get_wjet_category(best);
-					fill(ttsubdir+"/"+item->first+jet_category, best, selected_jets.size(), bjets.size(), gen);
-					if(dir_id == TTNaming::RIGHT) fill_gen_info("semilep_visible_right/"+item->first+"/all", best, gen_hyp);
+					//fill(ttsubdir+"/"+item->first+"/all", best, selected_jets.size(), bjets.size(), gen);
+					for(auto& wpoint : working_points_){
+						string jet_category = get_wjet_category(best, wpoint.second);
+						fill(ttsubdir+"/"+item->first+"/"+wpoint.first+jet_category, best, selected_jets.size(), bjets.size(), gen);
+						//if(dir_id == TTNaming::RIGHT) fill_gen_info("semilep_visible_right/"+item->first+"/all", best, gen_hyp);
+					}
 				} //if(!isTTbar_)
 			} // for(auto item = ordering_.begin(); item != ordering_.end(); ++item)
 		} //while(event.next())
@@ -561,21 +598,6 @@ public:
 		opts.add_options()
       ("limit,l", opts::value<int>()->default_value(-1), "limit the number of events processed per file");
 	}
-private:
-	map<string, map<string, RObject> > histos_;
-	map<TTNaming, string> naming_;
-	CutFlowTracker tracker_;
-	bool isData_, isTTbar_;
-
-	float (Jet::*btag_id_)() const; // = &Jet::csvIncl;
-	float btag_cut_ ;//= 0.941;
-	float bjet_pt_cut_ ;//= 30;
-	float DR_match_to_gen_ ;//= 0.3;
-	map<string, std::function<bool(const TTbarHypothesis &, const TTbarHypothesis &)> > ordering_;
-
-	TTBarSolver solver_;
-  // Nothing by default
-  // Add your private variables/methods here
 };
 
 //make it executable
