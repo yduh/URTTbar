@@ -51,9 +51,25 @@ class Permutation
 		TLorentzVector TLep() const {return((WLep() + *BLep()));}
 		double Prob() const {return(prob_);}
 
-		bool IsBCorrect(const Permutation& other) const //bjets are selected correct, but not necessarily at the right position!!!!!!!!!!
+		bool AreBsCorrect(const Permutation& other) const //bjets are selected correct, but not necessarily at the right position!!!!!!!!!!
 		{
 			return((BLep() == other.BLep() && BHad() == other.BHad()) || (BHad() == other.BLep() && BLep() == other.BHad()));
+		}
+		bool AreJetsCorrect(const Permutation& other) const
+		{
+			if(BLep() != other.BLep() && BLep() != other.BHad() && BLep() != other.WJa() && BLep() != other.WJb()){return(false);}
+			if(BHad() != other.BLep() && BHad() != other.BHad() && BHad() != other.WJa() && BHad() != other.WJb()){return(false);}
+			if(WJa() != other.BLep() && WJa() != other.BHad() && WJa() != other.WJa() && WJa() != other.WJb()){return(false);}
+			if(WJb() != other.BLep() && WJb() != other.BHad() && WJb() != other.WJa() && WJb() != other.WJb()){return(false);}
+			return(true);
+		}
+
+		bool AreHadJetsCorrect(const Permutation& other) const
+		{
+			if(BHad() != other.BHad() && BHad() != other.WJa() && BHad() != other.WJb()){return(false);}
+			if(WJa() != other.BHad() && WJa() != other.WJa() && WJa() != other.WJb()){return(false);}
+			if(WJb() != other.BHad() && WJb() != other.WJa() && WJb() != other.WJb()){return(false);}
+			return(true);
 		}
 
 		bool IsBLepCorrect(const Permutation& other) const
@@ -68,10 +84,17 @@ class Permutation
 		{
 			return((WJa() == other.WJa() && WJb() == other.WJb()) || (WJa() == other.WJb() && WJb() == other.WJa()));
 		}
+		bool IsTHadCorrect(const Permutation& other) const
+		{
+			return(IsBHadCorrect(other) && IsWHadCorrect(other));
+		}
 		bool IsCorrect(const Permutation& other) const
 		{
-			return(IsBLepCorrect(other) && IsBHadCorrect(other) && IsWHadCorrect(other));
+			return(IsBLepCorrect(other) && IsTHadCorrect(other));
 		}
+
+		
+		
 		
 };
 

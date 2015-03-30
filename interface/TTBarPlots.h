@@ -17,6 +17,7 @@ class TTBarPlots
 		string prefix_;
 		TH1DCollection plot1d;	
 		TH2DCollection plot2d;	
+		ttbar* an;
 
 	public:
 		TTBarPlots(string prefix);

@@ -18,14 +18,17 @@ TTBarPlots::~TTBarPlots()
 
 void TTBarPlots::Init(ttbar* analysis)
 {
+	an = analysis;
     plot2d.AddHist("bjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(b)_{min} (GeV)", "p_{T}(b)_{max} (GeV)");
     plot2d.AddHist("wjets_pt", 500, 0., 500., 500, 0., 500., "p_{T} (GeV)", "p_{T} (GeV)");
     plot2d.AddHist("Whad_M_thad_M", 500, 0., 500., 500, 0., 500., "M(W_{had}) (GeV)", "M(t_{had}) (GeV)");
     plot2d.AddHist("Wlep_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(W_{lep}) (GeV)", "M(t_{lep}) (GeV)");
     plot2d.AddHist("thad_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(t_{had}) (GeV)", "M(t_{lep}) (GeV)");
-    plot2d.AddHist("test_ptthad", 96, -12., 12., analysis->topptbins, "test", "p_{T}(t_{had}) (GeV)");
-    plot2d.AddHist("test_pttlep", 96, -12., 12., analysis->topptbins, "test", "p_{T}(t_{lep}) (GeV)");
-    plot2d.AddHist("test_mtt", 96, -12., 12., analysis->ttmbins, "test", "M_{tt} (GeV)");
+    plot2d.AddHist("test_ptthad", 96, -12., 12., an->topptbins, "test", "p_{T}(t_{had}) (GeV)");
+    plot2d.AddHist("test_pttlep", 96, -12., 12., an->topptbins, "test", "p_{T}(t_{lep}) (GeV)");
+    plot2d.AddHist("test_etathad", 96, -12., 12., an->topetabins, "test", "#eta(t_{had})");
+    plot2d.AddHist("test_etatlep", 96, -12., 12., an->topetabins, "test", "#eta(t_{lep})");
+    plot2d.AddHist("test_mtt", 96, -12., 12., an->ttmbins, "test", "M_{tt} (GeV)");
     plot1d.AddHist("lep_pt", 500, 0., 500., "p_{T}(l) (GeV)", "Events");
     plot1d.AddHist("nu_pt", 500, 0., 500., "p_{T}(#nu) (GeV)", "Events");
     plot1d.AddHist("nu_eta", 200, -5, 5., "#eta(#nu)", "Events");
@@ -41,7 +44,10 @@ void TTBarPlots::Init(ttbar* analysis)
     plot1d.AddHist("tt_DeltaPhi", 200, -Pi(), Pi(), "#Delta#Phi(t#bar{t})", "Events");
     plot1d.AddHist("whad_pt", 100, 0, 200, "p_{T}(W_{had}) (GeV)", "Events");
     plot1d.AddHist("wj_dphi", 100, -4, 4, "#Delta#phi(j_{whad}) (GeV)", "Events");
-    plot1d.AddHist("t_costhetastar", 20, -1., 1., "cos(#Theta*)", "Events");
+    plot2d.AddHist("test_costhetastar", 96, -12., 12., 10, -1., 1., "test", "cos(#Theta*)");
+    plot2d.AddHist("test_njet", 96, -12., 12., 20, 0., 20., "test", "n-jets");
+    plot1d.AddHist("bjet_pt", 100, 0., 500., "p_{T}(b) (GeV)", "Events");
+    plot1d.AddHist("bjet_eta", 100, -2.5, 2.5, "#eta(b)", "Events");
 }
 
 void TTBarPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double test, double weight)
@@ -52,6 +58,8 @@ void TTBarPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* H
     plot2d["Whad_M_thad_M"]->Fill((*Hwa + *Hwb).M(), thad.M(), weight);
     plot2d["test_ptthad"]->Fill(test, thad.Pt(), weight);
 	plot2d["test_pttlep"]->Fill(test, tlep.Pt(), weight);
+    plot2d["test_etathad"]->Fill(test, Abs(thad.Eta()), weight);
+	plot2d["test_etatlep"]->Fill(test, Abs(tlep.Eta()), weight);
 	plot2d["test_mtt"]->Fill(test, (tlep+thad).M(), weight);
 	plot2d["bjets_pt"]->Fill(Min(Hb->Pt(), Lb->Pt()), Max(Hb->Pt(), Lb->Pt()), weight);
 	plot2d["wjets_pt"]->Fill(Min(Hwa->Pt(), Hwb->Pt()), Max(Hwa->Pt(), Hwb->Pt()), weight);
@@ -81,7 +89,16 @@ void TTBarPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* H
 		//tbar = tlep;
 	}
 	t.Boost(bv);
-	plot1d["t_costhetastar"]->Fill(t.CosTheta());
+	plot2d["test_costhetastar"]->Fill(test, t.CosTheta(), weight);
+	plot2d["test_njet"]->Fill(test, an->cleanedjets.size()+0.5, weight);
+
+	if(tlep.Pt() > 50 && thad.Pt() > 50.)
+	{
+		plot1d["bjet_pt"]->Fill(Hb->Pt(), weight);
+		plot1d["bjet_pt"]->Fill(Lb->Pt(), weight);
+		plot1d["bjet_eta"]->Fill(Hb->Eta(), weight);
+		plot1d["bjet_eta"]->Fill(Lb->Eta(), weight);
+	}
 
 }
 

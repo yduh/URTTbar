@@ -17,6 +17,7 @@ using namespace std;
 
 class ttbar : public AnalyzerBase
 {
+	friend class TTBarPlots;
 	private:
 		//Collections
 		//Gen:
@@ -28,10 +29,13 @@ class ttbar : public AnalyzerBase
 		vector<Genparticle*> genwpartons;
 		vector<Genparticle*> gencls;
 		vector<Genparticle*> gennls;
+		vector<Genparticle*> genfincls;
 		Genparticle* genb;
 		Genparticle* genbbar;
 		Genparticle* genbl;
 		Genparticle* genbh;
+		TLorentzVector gentoplep;
+		TLorentzVector gentophad;
 
 		//matched
 		//vector<Jet*> recbjets;
@@ -67,13 +71,29 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_wrong;
 		TTBarPlots ttp_semi;
 		TTBarPlots ttp_other;
-		TTBarPlots ttp_truth;
 		TTBarPlots ttp_all;
 		TTBarPlots ttp_right_incl;
 		TTBarPlots ttp_wrong_incl;
 		TTBarPlots ttp_semi_incl;
 		TTBarPlots ttp_other_incl;
 		TTBarPlots ttp_all_incl;
+
+		TTBarPlots ttp_jetspos_right;
+		TTBarPlots ttp_jetspos_wrong;
+		TTBarPlots ttp_hadjets_right;
+		TTBarPlots ttp_hadjets_wrong;
+		TTBarPlots ttp_jets_right;
+		TTBarPlots ttp_jets_wrong;
+		TTBarPlots ttp_blep_right;
+		TTBarPlots ttp_blep_wrong;
+		TTBarPlots ttp_jetspos_incl_right;
+		TTBarPlots ttp_jetspos_incl_wrong;
+		TTBarPlots ttp_hadjets_incl_right;
+		TTBarPlots ttp_hadjets_incl_wrong;
+		TTBarPlots ttp_jets_incl_right;
+		TTBarPlots ttp_jets_incl_wrong;
+		TTBarPlots ttp_blep_incl_right;
+		TTBarPlots ttp_blep_incl_wrong;
 
 		BtagEff btageff;
 
@@ -96,10 +116,11 @@ class ttbar : public AnalyzerBase
 	
 		double weight;
 
-	public:
 		//binning vectors
 		vector<double> topptbins;
+		vector<double> topetabins;
 		vector<double> ttmbins;
+	public:
 
 		ttbar(const std::string output_filename);
 
