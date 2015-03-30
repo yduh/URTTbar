@@ -16,7 +16,7 @@ for dir in jobdirs:
 	info = [l.strip() for l in info if 'Queue' in l]
 	num =  int(info[0].split('Queue')[1].strip())
 	files = os.listdir(dir)
-	files = [f for f in files if 'out_' in f]
+	files = [f for f in files if ('%s_out_' % dir) in f]
 	print num, len(files)
 	if num == len(files):
 		files = [dir + '/' + f for f in files]

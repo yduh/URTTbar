@@ -1,7 +1,8 @@
 #!/usr/bin/env python2
 import sys, os, time
+from pdb import set_trace
 
-swdir = os.environ['URA_PROJECT']
+swdir = os.path.realpath(os.environ['URA_PROJECT'])
 jobid = os.environ['jobid']
 inputdir = os.path.join(swdir, 'inputs')
 inputdir = os.path.join(inputdir, jobid)
@@ -33,37 +34,33 @@ transferfiles_config = ', '.join(transferfiles)
 filesperjob = 50
 
 for sf in samplefiles:
-	infile = os.path.join(inputdir, sf)
-	jobpath = os.path.join(jobdir, sf.split('.txt')[0])
-	os.mkdir(jobpath)
-	infiledes = open(infile, 'r')
-	numrootfiles = infiledes.read().count('.root')
-	infiledes.close()
-	numjobs = max(numrootfiles/filesperjob, 1)
-	if 'pu30' in sf:
-		numjobs = 60
-	print sf, numjobs
+        infile = os.path.join(inputdir, sf)
+        jobpath = os.path.join(jobdir, sf.split('.txt')[0])
+        os.mkdir(jobpath)
+        infiledes = open(infile, 'r')
+        numrootfiles = infiledes.read().count('.root')
+        infiledes.close()
+        numjobs = max(numrootfiles/filesperjob, 1)
+        sample = sf.split('.txt')[0]
+        print sf, numjobs
 
-	condorfile ="""universe = vanilla
+        condorfile ="""universe = vanilla
 Executable = batch_job.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
 Transfer_Input_Files = {5}
 Output = con_$(Process).stdout
 Error = con_$(Process).stderr
-Arguments = {0} {1} out_$(Process).root --thread 1 --j $(Process) --J {3} {4}
+Arguments = {0} {1} {6}_out_$(Process).root --thread 1 --j $(Process) --J {3} {4}
 Queue {3}
 
-	""".format(exe, infile, '', numjobs, ' '.join(jobargs), transferfiles_config)
+	""".format(exe, infile, '', numjobs, ' '.join(jobargs), transferfiles_config, sample)
+        
+        conf = open(os.path.join(jobpath, 'condor.jdl'), 'w')
+        conf.write(condorfile)
+        conf.close()
 
-#print condorfile
-
-
-	conf = open(os.path.join(jobpath, 'condor.jdl'), 'w')
-	conf.write(condorfile)
-	conf.close()
-
-	batch_job="""#!/bin/bash
+        batch_job="""#!/bin/bash
 WORKINGDIR=$PWD
 cd {0}
 source environment.sh
@@ -84,9 +81,9 @@ $EXE $PA
 
 	""".format(swdir)
 
-	conf = open(os.path.join(jobpath, 'batch_job.sh'), 'w')
-	conf.write(batch_job)
-	conf.close()
-
-	os.system('cd ' + jobpath + ' && condor_submit condor.jdl')
+        conf = open(os.path.join(jobpath, 'batch_job.sh'), 'w')
+        conf.write(batch_job)
+        conf.close()
+        
+        os.system('cd ' + jobpath + ' && condor_submit condor.jdl')
 

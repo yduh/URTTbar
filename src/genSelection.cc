@@ -121,12 +121,14 @@ TTbarHypothesis SelectGenParticles(URStreamer& event)
 		if(wp1_isquark && wp2_isquark) {
 			ret.wplus.first  = wplus_prods[0];
 			ret.wplus.second = wplus_prods[1];
+			ret.wplus.isLeptonic = false;
 		} else if((wp1_isqlep && !wp1_isquark) && (wp2_isqlep && !wp2_isquark)) {
 			//assign the charged lepton as first
 			int id0 = wplus_prods[0]->pdgId();
 			ret.wplus.first  = (id0 % 2 == 0) ? wplus_prods[1] : wplus_prods[0];
 			ret.wplus.second = (id0 % 2 == 0) ? wplus_prods[0] : wplus_prods[1];
 			lep_decays++;
+			ret.wplus.isLeptonic = true;
 		} else {
 			Logger::log().error() << event.run<<":"<< event.lumi << ":" << event.evt << 
 				" W+ decays to lepton and quark! (" <<
@@ -146,12 +148,14 @@ TTbarHypothesis SelectGenParticles(URStreamer& event)
 		if(wm1_isquark && wm2_isquark) {
 			ret.wminus.first  = wminus_prods[0];
 			ret.wminus.second = wminus_prods[1];
+			ret.wminus.isLeptonic = false;
 		} else if((wm1_isqlep && !wm1_isquark) && (wm2_isqlep && !wm2_isquark)) {
 			//assign the charged lepton as first
 			int id0 = wminus_prods[0]->pdgId();
 			ret.wminus.first  = (id0 % 2 == 0) ? wminus_prods[1] : wminus_prods[0];
 			ret.wminus.second = (id0 % 2 == 0) ? wminus_prods[0] : wminus_prods[1];
 			lep_decays++;
+			ret.wminus.isLeptonic = true;
 		} else {
 			Logger::log().error() << event.run<<":"<< event.lumi << ":" << event.evt << 
 				" W- decays to lepton and quark! (" <<
@@ -169,4 +173,50 @@ TTbarHypothesis SelectGenParticles(URStreamer& event)
 	}
 	return ret;
 
+}
+
+TTbarHypothesis match_to_gen(
+	TTbarHypothesis& gen_hyp, 
+	std::vector<const Jet*>& jets, 
+	std::vector<const Electron*>& electrons,
+	std::vector<const Muon*>& muons,
+	float dr_max){
+	TTbarHypothesis ret;
+	ret.decay = gen_hyp.decay;
+	ret.wplus.isLeptonic  = gen_hyp.wplus.isLeptonic;
+	ret.wminus.isLeptonic = gen_hyp.wminus.isLeptonic;
+	// cout << ret.b << " " << ret.bbar << " " << ret.wplus.isLeptonic << " " <<
+	// 	ret.wminus.isLeptonic << endl;
+
+	if(gen_hyp.decay != SEMILEP) return ret;
+	ret.b    = gen_match(gen_hyp.b   , jets, dr_max);
+	ret.bbar = gen_match(gen_hyp.bbar, jets, dr_max);
+	
+	if(gen_hyp.wplus.isLeptonic) {
+		// cout << "matching wplus lep" << endl;
+		ret.wminus.first  = gen_match(gen_hyp.wminus.first , jets, dr_max);
+		ret.wminus.second = gen_match(gen_hyp.wminus.second, jets, dr_max);
+		if(fabs(((const Genparticle*) gen_hyp.wplus.first)->pdgId()) == ura::PDGID::e){
+			// cout << "matching to electron" << endl;
+			ret.wplus.first = gen_match(gen_hyp.wplus.first, electrons, dr_max);
+		}else{
+			// cout << "matching to muon" << endl;
+			ret.wplus.first = gen_match(gen_hyp.wplus.first, muons, dr_max);
+		}
+		ret.wplus.second = gen_hyp.wplus.second;
+	} else {
+		// cout << "Matching wminus lep" << endl;
+		ret.wplus.first  = gen_match(gen_hyp.wplus.first , jets, dr_max);
+		ret.wplus.second = gen_match(gen_hyp.wplus.second, jets, dr_max);
+
+		if(fabs(((const Genparticle*) gen_hyp.wminus.first)->pdgId()) == ura::PDGID::e){
+			// cout << "Matching to electron" << endl;
+			ret.wminus.first = gen_match(gen_hyp.wminus.first, electrons, dr_max);
+		}else{
+			// cout << "Matching to muon" << endl;
+			ret.wminus.first = gen_match(gen_hyp.wminus.first, muons, dr_max);
+		}
+		ret.wminus.second = gen_hyp.wminus.second;
+	}	
+	return ret;
 }
