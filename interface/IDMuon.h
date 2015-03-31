@@ -1,15 +1,18 @@
 #ifndef IDMUON_H
 #define IDMUON_H
 #include "URStreamer.h"
+#include "MCMatchable.h"
 #include <TMath.h>
 
 
-class IDMuon : public Muon
+class IDMuon : public Muon, public MCMatchable
 {
 private:
 
 public:
-	IDMuon(const Muon mu) : Muon(mu)
+	IDMuon(const Muon mu) : 
+		Muon(mu),
+		MCMatchable()
 	{
 	}
 	enum IDS {TIGHT_12, LOOSE_12};

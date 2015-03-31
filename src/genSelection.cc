@@ -175,48 +175,37 @@ TTbarHypothesis SelectGenParticles(URStreamer& event)
 
 }
 
-TTbarHypothesis match_to_gen(
+Permutation match_to_gen(
 	TTbarHypothesis& gen_hyp, 
-	std::vector<const Jet*>& jets, 
-	std::vector<const Electron*>& electrons,
-	std::vector<const Muon*>& muons,
+	std::vector<IDJet*>& jets, 
+	std::vector<IDElectron*>& electrons,
+	std::vector<IDMuon*>& muons,
 	float dr_max){
-	TTbarHypothesis ret;
-	ret.decay = gen_hyp.decay;
-	ret.wplus.isLeptonic  = gen_hyp.wplus.isLeptonic;
-	ret.wminus.isLeptonic = gen_hyp.wminus.isLeptonic;
-	// cout << ret.b << " " << ret.bbar << " " << ret.wplus.isLeptonic << " " <<
-	// 	ret.wminus.isLeptonic << endl;
-
+	Permutation ret;
 	if(gen_hyp.decay != SEMILEP) return ret;
-	ret.b    = gen_match(gen_hyp.b   , jets, dr_max);
-	ret.bbar = gen_match(gen_hyp.bbar, jets, dr_max);
-	
-	if(gen_hyp.wplus.isLeptonic) {
-		// cout << "matching wplus lep" << endl;
-		ret.wminus.first  = gen_match(gen_hyp.wminus.first , jets, dr_max);
-		ret.wminus.second = gen_match(gen_hyp.wminus.second, jets, dr_max);
-		if(fabs(((const Genparticle*) gen_hyp.wplus.first)->pdgId()) == ura::PDGID::e){
-			// cout << "matching to electron" << endl;
-			ret.wplus.first = gen_match(gen_hyp.wplus.first, electrons, dr_max);
-		}else{
-			// cout << "matching to muon" << endl;
-			ret.wplus.first = gen_match(gen_hyp.wplus.first, muons, dr_max);
-		}
-		ret.wplus.second = gen_hyp.wplus.second;
-	} else {
-		// cout << "Matching wminus lep" << endl;
-		ret.wplus.first  = gen_match(gen_hyp.wplus.first , jets, dr_max);
-		ret.wplus.second = gen_match(gen_hyp.wplus.second, jets, dr_max);
 
-		if(fabs(((const Genparticle*) gen_hyp.wminus.first)->pdgId()) == ura::PDGID::e){
-			// cout << "Matching to electron" << endl;
-			ret.wminus.first = gen_match(gen_hyp.wminus.first, electrons, dr_max);
-		}else{
-			// cout << "Matching to muon" << endl;
-			ret.wminus.first = gen_match(gen_hyp.wminus.first, muons, dr_max);
-		}
-		ret.wminus.second = gen_hyp.wminus.second;
-	}	
+	IDJet* b    = gen_match((const Genparticle*) gen_hyp.b   , jets, dr_max);
+	IDJet* bbar = gen_match((const Genparticle*) gen_hyp.bbar, jets, dr_max);
+	const Genparticle* lepton = (const Genparticle*) gen_hyp.wlep()->first;
+
+	ret.WJa( gen_match((const Genparticle*) gen_hyp.whad()->first , jets, dr_max) );
+	ret.WJb( gen_match((const Genparticle*) gen_hyp.whad()->second, jets, dr_max) );
+
+	if(fabs(lepton->pdgId()) == ura::PDGID::e){
+		// cout << "matching to electron" << endl;
+		ret.L( gen_match(lepton, electrons, dr_max) );
+	}else{
+		// cout << "matching to muon" << endl;
+		ret.L( gen_match(lepton, muons, dr_max) );
+	}
+	//neutrino is not set
+	//ret.wplus.second = gen_hyp.wplus.second;
+	if(gen_hyp.wplus.isLeptonic) {
+		ret.BHad(bbar);
+    ret.BLep(b);
+	} else {
+		ret.BHad(b);
+    ret.BLep(bbar);
+	}
 	return ret;
 }

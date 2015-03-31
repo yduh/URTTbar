@@ -388,8 +388,8 @@ jet_variables = [
 variables = [
   ("njets"    , "# of selected jets", 1, [0, 12]),
   ("nbjets"   , "# of bjets", 1, [0, 12]),
-  ("b_pt"     , "p_{T}(b) (GeV)", 10, None),
-  ("bbar_pt"  , "p_{T}(b) (GeV)", 10, None),
+  ("lep_b_pt" , "p_{T}(b) (GeV)", 10, None),
+  ("had_b_pt" , "p_{T}(b) (GeV)", 10, None),
   ("lep_pt"   , "p_{T}(l) (GeV)", 10, None),
   #("Wlep_mass", "m_{W}(lep) (GeV)", 10, None),
   ("Whad_mass", "m_{W}(had) (GeV)", 10, None),

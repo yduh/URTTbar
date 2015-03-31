@@ -13,6 +13,10 @@ class Permutation
 {
 	private:
 		double prob_ = numeric_limits<double>::max();
+		double nu_chisq_          = numeric_limits<double>::max();
+		double nu_discriminant_   = numeric_limits<double>::max();
+		double btag_discriminant_ = numeric_limits<double>::max();
+		double mass_discriminant_ = numeric_limits<double>::max();
 		Jet* wja_ = 0;
 		Jet* wjb_ = 0;
 		Jet* bjh_ = 0;
@@ -47,7 +51,13 @@ class Permutation
 		TLorentzVector Nu() {return(nu_);}
 		TLorentzVector WHad() const {return((*wja_ + *wjb_));}
 		TLorentzVector THad() const {return((WHad() + *bjh_));}
+		TLorentzVector WLep() const {return((*lep_ + nu_));}
+		TLorentzVector TLep() const {return((WLep() + *bjl_));}
 		double Prob() const {return(prob_);}
+		double NuChisq() 	 const {return nu_chisq_         ;}
+		double NuDiscr() 	 const {return nu_discriminant_  ;}
+		double BDiscr()  	 const {return btag_discriminant_;}
+		double MassDiscr() const {return mass_discriminant_;}
 
 		bool IsBCorrect(const Permutation& other) const //bjets are selected correct, but not necessarily at the right position!!!!!!!!!!
 		{

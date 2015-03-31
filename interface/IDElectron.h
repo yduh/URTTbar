@@ -1,16 +1,19 @@
 #ifndef IDELECTRON_H
 #define IDELECTRON_H
 #include "URStreamer.h"
+#include "MCMatchable.h"
 #include <TMath.h>
 
 using namespace TMath;
 
-class IDElectron : public Electron
+class IDElectron : public Electron, public MCMatchable
 {
 private:
 
 public:
-	IDElectron(const Electron el) : Electron(el)
+	IDElectron(const Electron el) : 
+		Electron(el),
+		MCMatchable()
 	{
 	}
 	enum IDS {MEDIUM_12, LOOSE_12};
