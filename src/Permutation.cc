@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Permutation::Permutation(Jet* wja, Jet* wjb, Jet* bjh, Jet* bjl, TLorentzVector* lep, Met* met) :
+Permutation::Permutation(IDJet* wja, IDJet* wjb, IDJet* bjh, IDJet* bjl, TLorentzVector* lep, Met* met) :
 	wja_(wja),
 	wjb_(wjb),
 	bjh_(bjh),

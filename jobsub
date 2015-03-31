@@ -43,6 +43,9 @@ for sf in samplefiles:
         numjobs = max(numrootfiles/filesperjob, 1)
         sample = sf.split('.txt')[0]
         print sf, numjobs
+        numjobs = 5
+        if 'pu30' in sf:
+            numjobs = 60
 
         condorfile ="""universe = vanilla
 Executable = batch_job.sh

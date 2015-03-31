@@ -183,7 +183,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		//	}
 			//if(gp->pdgId() == 6)
 			//{
-			//	weight = 1.-(gp->Pt()-200.)/2000.;
+			//	weight = 1.+(gp->Pt()-200.)/200.;
 			//}
 		if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 		{
@@ -328,32 +328,17 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		}
 	}
 
-	vector<Jet> jets = event.jets();
-	for(vector<Jet>::iterator jet = jets.begin(); jet != jets.end(); ++jet)
+	const vector<Jet> jets = event.jets();
+	for(vector<Jet>::const_iterator jetit = jets.begin(); jetit != jets.end(); ++jetit)
 	{
+		IDJet jet(*jetit);
 		double sf = 1.0;
-		jet->SetPxPyPzE(jet->Px()*sf, jet->Py()*sf, jet->Pz()*sf, jet->E()*sf);
-		if(jet->Pt() < jetptmin || Abs(jet->Eta()) > cjetetamax) {continue;}
+		jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
+		if(jet.Pt() < jetptmin || Abs(jet.Eta()) > cjetetamax) {continue;}
+		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons) ) {continue;}
 
-		for(IDMuon* mu : loosemuons)
-		{
-			if(mu->DeltaR(*jet) < 0.3)
-			{
-				goto nextjetA;
-			}
-		}
-
-		for(IDElectron* el : looseelectrons)
-		{
-			if(el->DeltaR(*jet) < 0.3)
-			{
-				goto nextjetA;
-			}
-		}
-
-		sjets.push_back(*jet);
+		sjets.push_back(jet);
 		cleanedjets.push_back(&(sjets.back()));
-nextjetA: continue;
 	}
 
 	const vector<Met>& mets = event.METs();
@@ -388,7 +373,7 @@ nextjetA: continue;
 		vector<double> wjptmax(genwpartons.size(), 0.);
 		for(size_t j = 0 ; j < cleanedjets.size() ; ++j)
 		{
-			Jet* jet = cleanedjets[j];
+			IDJet* jet = cleanedjets[j];
 			if(jet->DeltaR(*genb) < 0.3 && jet->Pt() > ptbmax)
 			{
 				ptbmax = jet->Pt();
@@ -495,13 +480,13 @@ void ttbar::ttanalysis()
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
 
 	//keeping only the n leading jets. 
-	sort(cleanedjets.begin(), cleanedjets.end(), [](Jet* A, Jet* B){return(A->Pt() > B->Pt());});
+	sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->Pt() > B->Pt());});
 	int reducedsize = Min(cleanedjets.size(), cnusedjets);
 	reducedjets.resize(reducedsize);
 	copy(cleanedjets.begin(), cleanedjets.begin()+reducedsize, reducedjets.begin());
 
 	//check for b-jets
-	sort(reducedjets.begin(), reducedjets.end(), [](Jet* A, Jet* B){return(A->csvIncl() > B->csvIncl());});
+	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
 	if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && reducedjets[1]->csvIncl() < 0.814)){return;}
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 

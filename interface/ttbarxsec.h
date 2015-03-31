@@ -7,6 +7,7 @@
 #include "URDriver.h"
 #include "IDMuon.h"
 #include "IDElectron.h"
+#include "IDJet.h"
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
 #include "Permutation.h"
@@ -46,12 +47,12 @@ class ttbar : public AnalyzerBase
 		//Jet* recbljet;
 		//int nttjets;
 		Permutation rightper;
-		vector<Jet*> recotherjets;
+		vector<IDJet*> recotherjets;
 
 		//reco
-		list<Jet> sjets;
-		vector<Jet*> cleanedjets;
-		vector<Jet*> reducedjets;
+		list<IDJet> sjets;
+		vector<IDJet*> cleanedjets;
+		vector<IDJet*> reducedjets;
 		list<IDMuon> smuons;
 		vector<IDMuon*> loosemuons;
 		vector<IDMuon*> tightmuons;
