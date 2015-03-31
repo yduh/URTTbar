@@ -25,10 +25,10 @@ public:
 			if(validHits() <= 0) return(false);
 			if(numMatchedStations() <= 1) return(false);
 			if(TMath::Abs(dB()) > 0.2) return(false);
-			//if(TMath::Abs(InnerTrack(0).Dz()) > 0.5) return(false); //todo: needs vertex for correct calculation
+			if(TMath::Abs(dz()) > 0.5) return(false);
 			if(chi2()/ndof() > 10.) return(false);
 			//if((chargedIso() + neutralIso() + photonIso())/Pt() > 0.12) return(false);
-			if((chargedIso())/Pt() > 0.1) return(false);
+			if((trackiso())/Pt() > 0.05) return(false);
 			return(true);
 		}
 		else if(idtyp == LOOSE_12)
@@ -36,7 +36,8 @@ public:
 			if(TMath::Abs(Eta()) > 2.4) return(false);
 			if(!isPF()) return(false);
 			if(!isGlobal() && !isTracker()) return(false);
-			if((chargedIso() + neutralIso() + photonIso())/Pt() > 0.2) return(false);
+			//if((chargedIso() + neutralIso() + photonIso())/Pt() > 0.2) return(false);
+			if((trackiso())/Pt() > 0.1) return(false);
 			return(true);
 		}
 		return(false);

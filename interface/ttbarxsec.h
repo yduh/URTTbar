@@ -8,6 +8,7 @@
 #include "IDMuon.h"
 #include "IDElectron.h"
 #include "IDJet.h"
+#include "GenObject.h"
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
 #include "Permutation.h"
@@ -26,15 +27,15 @@ class ttbar : public AnalyzerBase
 		bool SEMILEP;
 		bool FULLLEP;
 		bool SEMILEPACC;
-		list<Genparticle> sgenparticles;
-		vector<Genparticle*> genwpartons;
-		vector<Genparticle*> gencls;
-		vector<Genparticle*> gennls;
-		vector<Genparticle*> genfincls;
-		Genparticle* genb;
-		Genparticle* genbbar;
-		Genparticle* genbl;
-		Genparticle* genbh;
+		list<GenObject> sgenparticles;
+		vector<GenObject*> genwpartons;
+		vector<GenObject*> gencls;
+		vector<GenObject*> gennls;
+		vector<GenObject*> genfincls;
+		GenObject* genb;
+		GenObject* genbbar;
+		GenObject* genbl;
+		GenObject* genbh;
 		TLorentzVector gentoplep;
 		TLorentzVector gentophad;
 
@@ -102,6 +103,7 @@ class ttbar : public AnalyzerBase
 		TTBarSolver ttsolver;
 
 		//configuration
+		bool PSEUDOTOP;
 		bool BTAGMODE;
 		int cnbtag;
 		size_t cnusedjets;

@@ -39,6 +39,7 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_jets_incl_wrong("jets_incl_wrong"),
 	ttp_blep_incl_right("blep_incl_right"),
 	ttp_blep_incl_wrong("blep_incl_wrong"),
+	PSEUDOTOP(true),
 	BTAGMODE(false), //set true for the b-tag efficiency measurement
 	cnbtag(1), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(10000), //only nused jets, ordered by pT are used for the permutations
@@ -67,6 +68,7 @@ void ttbar::begin()
 	gen2d.AddHist("bjets_eta", 100, 0., 5., 100, 0, 5, "b-jet #eta_{min}", "b-jet #eta_{max}");
 	gen2d.AddHist("wjets_pt", 200, 0, 400, 200, 0., 400, "W-jet p_{T,min} (GeV)", "W-jet p_{T,max} (GeV)");
 	gen2d.AddHist("bjets_pt", 200, 0, 400, 200, 0., 400, "b-jet p_{T,min} (GeV)", "b-jet p_{T,max} (GeV)");
+	gen2d.AddHist("t_pt", 200, 0, 600, 200, 0., 600, "t p_{T,min} (GeV)", "t p_{T,max} (GeV)");
 	gen1d.AddHist("bjets_dr", 100, 0, 5, "b-jets #DeltaR", "Events");
 	gen1d.AddHist("wjets_dr", 100, 0, 5, "W-jets #DeltaR", "Events");
 
@@ -168,72 +170,125 @@ void ttbar::begin()
 
 void ttbar::SelectGenParticles(URStreamer& event)
 {
-	const vector<Genparticle>& gps = event.genParticles();
-	//cout <<gps.size() << endl;
-	//loop over muons (by reference)
 	int lepdecays = 0;
 	int topcounter = 0;
-	for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
+	
+	if(PSEUDOTOP)
 	{
-		//	if(Abs(gp->pdgId()) > 10 && Abs(gp->pdgId()) < 18)
-		//	{
-		//		cout << "P:"  << " " << gp->status() << " " << gp->pdgId() << ":";
-		//		for(size_t m = 0 ; m < gp->momIdx().size() ; ++m) cout << " " << gps[gp->momIdx()[m]].pdgId();
-		//		cout << endl;
-		//	}
+		const vector<Pst>& pseudotops = event.PSTs();
+		if(pseudotops.size() == 10)
+		{
+			topcounter = 2;
+
+			if(Abs(pseudotops[8].pdgId()) == 11 || Abs(pseudotops[8].pdgId()) == 13)
+			{
+				sgenparticles.push_back(pseudotops[8]);
+				gencls.push_back(&(sgenparticles.back()));
+				genfincls.push_back(&(sgenparticles.back()));
+				sgenparticles.push_back(pseudotops[9]);
+				gennls.push_back(&(sgenparticles.back()));
+				lepdecays++;
+			}
+			else
+			{
+				sgenparticles.push_back(pseudotops[8]);
+				genwpartons.push_back(&(sgenparticles.back()));
+				sgenparticles.push_back(pseudotops[9]);
+				genwpartons.push_back(&(sgenparticles.back()));
+			}
+
+			if(Abs(pseudotops[3].pdgId()) == 11 || Abs(pseudotops[3].pdgId()) == 13)
+			{
+				sgenparticles.push_back(pseudotops[3]);
+				gencls.push_back(&(sgenparticles.back()));
+				genfincls.push_back(&(sgenparticles.back()));
+				sgenparticles.push_back(pseudotops[4]);
+				gennls.push_back(&(sgenparticles.back()));
+				lepdecays++;
+			}
+			else
+			{
+				sgenparticles.push_back(pseudotops[3]);
+				genwpartons.push_back(&(sgenparticles.back()));
+				sgenparticles.push_back(pseudotops[4]);
+				genwpartons.push_back(&(sgenparticles.back()));
+			}
+
+			if(pseudotops[2].pdgId() == 5)
+			{
+				sgenparticles.push_back(pseudotops[2]);
+				genb = &(sgenparticles.back());
+				sgenparticles.push_back(pseudotops[7]);
+				genbbar = &(sgenparticles.back());
+			}
+			else
+			{
+				sgenparticles.push_back(pseudotops[2]);
+				genbbar = &(sgenparticles.back());
+				sgenparticles.push_back(pseudotops[7]);
+				genb = &(sgenparticles.back());
+			}
+		}
+	}
+	else
+	{
+		const vector<Genparticle>& gps = event.genParticles();
+		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
+		{
 			//if(gp->pdgId() == 6)
 			//{
 			//	weight = 1.+(gp->Pt()-200.)/200.;
 			//}
-		if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
-		{
-			if(Abs(gp->pdgId()) == 6)
+			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
-				topcounter++;
-			}
-			if(gp->pdgId() == 5 && gps[gp->momIdx()[0]].pdgId() != 24)
-			{
-				sgenparticles.push_back(*gp);
-				genb = &(sgenparticles.back());
+				if(Abs(gp->pdgId()) == 6)
+				{
+					topcounter++;
+				}
+				if(gp->pdgId() == 5 && gps[gp->momIdx()[0]].pdgId() != 24)
+				{
+					sgenparticles.push_back(*gp);
+					genb = &(sgenparticles.back());
+				}
+
+				if(gp->pdgId() == -5 && gps[gp->momIdx()[0]].pdgId() != -24)
+				{
+					sgenparticles.push_back(*gp);
+					genbbar = &(sgenparticles.back());
+				}
+				if(Abs(gp->pdgId()) < 6 && Abs(gps[gp->momIdx()[0]].pdgId()) == 24)
+				{
+					sgenparticles.push_back(*gp);
+					genwpartons.push_back(&(sgenparticles.back()));
+				}
 			}
 
-			if(gp->pdgId() == -5 && gps[gp->momIdx()[0]].pdgId() != -24)
-			{
-				sgenparticles.push_back(*gp);
-				genbbar = &(sgenparticles.back());
+			if(gp->momIdx().size() != 0 && Abs(gps[gp->momIdx()[0]].pdgId()) == 24)
+			{	
+				if(Abs(gp->pdgId()) == 11 || Abs(gp->pdgId()) == 13)
+				{
+					sgenparticles.push_back(*gp);
+					gencls.push_back(&(sgenparticles.back()));
+				}
+				if(Abs(gp->pdgId()) == 12 || Abs(gp->pdgId()) == 14)
+				{
+					sgenparticles.push_back(*gp);
+					gennls.push_back(&(sgenparticles.back()));	
+					lepdecays++;
+				}
+				if(Abs(gp->pdgId()) == 16)
+				{
+					lepdecays++;
+				}
 			}
-			if(Abs(gp->pdgId()) < 6 && Abs(gps[gp->momIdx()[0]].pdgId()) == 24)
-			{
-				sgenparticles.push_back(*gp);
-				genwpartons.push_back(&(sgenparticles.back()));
-			}
-		}
 
-		if(gp->momIdx().size() != 0 && Abs(gps[gp->momIdx()[0]].pdgId()) == 24)
-		{	
-			if(Abs(gp->pdgId()) == 11 || Abs(gp->pdgId()) == 13)
+			if(gp->status() == 1 && gp->momIdx().size() != 0 && (Abs(gps[gp->momIdx()[0]].pdgId()) == 24 || gp->pdgId() == gps[gp->momIdx()[0]].pdgId()))
 			{
-				sgenparticles.push_back(*gp);
-				gencls.push_back(&(sgenparticles.back()));
-			}
-			if(Abs(gp->pdgId()) == 12 || Abs(gp->pdgId()) == 14)
-			{
-				sgenparticles.push_back(*gp);
-				gennls.push_back(&(sgenparticles.back()));	
-				lepdecays++;
-			}
-			if(Abs(gp->pdgId()) == 16)
-			{
-				lepdecays++;
-			}
-		}
-
-		if(gp->status() == 1 && gp->momIdx().size() != 0 && (Abs(gps[gp->momIdx()[0]].pdgId()) == 24 || gp->pdgId() == gps[gp->momIdx()[0]].pdgId()))
-		{
-			if(Abs(gp->pdgId()) == 11 || Abs(gp->pdgId()) == 13)
-			{
-				sgenparticles.push_back(*gp);
-				genfincls.push_back(&(sgenparticles.back()));	
+				if(Abs(gp->pdgId()) == 11 || Abs(gp->pdgId()) == 13)
+				{
+					sgenparticles.push_back(*gp);
+					genfincls.push_back(&(sgenparticles.back()));	
+				}
 			}
 		}
 	}
@@ -276,6 +331,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		{
 			gen2d["wjets_pt"]->Fill(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()), Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()), weight);
 			gen2d["bjets_pt"]->Fill(Min(genb->Pt(), genbbar->Pt()), Max(genb->Pt(), genbbar->Pt()), weight);
+			gen2d["t_pt"]->Fill(Min(gentophad.Pt(), gentoplep.Pt()), Max(gentophad.Pt(), gentoplep.Pt()), weight);
 			gen1d["wjets_dr"]->Fill(genwpartons[0]->DeltaR(*genwpartons[1]), weight);
 			gen1d["bjets_dr"]->Fill(genb->DeltaR(*genbbar), weight);
 			if(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetptsoft && Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetpthard && Min(genb->Pt(), genbbar->Pt()) > cbjetptsoft && Max(genb->Pt(), genbbar->Pt()) > cbjetpthard)
@@ -335,7 +391,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		double sf = 1.0;
 		jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
 		if(jet.Pt() < jetptmin || Abs(jet.Eta()) > cjetetamax) {continue;}
-		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons) ) {continue;}
+		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
 
 		sjets.push_back(jet);
 		cleanedjets.push_back(&(sjets.back()));
@@ -727,7 +783,6 @@ void ttbar::analyze()
 		selectrons.clear();
 		mediumelectrons.clear();
 		looseelectrons.clear();
-
 		SelectGenParticles(event);
 		SelectRecoParticles(event);
 

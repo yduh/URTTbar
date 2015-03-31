@@ -41,7 +41,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(sigmaIEtaIEta() > 0.01){return(false);}
 			if(hcalDepth1OverEcalBc() + hcalDepth2OverEcalBc() > 0.12){return(false);}
 			if(Abs(dB()) > 0.02){return(false);}
-			//if(Abs(dz()) > 0.1){return(false);}
+			if(Abs(dz()) > 0.1){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.05){return(false);}
 			if(CorPFIsolation2012(sceta) > 0.15){return(false);}
 			if(!passConversionVeto()){return(false);}
@@ -54,7 +54,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(sigmaIEtaIEta() > 0.03){return(false);}
 			if(hcalDepth1OverEcalBc() + hcalDepth2OverEcalBc() > 0.10){return(false);}
 			if(Abs(dB()) > 0.02){return(false);}
-			//if(Abs(dz()) > 0.1){return(false);}
+			if(Abs(dz()) > 0.1){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.05){return(false);}
 			if(CorPFIsolation2012(sceta) > 0.15){return(false);}
 			if(!passConversionVeto()){return(false);}
@@ -70,7 +70,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(sigmaIEtaIEta() > 0.01){return(false);}
 			if(hcalDepth1OverEcalBc() + hcalDepth2OverEcalBc() > 0.12){return(false);}
 			if(Abs(dB()) > 0.02){return(false);}
-			//if(Abs(dz()) > 0.1){return(false);}
+			if(Abs(dz()) > 0.2){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.05){return(false);}
 			if(CorPFIsolation2012(sceta) > 0.15){return(false);}
 			if(!passConversionVeto()){return(false);}
@@ -83,7 +83,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(sigmaIEtaIEta() > 0.03){return(false);}
 			if(hcalDepth1OverEcalBc() + hcalDepth2OverEcalBc() > 0.10){return(false);}
 			if(Abs(dB()) > 0.02){return(false);}
-			//if(Abs(dz()) > 0.1){return(false);}
+			if(Abs(dz()) > 0.2){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.05){return(false);}
 			if(CorPFIsolation2012(sceta) > 0.15){return(false);}
 			if(!passConversionVeto()){return(false);}
