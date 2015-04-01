@@ -215,7 +215,7 @@ public:
 		dir->second["nu_DE"].fill(reco_wlep.second->E() - gen_wlep.second->E());
 	}
 
-	void fill_jet_info(string folder, const Jet* jet){//, const Genparticle* genp=0){
+	void fill_jet_info(string folder, const IDJet* jet){//, const Genparticle* genp=0){
 		Logger::log().debug() << folder << endl;
 		auto dir = histos_.find(folder);
 		dir->second["eta"	 ].fill(jet->Eta());
@@ -229,9 +229,9 @@ public:
 		dir->second["nneutral"].fill(jet->numNeutralHadrons());
 		dir->second["ntotal"  ].fill(jet->numChargedHadrons()+jet->numNeutralHadrons());
 
-		const IDJet* idjet = (const IDJet*) jet;
-		Logger::log().debug() << "fill_jet_info " << jet->partonFlavour() << " " << idjet->flavor() << endl;
-		dir->second["pflav_smart"].fill(idjet->flavor());
+		//const IDJet* idjet = (const IDJet*) jet;
+		Logger::log().debug() << "fill_jet_info " << jet->partonFlavour() << " " << jet->flavor() << endl;
+		dir->second["pflav_smart"].fill(jet->flavor());
 	}
 
 	void fill_discriminator_info(string folder, const Permutation &hyp){
@@ -284,8 +284,8 @@ public:
 
 		//if(folder == "gen") return;
 		Logger::log().debug() <<"analyzer::fill " << folder << endl;
-		const Jet *leading    = (hyp.WJa()->E() > hyp.WJb()->E()) ? hyp.WJa() : hyp.WJb();
-		const Jet *subleading = (hyp.WJa()->E() > hyp.WJb()->E()) ? hyp.WJb() : hyp.WJa();
+		const IDJet *leading    = (hyp.WJa()->E() > hyp.WJb()->E()) ? hyp.WJa() : hyp.WJb();
+		const IDJet *subleading = (hyp.WJa()->E() > hyp.WJb()->E()) ? hyp.WJb() : hyp.WJa();
 
 		dir->second["Whad_leading_DR" ].fill(hyp.WHad().DeltaR(*leading));
 		dir->second["Whad_sublead_DR" ].fill(hyp.WHad().DeltaR(*subleading));
@@ -371,10 +371,10 @@ public:
 			vector<IDMuon*> loose_muons; loose_muons.reserve(muons.size());
 			for(vector<Muon>::const_iterator muon = muons.begin(); muon != muons.end(); ++muon){
 				IDMuon mu(*muon);
-				if(mu.ID(IDMuon::LOOSE_12) && mu.Pt() > 15.){
+				if(mu.ID(IDMuon::LOOSE_12Db) && mu.Pt() > 15.){
 					keep_muons.push_back(mu);
 					loose_muons.push_back(&keep_muons.back());
-					if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 30.){
+					if(mu.ID(IDMuon::TIGHT_12Db) && mu.Pt() > 30.){
 						histos_["preselection"]["tlep_char"].fill(muon->charge()*0.5);
 						histos_["preselection"]["mu_char"].fill(muon->charge()*0.5);
 						mu_charge += muon->charge();
@@ -393,10 +393,10 @@ public:
 			vector<IDElectron*> loose_electrons; loose_electrons.reserve(electrons.size());
 			for(vector<Electron>::const_iterator electron = electrons.begin(); electron != electrons.end(); ++electron){
 				IDElectron el(*electron);
-				if(el.ID(IDElectron::LOOSE_12) && el.Pt() > 15.){
+				if(el.ID(IDElectron::LOOSE_12Db) && el.Pt() > 15.){
 					keep_electrons.push_back(el);
 					loose_electrons.push_back(&keep_electrons.back());
-					if(el.ID(IDElectron::MEDIUM_12) && el.Pt() > 30.){
+					if(el.ID(IDElectron::MEDIUM_12Db) && el.Pt() > 30.){
 						histos_["preselection"]["tlep_char"].fill(electron->charge()*0.5);
 						histos_["preselection"]["el_char"].fill(electron->charge()*0.5);
 						e_charge += electron->charge();
@@ -459,7 +459,7 @@ public:
 			//sort jets by pt
 			sort(selected_jets.begin(), selected_jets.end(), [](const Jet* one, const Jet* two) {return  one->Pt() > two->Pt();});
 			size_t pick = selected_jets.size() == 4 ? 4 : 5; //avoid vector out of bounds
-			vector<Jet*> leading_jets(selected_jets.begin(), selected_jets.begin()+pick); //pick first 4-5 
+			vector<IDJet*> leading_jets(selected_jets.begin(), selected_jets.begin()+pick); //pick first 4-5 
 			//at least two jets with pt > 30
 			if(leading_jets[1]->Pt() < bjet_pt_cut_) continue;
 			tracker_.track("bjets pt cut");
