@@ -191,6 +191,7 @@ public:
 
 		string folder = "preselection";
 		book<TH1F>(folder, "njets"    , "", 50, 0., 50.);
+		book<TH1F>(folder, "nleadjets", "", 10, 0., 10.);
 		book<TH1F>(folder, "nbjets"   , "", 50, 0., 50.);
 		book<TH1F>(folder, "lep_pt"   , ";p_{T}(#ell) (GeV)", 500, 0., 500.);
 		book<TH1F>(folder, "lep_char" , ";charge_{W}(lep) (GeV)", 2, -1, 1);
@@ -463,6 +464,7 @@ public:
 			if(leading_jets[1]->Pt() < bjet_pt_cut_) continue;
 			tracker_.track("bjets pt cut");
 
+			histos_["preselection"]["nleadjets"].fill(leading_jets.size());
 			histos_["preselection"]["njets"   ].fill(selected_jets.size());
 			histos_["preselection"]["nbjets"  ].fill(bjets.size());
 			histos_["preselection"]["lep_pt"  ].fill(lepton->Pt());
@@ -470,7 +472,9 @@ public:
 
 			vector< Permutation > combinations;
 			list< TLorentzVector > i_wish_it_was_python;
+			size_t ncombos=0;
 			do {
+				ncombos++;
 				tracker_.track("Combination start");
 				if((leading_jets[0]->*btag_id_)() < btag_cut_) continue;
 				if((leading_jets[1]->*btag_id_)() < btag_cut_) continue;
@@ -505,6 +509,10 @@ public:
 
 				combinations.push_back(hyp);
 			} while(std::next_permutation(leading_jets.begin(), leading_jets.end()));
+			Logger::log().debug() << "HOOK: event: " << event.run << " " << event.lumi << " " << 
+				event.evt << endl << "n total cmbs: " << ncombos << ", passing: " << combinations.size() << endl <<
+				" nleadjets: " << leading_jets.size() << " njets: " <<  selected_jets.size() <<
+				" nbjets: "  << bjets.size() << endl;
 
 			if(combinations.size() == 0) continue;
 			tracker_.track("one ttbar hypothesis");
