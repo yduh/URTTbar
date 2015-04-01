@@ -27,6 +27,8 @@ for category in $categories; do
 				fi
 		done
 done
+
 sed -i 's|\x1b\[?1034h||g' unc.vals
 sed -i 's|\x1b\[?1034h||g' unc.conf
+
 popd
