@@ -469,6 +469,14 @@ public:
 			histos_["preselection"]["nbjets"  ].fill(bjets.size());
 			histos_["preselection"]["lep_pt"  ].fill(lepton->Pt());
 			histos_["preselection"]["lep_char"].fill(lep_charge*0.5);
+			// for(auto& jet : leading_jets) Logger::log().debug() << jet << " ";
+			// Logger::log().debug() << " " << endl;
+
+			// for(auto& jet : leading_jets) Logger::log().debug() << jet->Pt() << " ";
+			// Logger::log().debug() << " " << endl;
+		
+			//sort leading jets to make next_permutation to work properly
+			sort(leading_jets.begin(), leading_jets.end());
 
 			vector< Permutation > combinations;
 			list< TLorentzVector > i_wish_it_was_python;
@@ -509,10 +517,12 @@ public:
 
 				combinations.push_back(hyp);
 			} while(std::next_permutation(leading_jets.begin(), leading_jets.end()));
-			Logger::log().debug() << "HOOK: event: " << event.run << " " << event.lumi << " " << 
-				event.evt << endl << "n total cmbs: " << ncombos << ", passing: " << combinations.size() << endl <<
-				" nleadjets: " << leading_jets.size() << " njets: " <<  selected_jets.size() <<
-				" nbjets: "  << bjets.size() << endl;
+			//check that we have the right number of combinations
+			if((leading_jets.size() == 4 && ncombos != 24) || (leading_jets.size() == 5 && ncombos != 120)) throw 20;
+			// Logger::log().debug() << "HOOK: event: " << event.run << " " << event.lumi << " " << 
+			// 	event.evt << endl << "n total cmbs: " << ncombos << ", passing: " << combinations.size() << endl <<
+			// 	" nleadjets: " << leading_jets.size() << " njets: " <<  selected_jets.size() <<
+			// 	" nbjets: "  << bjets.size() << endl;
 
 			if(combinations.size() == 0) continue;
 			tracker_.track("one ttbar hypothesis");
