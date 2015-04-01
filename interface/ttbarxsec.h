@@ -7,14 +7,19 @@
 #include "URDriver.h"
 #include "IDMuon.h"
 #include "IDElectron.h"
+#include "IDJet.h"
+#include "GenObject.h"
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
 #include "Permutation.h"
+#include "BtagEff.h"
 
 using namespace std;
 
+
 class ttbar : public AnalyzerBase
 {
+	friend class TTBarPlots;
 	private:
 		//Collections
 		//Gen:
@@ -22,14 +27,17 @@ class ttbar : public AnalyzerBase
 		bool SEMILEP;
 		bool FULLLEP;
 		bool SEMILEPACC;
-		list<Genparticle> sgenparticles;
-		vector<Genparticle*> genwpartons;
-		vector<Genparticle*> gencls;
-		vector<Genparticle*> gennls;
-		Genparticle* genb;
-		Genparticle* genbbar;
-		Genparticle* genbl;
-		Genparticle* genbh;
+		list<GenObject> sgenparticles;
+		vector<GenObject*> genwpartons;
+		vector<GenObject*> gencls;
+		vector<GenObject*> gennls;
+		vector<GenObject*> genfincls;
+		GenObject* genb;
+		GenObject* genbbar;
+		GenObject* genbl;
+		GenObject* genbh;
+		TLorentzVector gentoplep;
+		TLorentzVector gentophad;
 
 		//matched
 		//vector<Jet*> recbjets;
@@ -40,12 +48,12 @@ class ttbar : public AnalyzerBase
 		//Jet* recbljet;
 		//int nttjets;
 		Permutation rightper;
-		vector<Jet*> recotherjets;
+		vector<IDJet*> recotherjets;
 
 		//reco
-		list<Jet> sjets;
-		vector<Jet*> cleanedjets;
-		vector<Jet*> reducedjets;
+		list<IDJet> sjets;
+		vector<IDJet*> cleanedjets;
+		vector<IDJet*> reducedjets;
 		list<IDMuon> smuons;
 		vector<IDMuon*> loosemuons;
 		vector<IDMuon*> tightmuons;
@@ -65,33 +73,57 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_wrong;
 		TTBarPlots ttp_semi;
 		TTBarPlots ttp_other;
-		TTBarPlots ttp_truth;
 		TTBarPlots ttp_all;
-		TTBarPlots ttp_right_imp;
-		TTBarPlots ttp_wrong_imp;
-		TTBarPlots ttp_semi_imp;
-		TTBarPlots ttp_other_imp;
-		TTBarPlots ttp_all_imp;
+		TTBarPlots ttp_right_incl;
+		TTBarPlots ttp_wrong_incl;
+		TTBarPlots ttp_semi_incl;
+		TTBarPlots ttp_other_incl;
+		TTBarPlots ttp_all_incl;
+
+		TTBarPlots ttp_jetspos_right;
+		TTBarPlots ttp_jetspos_wrong;
+		TTBarPlots ttp_hadjets_right;
+		TTBarPlots ttp_hadjets_wrong;
+		TTBarPlots ttp_jets_right;
+		TTBarPlots ttp_jets_wrong;
+		TTBarPlots ttp_blep_right;
+		TTBarPlots ttp_blep_wrong;
+		TTBarPlots ttp_jetspos_incl_right;
+		TTBarPlots ttp_jetspos_incl_wrong;
+		TTBarPlots ttp_hadjets_incl_right;
+		TTBarPlots ttp_hadjets_incl_wrong;
+		TTBarPlots ttp_jets_incl_right;
+		TTBarPlots ttp_jets_incl_wrong;
+		TTBarPlots ttp_blep_incl_right;
+		TTBarPlots ttp_blep_incl_wrong;
+
+		BtagEff btageff;
 
 		//ttbar solver
 		TTBarSolver ttsolver;
 
 		//configuration
+		bool PSEUDOTOP;
+		bool BTAGMODE;
 		int cnbtag;
 		size_t cnusedjets;
 		double cwjetptsoft;
 		double cwjetpthard;
-		double cbjetpt;
+		double cbjetptsoft;
+		double cbjetpthard;
 		double cjetetamax;
 		double clptmin;
 		double cletamax;
 		//
 		double jetptmin;
+	
+		double weight;
 
-	public:
 		//binning vectors
 		vector<double> topptbins;
+		vector<double> topetabins;
 		vector<double> ttmbins;
+	public:
 
 		ttbar(const std::string output_filename);
 
