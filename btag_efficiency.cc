@@ -471,12 +471,16 @@ public:
 			vector< Permutation > combinations;
 			list< TLorentzVector > i_wish_it_was_python;
 			do {
+				tracker_.track("Combination start");
 				if((leading_jets[0]->*btag_id_)() < btag_cut_) continue;
 				if((leading_jets[1]->*btag_id_)() < btag_cut_) continue;
+				tracker_.track("Bjet Tag cuts");
 				if(leading_jets[0]->Pt() < bjet_pt_cut_) continue;
 				if(leading_jets[1]->Pt() < bjet_pt_cut_) continue;
+				tracker_.track("Bjet PT cuts");
 				//remove W had ambiguity
 				if(leading_jets[2]->Pt() < leading_jets[3]->Pt()) continue;
+				tracker_.track("Ambiguity cut");
 
 				Permutation hyp(
 					leading_jets[2], 
@@ -491,9 +495,12 @@ public:
 				//Hypothesis selection (rough cuts so far)
 				//if(fabs(hyp.wplus.mass()  - 80) > 40) continue;
 				if(fabs(hyp.WHad().M() - 80) > 40) continue;
+				tracker_.track("W mass cut");
 				//if(fabs(hyp.top_mass() - 173) > 50) continue;
 				if(fabs(hyp.THad().M() - 173) > 50) continue;
+				tracker_.track("Top mass cut");
 				if(hyp.NuChisq() < 0) continue;
+				tracker_.track("Neutrino chisquare cut");
 				//if(hyp.mass_discriminant > 4) continue;
 
 				combinations.push_back(hyp);
