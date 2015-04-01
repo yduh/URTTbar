@@ -8,6 +8,7 @@
 
 class IDJet : public Jet, public MCMatchable
 {
+public:
 	IDJet(const Jet el):
 		Jet(el),
     MCMatchable()

@@ -21,9 +21,9 @@ public:
 	//why this here? it is likely to break 
   //if we ever move to threaded running!
 	static URStreamer* streamer;
-	enum IDS {MEDIUM_12, LOOSE_12};
-	IDElectron(const Electron el);
+	enum IDS {MEDIUM_12, LOOSE_12, MEDIUM_12Db, LOOSE_12Db};
 	double CorPFIsolation2012(double eta) const;
+	double PFIsoDb() const;
 	bool ID(IDS idtyp);
 
 };
