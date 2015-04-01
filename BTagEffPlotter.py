@@ -462,6 +462,12 @@ additional_opts = {
 }
 
 if not args.noplots:
+   cut_flow = plotter.get_view('ttJets_pu30').Get('cut_flow')
+   cut_flow.Draw()
+   cut_flow.GetYaxis().SetRangeUser(1, 10**7)
+   #plotter.pad.SetLogy()
+   plotter.save('cut_flow', pdf=False)
+
    for order in orders:
       for wpoint in working_points:
         for jet_cat in jet_categories:
