@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <TLorentzVector.h>
+#include <TTBarPlotsBase.h>
 
 using namespace std;
 
@@ -11,19 +12,14 @@ class Jet;
 class ttbar;
 class Permutation;
 
-class TTBarPlots
+class TTBarPlots : public TTBarPlotsBase
 {
 	private:
-		string prefix_;
-		TH1DCollection plot1d;	
-		TH2DCollection plot2d;	
-		ttbar* an;
 
 	public:
 		TTBarPlots(string prefix);
 		~TTBarPlots();
 		void Init(ttbar* analysis);
-		void Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double test, double testb, double weight);
 		void Fill(Permutation& per, int lepcharge, double weight);
 };
 

@@ -41,7 +41,7 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_blep_incl_wrong("blep_incl_wrong"),
 	PSEUDOTOP(false),
 	BTAGMODE(false), //set true for the b-tag efficiency measurement
-	cnbtag(1), //1: one thight b-jet, 2: two medium b-jets
+	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(10000), //only nused jets, ordered by pT are used for the permutations
 	cwjetptsoft(25.), //min pT of softer W-jet
 	cwjetpthard(35.), //min pT of harder W-jet 
@@ -179,8 +179,8 @@ void ttbar::begin()
 	}
 	else
 	{
-		ttsolver.Init(probfilename, true, true);
-		//ttsolver.Init(probfilename, false, true);
+		//ttsolver.Init(probfilename, true, true);
+		ttsolver.Init(probfilename, false, true);
 	}
 }
 

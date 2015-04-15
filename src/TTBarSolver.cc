@@ -56,22 +56,20 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 
 	nschi = -1;
 	res = 1.E10;
-	eventres = 1.E10;
 	nstest = 1.E10;
 	masstest = 1.E10;
-	if(bhad->csvIncl() > blep->csvIncl())
-	{
-		eventbtagtest = -1.*Log(BTag_right->Interpolate(bhad->csvIncl())/BTag_wrong->Interpolate(bhad->csvIncl()));
-	}
-	else
-	{
-		eventbtagtest = -1.*Log(BTag_right->Interpolate(blep->csvIncl())/BTag_wrong->Interpolate(blep->csvIncl()));
-	}
+	//if(bhad->csvIncl() > blep->csvIncl())
+	//{
+	//	eventbtagtest = -1.*Log(BTag_right->Interpolate(bhad->csvIncl())/BTag_wrong->Interpolate(bhad->csvIncl()));
+	//}
+	//else
+	//{
+	//	eventbtagtest = -1.*Log(BTag_right->Interpolate(blep->csvIncl())/BTag_wrong->Interpolate(blep->csvIncl()));
+	//}
 	btagtest = -1.*Log(BTag_right->Interpolate(bhad->csvIncl())/BTag_wrong->Interpolate(bhad->csvIncl()));
 	btagtest -= Log(BTag_right->Interpolate(blep->csvIncl())/BTag_wrong->Interpolate(blep->csvIncl()));
 	btagtest -= Log(BTag_wrong->Interpolate(j1had->csvIncl())/BTag_right->Interpolate(j1had->csvIncl()));
 	btagtest -= Log(BTag_wrong->Interpolate(j2had->csvIncl())/BTag_right->Interpolate(j2had->csvIncl()));
-	eventbtagtest = btagtest;
 	
 	TTBS = this;
 	minuit.SetFCN(myfuncln);
@@ -161,14 +159,8 @@ double TTBarSolver::Test(double* par)
 	res += Power((par[7]-1.)/umetx_/sqrt2 , 2);
 	res += Power((par[8]-1.)/umety_/sqrt2 , 2);
 	res += masstest;
-	if(USENS) res += nstest;
-	eventres = res;
-	if(USEBTAG)
-	{
-		//eventres += eventbtagtest;
-		//eventres += btagtest;
-		res += btagtest;
-	}
+	if(USENS) {res += nstest;}
+	if(USEBTAG) {res += btagtest;}
 
 	return(res);
 }

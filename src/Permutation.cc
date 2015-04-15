@@ -34,13 +34,10 @@ double Permutation::Solve(TTBarSolver& ttsolver, bool kinfit)
 {
 	kinfit_ = kinfit;
 	ttsolver.Solve(bjh_, wjb_, wja_, bjl_, lep_, met_);
-	prob_ = ttsolver.Res();
-	eventprob_ = ttsolver.EventRes();
-	eventprobb_ = ttsolver.EventBTagRes();
 	nu_ = ttsolver.Nu();
-
-	nu_chisq_          = ttsolver.NSChi2() ;
-	nu_discriminant_   = ttsolver.NSRes()	 ;
+	prob_ = ttsolver.Res();
+	nu_chisq_          = ttsolver.NSChi2();
+	nu_discriminant_   = ttsolver.NSRes();
 	btag_discriminant_ = ttsolver.BTagRes();
 	mass_discriminant_ = ttsolver.MassRes();
 

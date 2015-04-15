@@ -57,8 +57,6 @@ class TTBarSolver
 		double masstest;
 		double res;
 
-		double eventbtagtest;
-		double eventres;
 		bool USEBTAG;
 		bool USENS;
 	public:
@@ -74,9 +72,6 @@ class TTBarSolver
 		double NSRes() const {return nstest;}//-log(l) of neutriosolver 
 		double BTagRes() const {return btagtest;} //-log(l) of btagging
 		double MassRes() const {return masstest;} //-log(l) of 2d-mass test
-	
-		double EventRes() const {return eventres;}//final event discriminant
-		double EventBTagRes() const {return eventbtagtest;} //-log(l) of event btagging
 
 		double NSChi2() const {return nschi;}//chi2 of neutrinosolver
 
