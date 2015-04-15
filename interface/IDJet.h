@@ -1,18 +1,21 @@
 #ifndef IDJET_H
 #define IDJET_H
+#include "MCMatchable.h"
 #include "URStreamer.h"
 #include "IDMuon.h"
 #include "IDElectron.h"
 #include <TMath.h>
 
-class IDJet : public Jet
+class IDJet : public Jet, public MCMatchable
 {
-private:
-
 public:
-	IDJet(const Jet jet) : Jet(jet)
-	{
-	}
+	IDJet(const Jet el):
+		Jet(el),
+    MCMatchable()
+		{
+		}
+	int flavor() const {return (match()) ? match()->pdgId() : partonFlavour();}
+
 	bool ID()
 	{
 		//to be filled in new tree version

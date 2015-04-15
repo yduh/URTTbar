@@ -16,6 +16,10 @@ Permutation::Permutation(IDJet* wja, IDJet* wjb, IDJet* bjh, IDJet* bjl, TLorent
 void Permutation::Reset()
 {
 	prob_ = numeric_limits<double>::max();
+	nu_chisq_          = numeric_limits<double>::max();
+	nu_discriminant_   = numeric_limits<double>::max();
+	btag_discriminant_ = numeric_limits<double>::max();
+	mass_discriminant_ = numeric_limits<double>::max();
 	wja_ = 0;
 	wjb_ = 0;
 	bjh_ = 0;
@@ -34,6 +38,12 @@ double Permutation::Solve(TTBarSolver& ttsolver, bool kinfit)
 	eventprob_ = ttsolver.EventRes();
 	eventprobb_ = ttsolver.EventBTagRes();
 	nu_ = ttsolver.Nu();
+
+	nu_chisq_          = ttsolver.NSChi2() ;
+	nu_discriminant_   = ttsolver.NSRes()	 ;
+	btag_discriminant_ = ttsolver.BTagRes();
+	mass_discriminant_ = ttsolver.MassRes();
+
 	if(kinfit_)
 	{
 		improvedobjects.push_back(ttsolver.Wja());

@@ -5,13 +5,17 @@
 #include "URStreamer.h"
 #include <vector>
 #include "TLorentzVector.h"
+#include "IDMuon.h"
+#include "IDElectron.h"
+#include "IDJet.h"
+#include "Permutation.h"
 
 int Collapse(int root, std::vector<const Genparticle*> &particles);
 TTbarHypothesis SelectGenParticles(URStreamer& event);
 
 template <class T>
-const T* gen_match(const TLorentzVector* gen, std::vector<const T*> &recos, float dr_max){
-	const T* best = NULL;
+T* gen_match(const Genparticle* gen, std::vector<T*> &recos, float dr_max){
+	T* best = NULL;
 	float dpt = 1e100;
 	for(auto reco : recos){
 		if(reco->DeltaR(*gen) > dr_max)	continue;
@@ -33,14 +37,15 @@ const T* gen_match(const TLorentzVector* gen, std::vector<const T*> &recos, floa
 			best = reco;
 		}
 	}
+	if(best) best->addMatch(gen);
 	return best;
 }
 
-TTbarHypothesis match_to_gen(
+Permutation match_to_gen(
 	TTbarHypothesis &gen_hyp, 
-	std::vector<const Jet*> &jets,	
-	std::vector<const Electron*> &electrons,
-	std::vector<const Muon*> &muons,
+	std::vector<IDJet*> &jets,	
+	std::vector<IDElectron*> &electrons,
+	std::vector<IDMuon*> &muons,
   float dr_max);
 
 #endif

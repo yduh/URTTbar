@@ -1,0 +1,11 @@
+notag,leadtag,subtag all lumi 1.05
+
+notag,leadtag,subtag ttbar      tt_xsec 1.10
+notag,leadtag,subtag single_top singlet_xsec 1.10 
+notag   wrong_whad tagging_notag   1.05
+leadtag wrong_whad tagging_leadtag 1.05
+subtag  wrong_whad tagging_subtag  1.05
+ditag   wrong_whad tagging_ditag   1.05
+
+
+

@@ -13,6 +13,7 @@ import ROOT
 from pdb import set_trace
 import rootpy
 from fnmatch import fnmatch
+import URAnalysis.Utilities.prettyjson as prettyjson
 rootpy.log["/"].setLevel(rootpy.log.INFO)
 ROOT.gStyle.SetOptTitle(0)
 ROOT.gStyle.SetOptStat(0)
@@ -24,6 +25,13 @@ parser.add_argument('--noplots', dest='noplots', action='store_true',
 parser.add_argument('--noshapes', dest='noshapes', action='store_true',
                     help='skip shape making')
 args = parser.parse_args()
+
+def syscheck(cmd):
+   out = os.system(cmd)
+   if out == 0:
+      return 0
+   else:
+      raise OSError("command %s failed executing" % cmd)
 
 class BTagPlotter(Plotter):
    def __init__(self):
@@ -108,20 +116,33 @@ class BTagPlotter(Plotter):
          linecolor = color
          )
 
-   def write_mass_discriminant_shapes(self, tfolder, folder, rebin=1, preprocess=None):
+   def write_mass_discriminant_shapes(self, tfolder, folder, rebin=1, 
+                                      preprocess=None, bias={}):
       tfolder.cd()
       path = os.path.join(folder, 'mass_discriminant')
-      ritghtW_view = views.SumView(
-         self.get_view('ttJets_allRight'),
-         self.get_view('ttJets_rightHad'),
-         self.get_view('ttJets_rightWHad')
+      ritghtW_view = self.rebin_view( 
+         views.SumView(
+            self.get_view('ttJets_allRight'),
+            self.get_view('ttJets_rightHad'),
+            self.get_view('ttJets_rightWHad')
+            ), 
+         rebin
          )
-      wrongW_view = views.SumView(
-         self.get_view('ttJets_rightWLep'),
-         self.get_view('ttJets_semiWrong')
+      wrongW_view = self.rebin_view( 
+         views.SumView(
+            self.get_view('ttJets_rightWLep'),
+            self.get_view('ttJets_semiWrong')
+            ),
+         rebin
          )
-      other_view = self.get_view('ttJets_other')
-      singlet_view = self.get_view('single*')
+      other_view = self.rebin_view( 
+         self.get_view('ttJets_other'),
+         rebin
+         )
+      singlet_view = self.rebin_view( 
+         self.get_view('single*'),
+         rebin
+         )
 
       if preprocess:
          ritghtW_view = preprocess(ritghtW_view)
@@ -136,14 +157,116 @@ class BTagPlotter(Plotter):
       fake_data = ritghtW_view.Get(path).Clone()
       fake_data.Reset()
       fake_data.SetName('data_obs')
-      fake_data.Write()
 
       for view, name in zip(shape_views, shape_names):
          histo = view.Get(path)
+         if name in bias:
+            clone = histo.Clone()
+            clone.Scale(bias[name])
+            fake_data.Add(clone)
+         else:
+            fake_data.Add(histo)
          if name == 'right_whad':
             histo.Scale(1./histo.Integral())
          histo.SetName(name)
          histo.Write()
+      integral = fake_data.Integral()
+      int_int = float(int(integral))
+      fake_data.Scale(int_int/integral)
+      fake_data.Write()
+      return shape_names
+
+   def write_summary_table(self, orders, wpoints):
+      right_wpoints = [i for i in wpoints if i <> 'notag']
+      ritghtW_view = views.SumView(
+         self.get_view('ttJets_allRight'),
+         self.get_view('ttJets_rightHad'),
+         self.get_view('ttJets_rightWHad')
+         )
+      
+      info = {}
+      pflav_path = 'all/{order}/{wpoint}/{jtag}/{jrank}/pflav_smart'
+      for order in orders:
+         all_lead_pflav = ritghtW_view.Get(
+            pflav_path.format(
+               order = order,
+               wpoint = 'notag',
+               jtag = 'both_untagged',
+               jrank = 'leading'
+               )
+            )
+         all_sub_pflav = ritghtW_view.Get(
+            pflav_path.format(
+               order = order,
+               wpoint = 'notag',
+               jtag = 'both_untagged',
+               jrank = 'subleading'
+               )
+            )
+
+         ##compute total number of events
+         nevt = all_lead_pflav.Integral()
+         assert(abs(all_lead_pflav.Integral() - all_sub_pflav.Integral()) < 0.01)
+         
+         ##compute leading charm fraction 
+         #all histograms are the same
+         charm_bin = all_lead_pflav.FindBin(4)
+         cbar_bin  = all_lead_pflav.FindBin(-4)
+         total_charms = 0
+         ncharm  = all_lead_pflav.GetBinContent(
+            charm_bin
+            )
+         ncharm += all_lead_pflav.GetBinContent(
+            cbar_bin
+            )
+         total_charms += ncharm
+         lead_charm_fraction = ncharm/nevt
+
+         ##compute subleading charm fraction 
+         ncharm  = all_sub_pflav.GetBinContent(
+            charm_bin
+            )
+         ncharm += all_sub_pflav.GetBinContent(
+            cbar_bin
+            )
+         total_charms += ncharm
+         sub_charm_fraction = ncharm/nevt
+         total_lights = 2*nevt - total_charms
+
+         mc_effs = {}
+         ##compute MC charm efficiency
+         for wp in right_wpoints:
+            ncharm_tagged = 0
+            nlight_tagged = 0
+            mc_effs[wp] = {}
+            for jtag in ["lead_tagged", "sublead_tagged", "both_tagged", "both_untagged"]:
+               histo = ritghtW_view.Get(
+                  pflav_path.format(
+                     order  = order,
+                     wpoint = wp,
+                     jtag   = jtag,
+                     jrank  = 'leading',
+                     )
+                  )
+               mc_effs[wp][jtag] = histo.Integral()
+            ltag = (mc_effs[wp]['lead_tagged']   +mc_effs[wp]['both_tagged'])/nevt
+            stag = (mc_effs[wp]['sublead_tagged']+mc_effs[wp]['both_tagged'])/nevt
+            ceff = ((1-sub_charm_fraction)*ltag-(1-lead_charm_fraction)*stag)/(lead_charm_fraction-sub_charm_fraction)
+            leff = (sub_charm_fraction*ltag - lead_charm_fraction*stag)/(-lead_charm_fraction+sub_charm_fraction)
+            mc_effs[wp].update({
+               'charmEff' : ceff,
+               'lightEff' : leff
+               })
+         info[order] = {
+            'nevts' : nevt,
+            'leadCFrac' : lead_charm_fraction,
+            'subCFrac' : sub_charm_fraction,
+            'working_points' : mc_effs
+           } 
+
+      with open(os.path.join(self.outputdir, 'summary.json'), 'w') as f:
+         f.write(prettyjson.dumps(info))
+      return info
 
    def plot_mc_shapes(self, folder, variable, rebin=1, xaxis='',
                       leftside=True, xrange=None, preprocess=None,
@@ -265,8 +388,8 @@ jet_variables = [
 variables = [
   ("njets"    , "# of selected jets", 1, [0, 12]),
   ("nbjets"   , "# of bjets", 1, [0, 12]),
-  ("b_pt"     , "p_{T}(b) (GeV)", 10, None),
-  ("bbar_pt"  , "p_{T}(b) (GeV)", 10, None),
+  ("lep_b_pt" , "p_{T}(b) (GeV)", 10, None),
+  ("had_b_pt" , "p_{T}(b) (GeV)", 10, None),
   ("lep_pt"   , "p_{T}(l) (GeV)", 10, None),
   #("Wlep_mass", "m_{W}(lep) (GeV)", 10, None),
   ("Whad_mass", "m_{W}(had) (GeV)", 10, None),
@@ -293,11 +416,24 @@ orders = [
    ## "nu_discriminant"  , 
    ## "btag_discriminant", 
    "mass_discriminant", 
-   "full_discriminant",
+   ## "full_discriminant",
 ]
 
+working_points = [
+   "notag",
+   "csvTight",
+   "csvMedium",
+   "csvLoose",
+]
+
+both_tag_binning = {
+   'csvTight' : 100,
+   'csvMedium': 10,
+   'csvLoose' : 4
+}
+
 jet_categories = [
-   "all", "lead_tagged", "sublead_tagged", 
+   "lead_tagged", "sublead_tagged", 
    "both_tagged", "both_untagged"
 ]
 jet_types = ['leading', 'subleading']
@@ -326,98 +462,182 @@ additional_opts = {
 }
 
 if not args.noplots:
+   cut_flow = plotter.get_view('ttJets_pu30').Get('cut_flow')
+   cut_flow.Draw()
+   cut_flow.GetYaxis().SetRangeUser(1, 10**7)
+   #plotter.pad.SetLogy()
+   plotter.save('cut_flow', pdf=False)
+
    for order in orders:
-      for jet_cat in jet_categories:
-        base = os.path.join('all', order, jet_cat)
-        for jtype in jet_types:
-           folder = os.path.join(base, jtype)
-           plotter.set_subdir(os.path.join(order, jet_cat, jtype))
-           for var, rebin, axis, x_range in jet_variables:
-              plotter.plot_mc_vs_data(
-                 folder, var, rebin, sort=True,
-                 xaxis=axis % jtype, leftside=False, 
-                 xrange=x_range)
-              if 'pflav' in var:
-                 for h in plotter.keep:
-                    if isinstance(h, plotting.HistStack):
-                       set_pdg_bins(h)
-              plotter.save('_'.join((jtype,var)), pdf=False)
-              if var in shapes:
-                 plotter.plot_mc_shapes(
-                    folder, var, rebin,
-                    xaxis=axis % jtype, leftside=False,
-                    xrange=x_range)
-                 plotter.save('shape_'+'_'.join((jtype,var)), pdf=False)
-           plotter.bake_pie(folder)
+      for wpoint in working_points:
+        for jet_cat in jet_categories:
+          if wpoint == 'notag' and jet_cat <> "both_untagged": continue
+          base = os.path.join(order, wpoint, jet_cat)
+          for jtype in jet_types:
+             folder = os.path.join(base, jtype)
+             plotter.set_subdir(folder)
+             folder = os.path.join('all', folder)
+             logging.info(folder)
+             for var, rebin, axis, x_range in jet_variables:
+                plotter.plot_mc_vs_data(
+                   folder, var, rebin, sort=True,
+                   xaxis=axis % jtype, leftside=False, 
+                   xrange=x_range)
+                if 'pflav' in var:
+                   for h in plotter.keep:
+                      if isinstance(h, plotting.HistStack):
+                         set_pdg_bins(h)
+                plotter.save('_'.join((jtype,var)), pdf=False)
+                if var in shapes:
+                   plotter.plot_mc_shapes(
+                      folder, var, rebin,
+                      xaxis=axis % jtype, leftside=False,
+                      xrange=x_range)
+                   plotter.save('shape_'+'_'.join((jtype,var)), pdf=False)
+             plotter.bake_pie(folder)
 
-        plotter.set_subdir(os.path.join(order, jet_cat))
-        for var, axis, rebin, x_range in variables:
-           plotter.plot_mc_vs_data(
-              base, var, rebin, sort=True,
-              xaxis=axis, leftside=False,
-              xrange=x_range)
-           plotter.save(var, pdf=False)
-           if var in shapes:
-              if var == "mass_discriminant" and "_tagged" in jet_cat: rebin = 4
-              plotter.plot_mc_shapes(
-                 base, var, rebin,
-                 xaxis=axis, leftside=False,
-                 xrange=x_range)
-              plotter.save('shape_%s' % var, pdf=False)
-              if var <> "mass_discriminant": continue
-              plotter.plot_mc_shapes(
-                 base, var, rebin, normalize=True,
-                 xaxis=order.replace('_', ' '), leftside=False,
-                 xrange=x_range)
-              plotter.save('normshape_%s' % order, pdf=False)
+          plotter.set_subdir(base)
+          for var, axis, rebin, x_range in variables:
+             folder = os.path.join('all', base)
+             plotter.plot_mc_vs_data(
+                folder, var, rebin, sort=True,
+                xaxis=axis, leftside=False,
+                xrange=x_range)
+             plotter.save(var, pdf=False)
+             if var in shapes:
+                if var == "mass_discriminant" and "_tagged" in jet_cat: rebin = 4
+                plotter.plot_mc_shapes(
+                   folder, var, rebin,
+                   xaxis=axis, leftside=False,
+                   xrange=x_range)
+                plotter.save('shape_%s' % var, pdf=False)
+                if var <> "mass_discriminant": continue
+                plotter.plot_mc_shapes(
+                   folder, var, rebin, normalize=True,
+                   xaxis=order.replace('_', ' '), leftside=False,
+                   xrange=x_range)
+                plotter.save('normshape_%s' % order, pdf=False)
 
-              plotter.plot_mc_shapes(
-                 base, var, rebin, normalize=True, show_err=True,
-                 xaxis=order.replace('_', ' '), leftside=False,
-                 xrange=x_range, filt=['ttJets_allRight', 'ttJets_rightHad', 'ttJets_rightWHad'])
-              plotter.save('normshape_rightwhad_%s' % order, pdf=False)
+                plotter.plot_mc_shapes(
+                   folder, var, rebin, normalize=True, show_err=True,
+                   xaxis=order.replace('_', ' '), leftside=False,
+                   xrange=x_range, filt=['ttJets_allRight', 'ttJets_rightHad', 'ttJets_rightWHad'])
+                plotter.save('normshape_rightwhad_%s' % order, pdf=False)
 
-              plotter.plot_mc_shapes(
-                 base, var, rebin, normalize=True, show_err=True,
-                 xaxis=order.replace('_', ' '), leftside=False,
-                 xrange=x_range, filt=['ttJets_rightWLep', 'ttJets_semiWrong'])
-              plotter.save('normshape_wrongwhad_%s' % order, pdf=False)
+                plotter.plot_mc_shapes(
+                   folder, var, rebin, normalize=True, show_err=True,
+                   xaxis=order.replace('_', ' '), leftside=False,
+                   xrange=x_range, filt=['ttJets_rightWLep', 'ttJets_semiWrong'])
+                plotter.save('normshape_wrongwhad_%s' % order, pdf=False)
 
-      plotter.set_subdir("discriminants")
-      ## plotter.plot_mc_vs_data(
-      ##    'all/discriminators', order, 1, sort=True,
-      ##    xaxis=order.replace('_', ' '), leftside=False,
-      ##    **additional_opts.get(order,{}))
-      ## plotter.save(order, pdf=False)
-      plotter.plot_mc_shapes(
-         'all/discriminators', order, 1,
-         xaxis=order.replace('_', ' '), leftside=False,
-         **additional_opts.get(order,{}))
-      plotter.save('shape_%s' % order, pdf=False)
+        plotter.set_subdir("discriminants")
+        ## plotter.plot_mc_vs_data(
+        ##    'all/discriminators', order, 1, sort=True,
+        ##    xaxis=order.replace('_', ' '), leftside=False,
+        ##    **additional_opts.get(order,{}))
+        ## plotter.save(order, pdf=False)
+        plotter.plot_mc_shapes(
+           'all/discriminators', order, 1,
+           xaxis=order.replace('_', ' '), leftside=False,
+           **additional_opts.get(order,{}))
+        plotter.save('shape_%s' % order, pdf=False)
 
-      plotter.plot_mc_shapes(
-         'all/discriminators', order, 1, normalize=True,
-         xaxis=order.replace('_', ' '), leftside=False,
-         **additional_opts.get(order,{}))
-      plotter.save('normshape_%s' % order, pdf=False)
+        plotter.plot_mc_shapes(
+           'all/discriminators', order, 1, normalize=True,
+           xaxis=order.replace('_', ' '), leftside=False,
+           **additional_opts.get(order,{}))
+        plotter.save('normshape_%s' % order, pdf=False)
 
 if not args.noshapes:
-   fname = os.path.join(plotter.base_out_dir, 'shapes.root')
-   shape_file = ROOT.TFile(fname, 'RECREATE')
-   plotter.write_mass_discriminant_shapes(
-      shape_file.mkdir('notag'),
-      os.path.join('all', 'mass_discriminant', 'both_untagged'), 
-      rebin=2
-   )
-   plotter.write_mass_discriminant_shapes(
-      shape_file.mkdir('leadtag'),
-      os.path.join('all', 'mass_discriminant', 'lead_tagged'), 
-      rebin=4
-   )
-   plotter.write_mass_discriminant_shapes(
-      shape_file.mkdir('subtag'),
-      os.path.join('all', 'mass_discriminant', 'sublead_tagged'), 
-      rebin=4
-      )
-   shape_file.Close()
-   logging.info("%s created" % fname)
+   plotter.set_subdir("")
+   info = plotter.write_summary_table(orders, working_points)
+   cwd = os.getcwd()
+   for order in orders:
+      for wpoint in working_points:
+         if wpoint == "notag": continue
+         shapedir = os.path.join(cwd, plotter.base_out_dir, order, wpoint)
+         fname = os.path.join(shapedir, 'shapes.root')
+         shape_file = ROOT.TFile(fname, 'RECREATE')
+         
+         #plotter.write_mass_discriminant_shapes(
+         #   shape_file.mkdir('notused'),
+         #   os.path.join('all', order, 'notag', 'both_untagged'), 
+         #   rebin=2
+         #   )
+         categories=['notag', 'leadtag', 'subtag', 'ditag']
+         samples = plotter.write_mass_discriminant_shapes(
+            shape_file.mkdir('notag'),
+            os.path.join('all', order, wpoint, 'both_untagged'), 
+            rebin=2
+            )
+         plotter.write_mass_discriminant_shapes(
+            shape_file.mkdir('leadtag'),
+            os.path.join('all', order, wpoint, 'lead_tagged'), 
+            rebin=4
+            )
+         plotter.write_mass_discriminant_shapes(
+            shape_file.mkdir('subtag'),
+            os.path.join('all', order, wpoint, 'sublead_tagged'), 
+            rebin=4
+            )
+         plotter.write_mass_discriminant_shapes(
+            shape_file.mkdir('ditag'),
+            os.path.join('all', order, wpoint, 'both_tagged'), 
+            rebin= both_tag_binning[wpoint]
+            )
+         shape_file.Close()
+         logging.info("%s created" % fname)
+         syscheck('cp card_cfg/* %s/.' % shapedir)
+         logging.info("datacard cfgs copied")
+         logging.info(
+            './add_bbb.sh %s "%s" "%s"' % (shapedir, ' '.join(categories), ' '.join(samples))
+            )
+         syscheck(
+            './add_bbb.sh %s "%s" "%s"' % (shapedir, ' '.join(categories), ' '.join(samples))
+            )
+         logging.info("bbb added")
+         os.chdir(shapedir)
+         syscheck('create-datacard.py -i shapes.root -o datacard.txt')
+         os.chdir(cwd)
+         logging.info("datacard created")
+         with open(os.path.join(shapedir, 'make_workspace.sh'), 'w') as f:
+            #set_trace()
+            f.write("sed -i 's|$MASS||g' datacard.txt\n")
+            f.write(r"sed -i 's|\x1b\[?1034h||g' datacard.txt"+'\n')
+            f.write("echo creating workspace\n")
+            f.write(
+               'text2workspace.py datacard.txt -P HiggsAnalysis.CombinedLimit'
+               '.CTagEfficiencies:ctagEfficiency -o fitModel.root --PO '
+               'leadCharmFraction={leadcfrac:.4f} --PO subCharmFraction={subcfrac:.4f} '
+               '--PO mcCharmEff={ceff:.4f} --PO mcLightEff={leff:.4f} '
+               '--PO mcExpEvts={nevts:.1f}\n'.format(
+                  leadcfrac =info[order]['leadCFrac'],
+                  subcfrac  =info[order]['subCFrac'],
+                  ceff      =info[order]['working_points'][wpoint]['charmEff'],
+                  leff      =info[order]['working_points'][wpoint]['lightEff'],
+                  nevts     =info[order]['nevts'],
+                  )
+               )
+            f.write("echo 'running Multi-dimensional fit with Profile-Likelyhood errors on Asimov'\n")
+            f.write("combine fitModel.root -M MultiDimFit --algo=singles "
+                    "--setPhysicsModelParameterRanges charmTagScale=0,2:lightTagScale=0,2 "
+                    "-t -1 --expectSignal=1 > asimovFit.log\n")
+            f.write("mv higgsCombineTest.MultiDimFit.mH120.root asimovFit.root\n")
+            f.write("echo 'running 2D Scan on Asimov'\n")
+            f.write("combine -M MultiDimFit fitModel.root --algo=grid --points=900 "
+                    "--setPhysicsModelParameterRanges charmTagScale=0,2:lightTagScale=0,2 "
+                    "-t -1 --expectSignal=1 > asimovScan.log\n")
+            f.write("mv higgsCombineTest.MultiDimFit.mH120.root asimovScan.root\n")
+            f.write("echo 'running Multi-dimensional with Profile-Likelyhood errors'\n")
+            f.write("combine fitModel.root -M MultiDimFit --algo=singles "
+                    "--setPhysicsModelParameterRanges charmTagScale=0,2:lightTagScale=0,2 > dataFit.log\n")
+            f.write("mv higgsCombineTest.MultiDimFit.mH120.root DataFit.root\n")
+            f.write("echo 'running 2D likelyhood scan'\n")
+            f.write("combine -M MultiDimFit fitModel.root --algo=grid --points=900 "
+                    "--setPhysicsModelParameterRanges charmTagScale=0,2:lightTagScale=0,2 > dataScan.log\n")
+            f.write("mv higgsCombineTest.MultiDimFit.mH120.root DataScan.root\n")
+      tardir = os.path.join(cwd, plotter.base_out_dir, order)
+      os.chdir(tardir)
+      syscheck('tar -cvf tofit.tar */*.sh */datacard.txt */shapes.root')
+      os.chdir(cwd)
+
