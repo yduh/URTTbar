@@ -123,6 +123,8 @@ class ttbar : public AnalyzerBase
 		vector<double> topptbins;
 		vector<double> topetabins;
 		vector<double> ttmbins;
+		vector<double> ttybins;
+		vector<double> ttptbins;
 	public:
 
 		ttbar(const std::string output_filename);

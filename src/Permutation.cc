@@ -31,6 +31,8 @@ double Permutation::Solve(TTBarSolver& ttsolver, bool kinfit)
 	kinfit_ = kinfit;
 	ttsolver.Solve(bjh_, wjb_, wja_, bjl_, lep_, met_);
 	prob_ = ttsolver.Res();
+	eventprob_ = ttsolver.EventRes();
+	eventprobb_ = ttsolver.EventBTagRes();
 	nu_ = ttsolver.Nu();
 	if(kinfit_)
 	{

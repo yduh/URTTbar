@@ -14,6 +14,8 @@ class Permutation
 {
 	private:
 		double prob_ = numeric_limits<double>::max();
+		double eventprob_ = numeric_limits<double>::max();
+		double eventprobb_ = numeric_limits<double>::max();
 		IDJet* wja_ = 0;
 		IDJet* wjb_ = 0;
 		IDJet* bjh_ = 0;
@@ -51,6 +53,8 @@ class Permutation
 		TLorentzVector THad() const {return((WHad() + *BHad()));}
 		TLorentzVector TLep() const {return((WLep() + *BLep()));}
 		double Prob() const {return(prob_);}
+		double EventProb() const {return(eventprob_);}
+		double EventProbb() const {return(eventprobb_);}
 
 		bool AreBsCorrect(const Permutation& other) const //bjets are selected correct, but not necessarily at the right position!!!!!!!!!!
 		{
