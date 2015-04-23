@@ -10,6 +10,7 @@ ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
 	gen1d("gen"),
 	gen2d("gen"),
+    ttp_gen("gen_test"),
 	reco1d("reco"),
 	reco2d("reco"),
 	truth1d("truth"),
@@ -78,6 +79,7 @@ void ttbar::begin()
 	gen1d.AddHist("bjets_dr", 100, 0, 5, "b-jets #DeltaR", "Events");
 	gen1d.AddHist("wjets_dr", 100, 0, 5, "W-jets #DeltaR", "Events");
 	gen2d.AddHist("Wmasshad_tmasshad", 500, 0., 500., 500, 0., 500, "M(W) (GeV)", "M(t) (GeV)");
+    ttp_gen.Init(this);
 
 	TDirectory* dir_truth = outFile_.mkdir("TRUTH");
 	dir_truth->cd();
@@ -503,7 +505,11 @@ void ttbar::ttanalysis()
 {
 	truth1d["counter"]->Fill(19.5, weight);
 	reco1d["counter"]->Fill(0.5, weight);
-	if(SEMILEP) truth1d["counter"]->Fill(1.5, weight);
+	if(SEMILEP) 
+    {
+        truth1d["counter"]->Fill(1.5, weight);
+        ttp_gen.Fill(genbh, genwpartons[0], genwpartons[1], genbl, gencls[0], gennls[0], gencls[0]->pdgId(), weight);
+    }
 	if(SEMILEPACC)
 	{
 		truth1d["counter"]->Fill(2.5, weight);
