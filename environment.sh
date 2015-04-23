@@ -23,5 +23,8 @@ export PATH=$URA_PROJECT/bin:$PATH
 #FNAL PATCH
 if [[ $HOSTNAME == *"fnal.gov"* ]]
 then
-  LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/$SCRAM_ARCH/external/boost/1.57.0/lib/:$LD_LIBRARY_PATH
+  export LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/$SCRAM_ARCH/external/boost/1.57.0/lib/:$LD_LIBRARY_PATH
+  export LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc481/external/lhapdf6/6.1.5/lib:$LD_LIBRARY_PATH
 fi
+
+export LHAPDF_DATA_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc481/external/lhapdf6/6.1.5/share/LHAPDF

@@ -44,6 +44,7 @@ void TTBarPlots::Init(ttbar* analysis)
     plot2d.AddHist("testb_costhetastar", tb, tbmin, tbmax, 10, -1., 1., "testb", "cos(#Theta*)");
     plot2d.AddHist("test_njet", ta, tamin, tamax, 20, 0., 20., "test", "n-jets");
     plot2d.AddHist("testb_njet", tb, tbmin, tbmax, 20, 0., 20., "testb", "n-jets");
+    plot2d.AddHist("test_testb", ta, tamin, tamax, tb, tbmin, tbmax, "test", "testb");
 }
 
 void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
@@ -52,6 +53,7 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	TTBarPlotsBase::Fill(per.BHad(), per.WJa(), per.WJb(), per.BLep(), per.L(), &nu, lepcharge, weight);
 	double test = per.MassDiscr();
 	double testb = per.BDiscr();
+    plot2d["test_testb"]->Fill(test, testb, weight);
     plot2d["test_ptthad"]->Fill(test, thad.Pt(), weight);
     plot2d["testb_ptthad"]->Fill(testb, thad.Pt(), weight);
 	plot2d["test_pttlep"]->Fill(test, tlep.Pt(), weight);
@@ -62,8 +64,8 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	plot2d["testb_etatlep"]->Fill(testb, Abs(tlep.Eta()), weight);
 	plot2d["test_ttm"]->Fill(test, tt.M(), weight);
 	plot2d["testb_ttm"]->Fill(testb, tt.M(), weight);
-	plot2d["test_tty"]->Fill(test, tt.Rapidity(), weight);
-	plot2d["testb_tty"]->Fill(testb, tt.Rapidity(), weight);
+	plot2d["test_tty"]->Fill(test, Abs(tt.Rapidity()), weight);
+	plot2d["testb_tty"]->Fill(testb, Abs(tt.Rapidity()), weight);
 	plot2d["test_ttpt"]->Fill(test, tt.Pt(), weight);
 	plot2d["testb_ttpt"]->Fill(testb, tt.Pt(), weight);
 	plot2d["test_costhetastar"]->Fill(test, tCMS.CosTheta(), weight);

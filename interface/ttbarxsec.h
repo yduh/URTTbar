@@ -15,12 +15,13 @@
 #include "BtagEff.h"
 
 using namespace std;
-
+class PDFuncertainty;
 
 class ttbar : public AnalyzerBase
 {
 	friend class TTBarPlots;
 	private:
+		PDFuncertainty* pdfunc;
 		//Collections
 		//Gen:
 		bool FULLHAD;
