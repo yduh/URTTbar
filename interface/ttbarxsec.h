@@ -9,6 +9,7 @@
 #include "IDElectron.h"
 #include "IDJet.h"
 #include "GenObject.h"
+#include "TTBarGenPlots.h"
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
 #include "Permutation.h"
@@ -20,7 +21,9 @@ class PDFuncertainty;
 
 class ttbar : public AnalyzerBase
 {
-	friend class TTBarPlots;
+	friend class TTBarGenPlots;
+    friend class TTBarPlots;
+
 	private:
 		double selectionprob;
 		PDFuncertainty* pdfunc;
@@ -72,6 +75,9 @@ class ttbar : public AnalyzerBase
 		TH2DCollection reco2d;
 		TH1DCollection truth1d;
 		TH2DCollection truth2d;
+
+        TTBarGenPlots ttp_gen;
+
 		TTBarPlots ttp_right;
 		TTBarPlots ttp_wrong;
 		TTBarPlots ttp_semi;
