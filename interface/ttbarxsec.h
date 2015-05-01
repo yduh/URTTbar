@@ -13,6 +13,7 @@
 #include "TTBarSolver.h"
 #include "Permutation.h"
 #include "BtagEff.h"
+#include "JetScale.h"
 
 using namespace std;
 class PDFuncertainty;
@@ -21,6 +22,7 @@ class ttbar : public AnalyzerBase
 {
 	friend class TTBarPlots;
 	private:
+		double selectionprob;
 		PDFuncertainty* pdfunc;
 		//Collections
 		//Gen:
@@ -89,6 +91,8 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_jets_wrong;
 		TTBarPlots ttp_blep_right;
 		TTBarPlots ttp_blep_wrong;
+		TTBarPlots ttp_whad_right;
+		TTBarPlots ttp_whad_wrong;
 		TTBarPlots ttp_jetspos_incl_right;
 		TTBarPlots ttp_jetspos_incl_wrong;
 		TTBarPlots ttp_hadjets_incl_right;
@@ -104,8 +108,10 @@ class ttbar : public AnalyzerBase
 		TTBarSolver ttsolver;
 
 		//configuration
+		bool DATASIM;
 		bool PSEUDOTOP;
 		bool BTAGMODE;
+		bool JETSCALEMODE;
 		int cnbtag;
 		size_t cnusedjets;
 		double cwjetptsoft;
@@ -126,6 +132,9 @@ class ttbar : public AnalyzerBase
 		vector<double> ttmbins;
 		vector<double> ttybins;
 		vector<double> ttptbins;
+		vector<double> metbins;
+
+		JetScale jetscale;
 	public:
 
 		ttbar(const std::string output_filename);

@@ -38,10 +38,12 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot1d.AddHist("tt_y", 200, 0, 10., "y(t#bar{t})", "Events");
     plot1d.AddHist("tt_DeltaPhi", 200, -Pi(), Pi(), "#Delta#Phi(t#bar{t})", "Events");
     plot1d.AddHist("whad_pt", 100, 0, 200, "p_{T}(W_{had}) (GeV)", "Events");
-    plot1d.AddHist("wj_dphi", 100, -4, 4, "#Delta#phi(j_{whad})", "Events");
+    plot1d.AddHist("wj_dphi", 100, -Pi(), Pi(), "#Delta#phi(j_{whad})", "Events");
     plot1d.AddHist("wj_dr", 100, 0., 5., "#Delta#R(j_{whad})", "Events");
     plot1d.AddHist("bjet_pt", 100, 0., 500., "p_{T}(b) (GeV)", "Events");
     plot1d.AddHist("bjet_eta", 100, -2.5, 2.5, "#eta(b)", "Events");
+    plot1d.AddHist("wjet_pt", 100, 0., 500., "p_{T}(wj) (GeV)", "Events");
+    plot1d.AddHist("wjet_eta", 100, -2.5, 2.5, "#eta(wj)", "Events");
 	plot1d.AddHist("costhetastar", 20, -1., 1., "cos(#theta*)", "Events");
 }
 
@@ -76,6 +78,7 @@ void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVecto
 	plot1d["tlep_eta"]->Fill(tlep.Eta(), weight);
 	plot1d["thad_y"]->Fill(thad.Rapidity(), weight);
 	plot1d["tlep_y"]->Fill(tlep.Rapidity(), weight);
+	plot1d["tt_DeltaPhi"]->Fill(tlep.DeltaPhi(thad), weight);
 	plot1d["tt_M"]->Fill(tt.M(), weight);
 	plot1d["tt_pt"]->Fill(tt.Pt(), weight);
 	plot1d["tt_y"]->Fill(Abs(tt.Rapidity()), weight);
@@ -87,6 +90,10 @@ void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVecto
 	plot1d["bjet_pt"]->Fill(Lb->Pt(), weight);
 	plot1d["bjet_eta"]->Fill(Hb->Eta(), weight);
 	plot1d["bjet_eta"]->Fill(Lb->Eta(), weight);
+	plot1d["wjet_pt"]->Fill(Hwa->Pt(), weight);
+	plot1d["wjet_pt"]->Fill(Hwb->Pt(), weight);
+	plot1d["wjet_eta"]->Fill(Hwa->Eta(), weight);
+	plot1d["wjet_eta"]->Fill(Hwb->Eta(), weight);
 
 }
 

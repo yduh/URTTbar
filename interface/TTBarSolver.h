@@ -59,12 +59,13 @@ class TTBarSolver
 
 		bool USEBTAG;
 		bool USENS;
+		bool USEMASS;
 	public:
 		double Test(double* par);
 		static TTBarSolver* TTBS; 
 		TTBarSolver();
 		~TTBarSolver();
-		void Init(string filename, bool usebtag = true, bool usens = true);//provide root file with probability distribution, switches if btag and neutrino solver information should be used for final discriminant Res()
+		void Init(string filename, bool usebtag = true, bool usens = true, bool usemass = true);//provide root file with probability distribution, switches if btag and neutrino solver information should be used for final discriminant Res()
 		void Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVector* llep, Met* met);
 
 		//extrem unlikely hypothesis will return a value >= 1E10
