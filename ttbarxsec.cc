@@ -10,11 +10,13 @@ ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
 	gen1d("gen"),
 	gen2d("gen"),
-    ttp_gen("gen_test"),
+    ttp_genall("genall"),
+    ttp_genacc("genacc"),
 	reco1d("reco"),
 	reco2d("reco"),
 	truth1d("truth"),
 	truth2d("truth"),
+	ttp_truth("truth"),
 	ttp_right("right"),
 	ttp_wrong("wrong"),
 	ttp_semi("semi"),
@@ -89,7 +91,8 @@ ttbar::ttbar(const std::string output_filename):
 	ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
 	metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
 
-	vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
+	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
+	vector<string> testpdf = {"CT10"};
 	pdfunc = new PDFuncertainty("CT10", 0, testpdf);
 
 }
@@ -100,15 +103,16 @@ void ttbar::begin()
 	TDirectory* dir_gen = outFile_.mkdir("GEN");
 	dir_gen->cd();
 	gen1d.AddHist("TYP", 4, 0., 4., "Decay TYP", "Events");
-	gen2d.AddHist("wjets_eta", 100, 0., 5., 100, 0, 5, "W-jet #eta_{min}", "W-jet #eta_{max}");
-	gen2d.AddHist("bjets_eta", 100, 0., 5., 100, 0, 5, "b-jet #eta_{min}", "b-jet #eta_{max}");
-	gen2d.AddHist("wjets_pt", 200, 0, 400, 200, 0., 400, "W-jet p_{T,min} [GeV]", "W-jet p_{T,max} [GeV]");
-	gen2d.AddHist("bjets_pt", 200, 0, 400, 200, 0., 400, "b-jet p_{T,min} [GeV]", "b-jet p_{T,max} [GeV]");
-	gen2d.AddHist("t_pt", 200, 0, 600, 200, 0., 600, "t p_{T,min} [GeV]", "t p_{T,max} [GeV]");
-	gen1d.AddHist("bjets_dr", 100, 0, 5, "b-jets #DeltaR", "Events");
-	gen1d.AddHist("wjets_dr", 100, 0, 5, "W-jets #DeltaR", "Events");
-	gen2d.AddHist("Wmasshad_tmasshad", 500, 0., 500., 500, 0., 500, "M(W) (GeV)", "M(t) (GeV)");
-    ttp_gen.Init(this);
+	//gen2d.AddHist("wjets_eta", 100, 0., 5., 100, 0, 5, "W-jet #eta_{min}", "W-jet #eta_{max}");
+	//gen2d.AddHist("bjets_eta", 100, 0., 5., 100, 0, 5, "b-jet #eta_{min}", "b-jet #eta_{max}");
+	//gen2d.AddHist("wjets_pt", 200, 0, 400, 200, 0., 400, "W-jet p_{T,min} [GeV]", "W-jet p_{T,max} [GeV]");
+	//gen2d.AddHist("bjets_pt", 200, 0, 400, 200, 0., 400, "b-jet p_{T,min} [GeV]", "b-jet p_{T,max} [GeV]");
+	//gen2d.AddHist("t_pt", 200, 0, 600, 200, 0., 600, "t p_{T,min} [GeV]", "t p_{T,max} [GeV]");
+	//gen1d.AddHist("bjets_dr", 100, 0, 5, "b-jets #DeltaR", "Events");
+	//gen1d.AddHist("wjets_dr", 100, 0, 5, "W-jets #DeltaR", "Events");
+	//gen2d.AddHist("Wmasshad_tmasshad", 2000, 0., 500., 2000, 0., 500, "M(W) (GeV)", "M(t) (GeV)");
+    ttp_genall.Init(this);
+    ttp_genacc.Init(this);
 
 	TDirectory* dir_truth = outFile_.mkdir("TRUTH");
 	dir_truth->cd();
@@ -186,6 +190,7 @@ void ttbar::begin()
 	truth1d.AddHist("response_met_measured", metbins, "response_met_measured", "Events");
 	truth2d.AddHist("response_met_matrix", metbins, metbins, "gen", "reco");
 
+	ttp_truth.Init(this);
 	ttp_right.Init(this);
 	ttp_wrong.Init(this);
 	ttp_semi.Init(this);
@@ -224,6 +229,7 @@ void ttbar::begin()
 	ttp_all_incl.Init(this);
 
 	string probfilename("Prob_parton.root");
+	//string probfilename("Prob_part.root");
 	if(PSEUDOTOP){probfilename = "Prob_pseudo.root";}
 	if(BTAGMODE)
 	{
@@ -242,6 +248,8 @@ void ttbar::begin()
 
 void ttbar::SelectGenParticles(URStreamer& event)
 {
+	const Geninfo& info = event.genInfo();
+	weight *= info.weight()/Abs(info.weight());
 	int lepdecays = 0;
 	int topcounter = 0;
 	
@@ -320,18 +328,17 @@ void ttbar::SelectGenParticles(URStreamer& event)
 				{
 					topcounter++;
 				}
-				if(gp->pdgId() == 5 && gps[gp->momIdx()[0]].pdgId() != 24)
+				else if(gp->pdgId() == 5 && gps[gp->momIdx()[0]].pdgId() != 24)
 				{
 					sgenparticles.push_back(*gp);
 					genb = &(sgenparticles.back());
 				}
-
-				if(gp->pdgId() == -5 && gps[gp->momIdx()[0]].pdgId() != -24)
+				else if(gp->pdgId() == -5 && gps[gp->momIdx()[0]].pdgId() != -24)
 				{
 					sgenparticles.push_back(*gp);
 					genbbar = &(sgenparticles.back());
 				}
-				if(Abs(gp->pdgId()) < 6 && Abs(gps[gp->momIdx()[0]].pdgId()) == 24)
+				else if(Abs(gp->pdgId()) < 6 && Abs(gps[gp->momIdx()[0]].pdgId()) == 24)
 				{
 					sgenparticles.push_back(*gp);
 					genwpartons.push_back(&(sgenparticles.back()));
@@ -399,16 +406,8 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		else {genbh = genbbar; genbl = genb;}
 		gentophad = (*genwpartons[0] + *genwpartons[1] + *genbh);
 		gentoplep = (*gencls[0] + *gennls[0] + *genbl);
-		gen2d["Wmasshad_tmasshad"]->Fill((*genwpartons[0] + *genwpartons[1]).M(), gentophad.M());
-		gen2d["wjets_eta"]->Fill(Min(Abs(genwpartons[0]->Eta()), Abs(genwpartons[1]->Eta())), Max(Abs(genwpartons[0]->Eta()), Abs(genwpartons[1]->Eta())), weight);
-		gen2d["bjets_eta"]->Fill(Min(Abs(genb->Eta()), Abs(genbbar->Eta())), Max(Abs(genb->Eta()), Abs(genbbar->Eta())), weight);
 		if(Abs(gencls[0]->Eta()) < cletamax && gencls[0]->Pt() > clptmin && Abs(genwpartons[0]->Eta()) < cjetetamax && Abs(genwpartons[1]->Eta()) < cjetetamax && Abs(genb->Eta()) < cjetetamax && Abs(genbbar->Eta()) < cjetetamax)
 		{
-			gen2d["wjets_pt"]->Fill(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()), Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()), weight);
-			gen2d["bjets_pt"]->Fill(Min(genb->Pt(), genbbar->Pt()), Max(genb->Pt(), genbbar->Pt()), weight);
-			gen2d["t_pt"]->Fill(Min(gentophad.Pt(), gentoplep.Pt()), Max(gentophad.Pt(), gentoplep.Pt()), weight);
-			gen1d["wjets_dr"]->Fill(genwpartons[0]->DeltaR(*genwpartons[1]), weight);
-			gen1d["bjets_dr"]->Fill(genb->DeltaR(*genbbar), weight);
 			if(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetptsoft && Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetpthard && Min(genb->Pt(), genbbar->Pt()) > cbjetptsoft && Max(genb->Pt(), genbbar->Pt()) > cbjetpthard)
 			{
 				SEMILEPACC = true;
@@ -463,7 +462,20 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(vector<Jet>::const_iterator jetit = jets.begin(); jetit != jets.end(); ++jetit)
 	{
 		IDJet jet(*jetit);
-		double sf = 1.0;
+		double sf = 1.;//gRandom->Gaus(1, 0.1);
+		//double sf = 1./(1.-0.018);
+		//if(jet.Pt() > 45.)
+		//{
+		//	sf = 1./(1.-0.015);
+		//}
+		//if(jet.Pt() > 65.)
+		//{
+		//	sf = 1./(1.-0.006);
+		//}
+		//if(jet.Pt() > 90.)
+		//{
+		//	sf = 1./(1.+0.012);
+		//}
 		jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
 		if(jet.Pt() < jetptmin || Abs(jet.Eta()) > cjetetamax) {continue;}
 		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
@@ -553,12 +565,13 @@ void ttbar::ttanalysis()
 	truth1d["counter"]->Fill(19.5, weight);
 	reco1d["counter"]->Fill(0.5, weight);
 	if(SEMILEP) 
-    {
-        truth1d["counter"]->Fill(1.5, weight);
-        ttp_gen.Fill(genbh, genwpartons[0], genwpartons[1], genbl, gencls[0], gennls[0], gencls[0]->pdgId(), weight);
-    }
+	{
+		truth1d["counter"]->Fill(1.5, weight);
+		ttp_genall.Fill(genbh, genwpartons[0], genwpartons[1], genbl, gencls[0], gennls[0], gencls[0]->pdgId(), weight);
+	}
 	if(SEMILEPACC)
 	{
+		ttp_genacc.Fill(genbh, genwpartons[0], genwpartons[1], genbl, gencls[0], gennls[0], gencls[0]->pdgId(), weight);
 		truth1d["counter"]->Fill(2.5, weight);
 		truth1d["response_toppthad_truth"]->Fill(gentophad.Pt(), weight);
 		pdfunc->Fill1d("pdfunc_toppthad", gentophad.Pt(), weight);
@@ -577,6 +590,13 @@ void ttbar::ttanalysis()
 		if(Abs(gencls[0]->pdgId()) == 11) {truth2d["Ne_Nmu"]->Fill(mediumelectrons.size()+0.5, tightmuons.size()+0.5, weight);}
 		if(Abs(gencls[0]->pdgId()) == 13) {truth2d["Nmu_Ne"]->Fill(tightmuons.size()+0.5, mediumelectrons.size()+0.5, weight);}
 	}
+
+	//keeping only the n leading jets. 
+	sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->Pt() > B->Pt());});
+	int reducedsize = Min(cleanedjets.size(), cnusedjets);
+	reducedjets.resize(reducedsize);
+	copy(cleanedjets.begin(), cleanedjets.begin()+reducedsize, reducedjets.begin());
+
 	//check for lepton:
 	TLorentzVector* lep = 0;
 	int lepcharge = 0;
@@ -590,6 +610,7 @@ void ttbar::ttanalysis()
 		lep = dynamic_cast<TLorentzVector*>(mediumelectrons[0]);
 		lepcharge = mediumelectrons[0]->charge();
 	}
+	if(SEMILEPACC && rightper.IsComplete()){ttp_truth.Fill(rightper, lepcharge, weight);}
 	if(lep == 0){return;}
 	reco1d["counter"]->Fill(1.5, weight);
 	if(SEMILEPACC)
@@ -625,12 +646,6 @@ void ttbar::ttanalysis()
 	if(BTAGMODE && cleanedjets.size() > 5){return;}
 	reco1d["counter"]->Fill(2.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
-
-	//keeping only the n leading jets. 
-	sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->Pt() > B->Pt());});
-	int reducedsize = Min(cleanedjets.size(), cnusedjets);
-	reducedjets.resize(reducedsize);
-	copy(cleanedjets.begin(), cleanedjets.begin()+reducedsize, reducedjets.begin());
 
 	//check for b-jets
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
@@ -917,8 +932,8 @@ void ttbar::analyze()
 	{
 		nevent++;
 		if(nevent % 1000 == 0)cout << "Event:" << nevent << " " << selectionprob << endl;
-		truth1d["counter"]->Fill(0.5);	
-		weight = 1.;
+		truth1d["counter"]->Fill(0.5);
+		weight = 1.;	
 		//TLorentzVector tl(20., 10., 10., Sqrt(600));
 		//TLorentzVector tb(10., -30., -10., Sqrt(1200));
 		//NeutrinoSolver NS(&tl, &tb, 80., 173.);
@@ -958,7 +973,7 @@ void ttbar::analyze()
 		looseelectrons.clear();
 		if(DATASIM && selectionprob > rand.Uniform())
 		{
-			if(selectionprob > 1.){weight = selectionprob;}
+			if(selectionprob > 1.){weight *= selectionprob;}
 			SelectGenParticles(event);
 			SelectRecoParticles(event);
 			ttanalysis();

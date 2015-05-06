@@ -76,8 +76,10 @@ class ttbar : public AnalyzerBase
 		TH1DCollection truth1d;
 		TH2DCollection truth2d;
 
-        TTBarGenPlots ttp_gen;
+        TTBarGenPlots ttp_genall;
+        TTBarGenPlots ttp_genacc;
 
+		TTBarPlots ttp_truth;
 		TTBarPlots ttp_right;
 		TTBarPlots ttp_wrong;
 		TTBarPlots ttp_semi;

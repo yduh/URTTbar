@@ -55,6 +55,7 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	TTBarPlotsBase::Fill(per.BHad(), per.WJa(), per.WJb(), per.BLep(), per.L(), &nu, lepcharge, weight);
 	double test = per.MassDiscr();
 	double testb = per.BDiscr();
+	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
     plot2d["test_testb"]->Fill(test, testb, weight);
     plot2d["test_ptthad"]->Fill(test, thad.Pt(), weight);
     plot2d["testb_ptthad"]->Fill(testb, thad.Pt(), weight);

@@ -27,13 +27,13 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot1d.AddHist("nu_eta", 200, -5, 5., "#eta(#nu)", "Events");
     plot1d.AddHist("lepp_eta", 200, -5, 5., "#eta(l+)", "Events");
     plot1d.AddHist("lepm_eta", 200, -5, 5., "#eta(l-)", "Events");
-    plot1d.AddHist("thad_pt", 200, 0, 400, "p_{T}(t_{had}) (GeV)", "Events");
-    plot1d.AddHist("tlep_pt", 200, 0, 400, "p_{T}(t_{lep}) (GeV)", "Events");
+    plot1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{had}) (GeV)", "Events");
+    plot1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{lep}) (GeV)", "Events");
     plot1d.AddHist("thad_eta", 200, -5, 5, "#eta(t_{had})", "Events");
     plot1d.AddHist("tlep_eta", 200, -5, 5, "#eta(t_{lep})", "Events");
     plot1d.AddHist("thad_y", 200, -5, 5, "y(t_{had})", "Events");
     plot1d.AddHist("tlep_y", 200, -5, 5, "y(t_{lep})", "Events");
-    plot1d.AddHist("tt_M", 500, 0, 1000, "M(t#bar{t}) (GeV)", "Events");
+    plot1d.AddHist("tt_M", 1000, 0, 2000, "M(t#bar{t}) (GeV)", "Events");
     plot1d.AddHist("tt_pt", 250, 0, 500, "p_{T}(t#bar{t}) (GeV)", "Events");
     plot1d.AddHist("tt_y", 200, 0, 10., "y(t#bar{t})", "Events");
     plot1d.AddHist("tt_DeltaPhi", 200, -Pi(), Pi(), "#Delta#Phi(t#bar{t})", "Events");
