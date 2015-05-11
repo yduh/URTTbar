@@ -26,6 +26,7 @@ void TTBarSolver::Init(string filename, bool usebtag, bool usens, bool usemass)
 	TDirectory* dir = gDirectory;
 	probfile = new TFile(filename.c_str(), "READ");
 	WTmass_right = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_right"));
+	WTmass_right->Scale(1./WTmass_right->Integral());
 	WTmass_wrong = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_wrong"));
 	BTag_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_true"));
 	BTag_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_wrong"));
@@ -132,12 +133,12 @@ double TTBarSolver::Test(double* par)
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
-	if(mthad > 490. || mwhad > 490. || WTmass_right->Interpolate(mwhad, mthad) < 1.)
+	if(mthad > 490. || mwhad > 490. || WTmass_right->Interpolate(mwhad, mthad) < 0.00001)
 	{
 	}
 	else
 	{
-		masstest = -1.*Log(WTmass_right->Interpolate(mwhad, mthad)/Max(1., WTmass_wrong->Interpolate(mwhad, mthad)));
+		masstest = -1.*Log(WTmass_right->Interpolate(mwhad, mthad));///Max(1., WTmass_wrong->Interpolate(mwhad, mthad)));
 	}
 
 	res = 0.;

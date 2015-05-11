@@ -15,6 +15,7 @@ class Permutation;
 class TTBarPlots : public TTBarPlotsBase
 {
 	private:
+		vector<int> jetbins = {-1, 0, 1, 2, 3};
 
 	public:
 		TTBarPlots(string prefix);

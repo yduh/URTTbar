@@ -85,11 +85,6 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_semi;
 		TTBarPlots ttp_other;
 		TTBarPlots ttp_all;
-		TTBarPlots ttp_right_incl;
-		TTBarPlots ttp_wrong_incl;
-		TTBarPlots ttp_semi_incl;
-		TTBarPlots ttp_other_incl;
-		TTBarPlots ttp_all_incl;
 
 		TTBarPlots ttp_jetspos_right;
 		TTBarPlots ttp_jetspos_wrong;
@@ -101,14 +96,6 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_blep_wrong;
 		TTBarPlots ttp_whad_right;
 		TTBarPlots ttp_whad_wrong;
-		TTBarPlots ttp_jetspos_incl_right;
-		TTBarPlots ttp_jetspos_incl_wrong;
-		TTBarPlots ttp_hadjets_incl_right;
-		TTBarPlots ttp_hadjets_incl_wrong;
-		TTBarPlots ttp_jets_incl_right;
-		TTBarPlots ttp_jets_incl_wrong;
-		TTBarPlots ttp_blep_incl_right;
-		TTBarPlots ttp_blep_incl_wrong;
 
 		BtagEff btageff;
 
@@ -143,6 +130,8 @@ class ttbar : public AnalyzerBase
 		vector<double> metbins;
 
 		JetScale jetscale;
+
+		TH1D* puhist;
 	public:
 
 		ttbar(const std::string output_filename);

@@ -30,8 +30,10 @@ transferfiles = [os.path.join(transferdir, tf) for tf in transferfiles]
 
 transferfiles_config = ', '.join(transferfiles)
 
-
-filesperjob = 40
+if jobid == 'JOB2':
+	filesperjob = 2
+if jobid == 'JOB3':
+	filesperjob = 20
 
 for sf in samplefiles:
         infile = os.path.join(inputdir, sf)
