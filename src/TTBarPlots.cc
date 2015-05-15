@@ -21,9 +21,9 @@ TTBarPlots::~TTBarPlots()
 void TTBarPlots::Init(ttbar* analysis)
 {
 	TTBarPlotsBase::Init(analysis);
-	int ta = 30.;
+	int ta = 60.;
 	double tamin = 6.;
-	double tamax = 12.;
+	double tamax = 18.;
 	int tb = 60.;
 	double tbmin = -20.;
 	double tbmax = 10.;
@@ -31,14 +31,14 @@ void TTBarPlots::Init(ttbar* analysis)
 	{
 		stringstream jb;
 		if(jn != -1) jb << jn << "_";
-		plot2d.AddHist("test_"+jb.str()+"ptthad", ta, tamin, tamax, an->topptbins, "test", "p_{T}(t_{had}) [GeV]");
-		plot2d.AddHist("testb_"+jb.str()+"ptthad", tb, tbmin, tbmax, an->topptbins, "testb", "p_{T}(t_{had}) [GeV]");
-		plot2d.AddHist("test_"+jb.str()+"pttlep", ta, tamin, tamax, an->topptbins, "test", "p_{T}(t_{lep}) [GeV]");
-		plot2d.AddHist("testb_"+jb.str()+"pttlep", tb, tbmin, tbmax, an->topptbins, "testb", "p_{T}(t_{lep}) [GeV]");
-		plot2d.AddHist("test_"+jb.str()+"etathad", ta, tamin, tamax, an->topetabins, "test", "#eta(t_{had})");
-		plot2d.AddHist("testb_"+jb.str()+"etathad", tb, tbmin, tbmax, an->topetabins, "testb", "#eta(t_{had})");
-		plot2d.AddHist("test_"+jb.str()+"etatlep", ta, tamin, tamax, an->topetabins, "test", "#eta(t_{lep})");
-		plot2d.AddHist("testb_"+jb.str()+"etatlep", tb, tbmin, tbmax, an->topetabins, "testb", "#eta(t_{lep})");
+		plot2d.AddHist("test_"+jb.str()+"thadpt", ta, tamin, tamax, an->topptbins, "test", "p_{T}(t_{had}) [GeV]");
+		plot2d.AddHist("testb_"+jb.str()+"thadpt", tb, tbmin, tbmax, an->topptbins, "testb", "p_{T}(t_{had}) [GeV]");
+		plot2d.AddHist("test_"+jb.str()+"tleppt", ta, tamin, tamax, an->topptbins, "test", "p_{T}(t_{lep}) [GeV]");
+		plot2d.AddHist("testb_"+jb.str()+"tleppt", tb, tbmin, tbmax, an->topptbins, "testb", "p_{T}(t_{lep}) [GeV]");
+		plot2d.AddHist("test_"+jb.str()+"thadeta", ta, tamin, tamax, an->topetabins, "test", "#eta(t_{had})");
+		plot2d.AddHist("testb_"+jb.str()+"thadeta", tb, tbmin, tbmax, an->topetabins, "testb", "#eta(t_{had})");
+		plot2d.AddHist("test_"+jb.str()+"tlepeta", ta, tamin, tamax, an->topetabins, "test", "#eta(t_{lep})");
+		plot2d.AddHist("testb_"+jb.str()+"tlepeta", tb, tbmin, tbmax, an->topetabins, "testb", "#eta(t_{lep})");
 		plot2d.AddHist("test_"+jb.str()+"ttm", ta, tamin, tamax, an->ttmbins, "test", "M(tt) [GeV]");
 		plot2d.AddHist("testb_"+jb.str()+"ttm", tb, tbmin, tbmax, an->ttmbins, "testb", "M(tt) [GeV]");
 		plot2d.AddHist("test_"+jb.str()+"tty", ta, tamin, tamax, an->ttybins, "test", "y(tt)");
@@ -69,14 +69,14 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 		if((jn == -1) || (an->reducedjets.size() - 4 == jn) || (jn == jetbins.back() && an->reducedjets.size() - 4 > jn))
 		{
 			plot2d["test_"+jb.str()+"testb"]->Fill(test, testb, weight);
-			plot2d["test_"+jb.str()+"ptthad"]->Fill(test, thad.Pt(), weight);
-			plot2d["testb_"+jb.str()+"ptthad"]->Fill(testb, thad.Pt(), weight);
-			plot2d["test_"+jb.str()+"pttlep"]->Fill(test, tlep.Pt(), weight);
-			plot2d["testb_"+jb.str()+"pttlep"]->Fill(testb, tlep.Pt(), weight);
-			plot2d["test_"+jb.str()+"etathad"]->Fill(test, Abs(thad.Eta()), weight);
-			plot2d["testb_"+jb.str()+"etathad"]->Fill(testb, Abs(thad.Eta()), weight);
-			plot2d["test_"+jb.str()+"etatlep"]->Fill(test, Abs(tlep.Eta()), weight);
-			plot2d["testb_"+jb.str()+"etatlep"]->Fill(testb, Abs(tlep.Eta()), weight);
+			plot2d["test_"+jb.str()+"thadpt"]->Fill(test, thad.Pt(), weight);
+			plot2d["testb_"+jb.str()+"thadpt"]->Fill(testb, thad.Pt(), weight);
+			plot2d["test_"+jb.str()+"tleppt"]->Fill(test, tlep.Pt(), weight);
+			plot2d["testb_"+jb.str()+"tleppt"]->Fill(testb, tlep.Pt(), weight);
+			plot2d["test_"+jb.str()+"thadeta"]->Fill(test, Abs(thad.Eta()), weight);
+			plot2d["testb_"+jb.str()+"thadeta"]->Fill(testb, Abs(thad.Eta()), weight);
+			plot2d["test_"+jb.str()+"tlepeta"]->Fill(test, Abs(tlep.Eta()), weight);
+			plot2d["testb_"+jb.str()+"tlepeta"]->Fill(testb, Abs(tlep.Eta()), weight);
 			plot2d["test_"+jb.str()+"ttm"]->Fill(test, tt.M(), weight);
 			plot2d["testb_"+jb.str()+"ttm"]->Fill(testb, tt.M(), weight);
 			plot2d["test_"+jb.str()+"tty"]->Fill(test, Abs(tt.Rapidity()), weight);

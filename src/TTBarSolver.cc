@@ -133,12 +133,12 @@ double TTBarSolver::Test(double* par)
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
-	if(mthad > 490. || mwhad > 490. || WTmass_right->Interpolate(mwhad, mthad) < 0.00001)
+	double massdisval = WTmass_right->Interpolate(mwhad, mthad);
+	if(mthad < 490. && mwhad < 490. && massdisval > 0.00000001)
+	//if(mthad > 490. || mwhad > 490. || WTmass_right->Interpolate(mwhad, mthad) < 1.)
 	{
-	}
-	else
-	{
-		masstest = -1.*Log(WTmass_right->Interpolate(mwhad, mthad));///Max(1., WTmass_wrong->Interpolate(mwhad, mthad)));
+		masstest = -1.*Log(massdisval);
+		//masstest = -1.*Log(WTmass_right->Interpolate(mwhad, mthad)/Max(1., WTmass_wrong->Interpolate(mwhad, mthad)));
 	}
 
 	res = 0.;
