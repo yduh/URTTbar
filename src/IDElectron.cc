@@ -58,7 +58,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(dz()) > 0.1){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.05){return(false);}
 			if(idtyp == MEDIUM_12Db && PFIsoDb()/Pt()> 0.15){return(false);}
-      if(idtyp == MEDIUM_12 && CorPFIsolation2012(sceta) > 0.15){return(false);}
+			if(idtyp == MEDIUM_12 && CorPFIsolation2012(sceta) > 0.15){return(false);}
 			if(!passConversionVeto()){return(false);}
 			return(true);
 		}

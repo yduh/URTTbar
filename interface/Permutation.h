@@ -62,6 +62,14 @@ class Permutation
 		double BDiscr()  	 const {return btag_discriminant_;}
 		double MassDiscr() const {return mass_discriminant_;}
 
+		bool IsValid() const
+		{
+			if(WJa() != 0 && WJa() == WJb()) {return(false);}
+			if(BHad() != 0 && (BHad() == WJa() || BHad() == WJb())) {return(false);}
+			if(BLep() != 0 && (BLep() == BHad() || BLep() == WJa() || BLep() == WJb())) {return(false);}
+			return(true);
+		}
+
 		bool AreBsCorrect(const Permutation& other) const //bjets are selected correct, but not necessarily at the right position!!!!!!!!!!
 		{
 			return((BLep() == other.BLep() && BHad() == other.BHad()) || (BHad() == other.BLep() && BLep() == other.BHad()));

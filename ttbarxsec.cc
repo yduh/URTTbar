@@ -66,7 +66,8 @@ ttbar::ttbar(const std::string output_filename):
 	}
 	else if(output_filename.find("ttJets") != string::npos)
 	{
-		selectionprob = lumi*806./25246993.;
+		//selectionprob = lumi*806./25246993.;
+		selectionprob = lumi*806./21587302.;
 	}
 
 	jetptmin = min(cwjetptsoft, cbjetptsoft);
@@ -211,8 +212,11 @@ void ttbar::begin()
 	reco1d.AddHist("counter", 20, 0., 20., "counter", "Events");
 	ttp_all.Init(this);
 
-	string probfilename("Prob_parton.root");
-	//string probfilename("Prob_part.root");
+	//string probfilename("Prob_parton.root");
+	string probfilename("Prob_parton_jeccen.root");
+	//string probfilename("Prob_parton_jecp2.root");
+	//string probfilename("Prob_parton_jecm2.root");
+	//string probfilename("Prob_parton_jeccenS5.root");
 	if(PSEUDOTOP){probfilename = "Prob_pseudo.root";}
 	if(BTAGMODE)
 	{
@@ -305,12 +309,12 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		const vector<Genparticle>& gps = event.genParticles();
 		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
 		{
-			//if(gp->pdgId() == 6)
-			//{
-			//	weight = 1.+(gp->Pt()-200.)/200.;
-			//}
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
+				//if(gp->pdgId() == 6)
+				//{
+				//	weight *= 1.-(gp->Pt()-200.)/1000.;
+				//}
 				if(Abs(gp->pdgId()) == 6)
 				{
 					topcounter++;
@@ -455,8 +459,8 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(vector<Jet>::const_iterator jetit = jets.begin(); jetit != jets.end(); ++jetit)
 	{
 		IDJet jet(*jetit);
-		//double sf = gRandom->Gaus(0.98, 0.05);
-		double sf = 1.;
+		//double sf = gRandom->Gaus(1., 0.05);
+		double sf = 1.0;
 		jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
 		if(jet.Pt() < jetptmin || Abs(jet.Eta()) > cjetetamax) {continue;}
 		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
@@ -520,8 +524,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 				{
 					rightper.BHad(jet);
 				}
-				if(SEMILEPACC){truth1d["found"]->Fill(0.5, weight);}// truth1d["bjet_sep"]->Fill(jetsep, weight);}
-				continue;
+				if(SEMILEPACC){truth1d["found"]->Fill(0.5, weight);}
 			}
 			if(jet->DeltaR(*genbbar) < 0.3 && jet->Pt() > ptbbarmax)
 			{
@@ -535,24 +538,23 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 					rightper.BLep(jet);
 				}
 				if(SEMILEPACC){truth1d["found"]->Fill(1.5, weight);}
-				continue;
 			}
 			if(jet->DeltaR(*genwpartons[0]) < 0.3 && jet->Pt() > wjptmax[0])
 			{
 				wjptmax[0] = jet->Pt();
 				rightper.WJa(jet);
 				if(SEMILEPACC){truth1d["found"]->Fill(2.5, weight);}
-				continue;
 			}
 			if(jet->DeltaR(*genwpartons[1]) < 0.3 && jet->Pt() > wjptmax[1])
 			{
 				wjptmax[1] = jet->Pt();
 				rightper.WJb(jet);
-				if(SEMILEPACC){truth1d["found"]->Fill(3.5, weight);}//truth1d["wjet_sep"]->Fill(jetsep, weight);}
-				continue;
+				if(SEMILEPACC){truth1d["found"]->Fill(3.5, weight);}
 			}
 			recotherjets.push_back(jet);
 		}
+		//cout << rightper.IsValid() << endl;
+		//if(!rightper.IsValid()) {rightper.Reset();}
 	}
 }
 
@@ -646,6 +648,7 @@ void ttbar::ttanalysis()
 	//check for b-jets
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
 	if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && reducedjets[1]->csvIncl() < 0.814)){return;}
+	//if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && (reducedjets[0]->csvIncl() < 0.941 || reducedjets[1]->csvIncl() < 0.814))){return;}
 	//if(reducedjets[0]->csvIncl() > 0.814){return;}
 	//if(reducedjets[0]->csvIncl() < 0.941) {return;}
 	//if(reducedjets[1]->csvIncl() > 0.814 && reducedjets[2]->csvIncl() < 0.814) {cnbtag = 2;} else{cnbtag = 1;}
