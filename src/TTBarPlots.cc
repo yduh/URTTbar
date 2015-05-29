@@ -25,8 +25,10 @@ void TTBarPlots::Init(ttbar* analysis)
 	double tamin = 6.;
 	double tamax = 18.;
 	int tb = 60.;
-	double tbmin = -20.;
-	double tbmax = 10.;
+	//double tbmin = -20.;
+	//double tbmax = 10.;
+	double tbmin = 0.;
+	double tbmax = 600.;
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -60,7 +62,8 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	TLorentzVector nu(per.Nu());
 	TTBarPlotsBase::Fill(per.BHad(), per.WJa(), per.WJb(), per.BLep(), per.L(), &nu, lepcharge, weight);
 	double test = per.MassDiscr();
-	double testb = per.BDiscr();
+	//double testb = per.BDiscr();
+	double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	for(int jn : jetbins)
 	{

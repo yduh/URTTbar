@@ -132,6 +132,8 @@ void ttbar::begin()
 	truth1d.AddHist("dPtNuMet_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
 	truth2d.AddHist("Wmasshad_tmasshad_right", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
 	truth2d.AddHist("Wmasshad_tmasshad_wrong", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
+	truth2d.AddHist("Wmasslep_tmasslep_right", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
+	truth2d.AddHist("Wmasslep_tmasslep_wrong", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
 	truth2d.AddHist("Wmasshad_tmasshad_rightw", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
 	truth2d.AddHist("Wmasshad_tmasshad_wrongw", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
 	truth1d.AddHist("btagtest_wrong", 1000, -100, 100., "-Log(p) btag-test", "Events");
@@ -736,6 +738,8 @@ void ttbar::ttanalysis()
 
 						TLorentzVector whad(testper.WHad());
 						TLorentzVector thad(testper.THad());
+						TLorentzVector wlepmiss(*lep + met);
+						TLorentzVector tlepmiss(wlepmiss + *testper.BLep());
 
 						if(rightper.IsComplete())
 						{
@@ -762,6 +766,7 @@ void ttbar::ttanalysis()
 							if(rightper.IsCorrect(testper))
 							{
 								truth2d["Wmasshad_tmasshad_right"]->Fill(whad.M(), thad.M(), weight);
+								truth2d["Wmasslep_tmasslep_right"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
 								truth1d["masstest_right"]->Fill(ttsolver.MassRes(), weight);
 								truth1d["comtest_right"]->Fill(ttsolver.Res(), weight);
 							}
@@ -776,6 +781,7 @@ void ttbar::ttanalysis()
 									truth2d["Wmasshad_tmasshad_wrongw"]->Fill(whad.M(), thad.M(), weight);
 								}
 								truth2d["Wmasshad_tmasshad_wrong"]->Fill(whad.M(), thad.M(), weight);
+								truth2d["Wmasslep_tmasslep_wrong"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
 								truth1d["masstest_wrong"]->Fill(ttsolver.MassRes(), weight);
 								truth1d["comtest_wrong"]->Fill(ttsolver.Res(), weight);
 							}
