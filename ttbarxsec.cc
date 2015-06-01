@@ -24,14 +24,19 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_all("all"),
 	ttp_jetspos_right("jetspos_right"),
 	ttp_jetspos_wrong("jetspos_wrong"),
-	ttp_hadjets_right("hadjets_right"),
-	ttp_hadjets_wrong("hadjets_wrong"),
-	ttp_jets_right("jets_right"),
-	ttp_jets_wrong("jets_wrong"),
-	ttp_blep_right("blep_right"),
-	ttp_blep_wrong("blep_wrong"),
+//	ttp_hadjets_right("hadjets_right"),
+//	ttp_hadjets_wrong("hadjets_wrong"),
+//	ttp_jets_right("jets_right"),
+//	ttp_jets_wrong("jets_wrong"),
+//	ttp_blep_right("blep_right"),
+//	ttp_blep_wrong("blep_wrong"),
 	ttp_whad_right("whad_right"),
 	ttp_whad_wrong("whad_wrong"),
+	ttp_tlepthad_right("ttp_tlepthad_right"),
+	ttp_tlep_right("ttp_tlep_right"),
+	ttp_thad_right("ttp_thad_right"),
+	ttp_nn_right("ttp_nn_right"),
+	ttp_nsemi_right("ttp_nsemi_right"),
 	DATASIM(false),
 	PSEUDOTOP(false),
 	BTAGMODE(false), //set true for the b-tag efficiency measurement
@@ -72,22 +77,23 @@ ttbar::ttbar(const std::string output_filename):
 
 	jetptmin = min(cwjetptsoft, cbjetptsoft);
 	if(PSEUDOTOP){cnbtag = 2;}
-	//topptbins = {0., 40., 55., 65., 75., 85., 95., 105., 115., 125., 135., 145., 155., 170., 185., 200., 220., 240., 265., 300., 350., 400., 1000.};
-	//topetabins = {0., 0.2, 0.4, 0.6,  0.8,  1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.3, 2.8, 8.0};
-	//ttmbins = {250., 350., 370., 390., 410., 430., 450., 470., 490., 510., 530., 550., 575., 600., 630., 670., 720., 770., 900, 5000.};
-	//ttybins = {0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 3.};
-	//ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
-	//metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
-	topptbins = {0., 66.0, 100.0, 134.0, 174.0, 234.0, 800.};
-	topetabins = {0., 0.35, 0.70, 1.05, 1.45, 1.9, 4};
-	ttmbins = {280., 394.0, 442.0, 494.0, 562.0, 676.0, 2000.};
-	ttybins = {0., 0.2, 0.4, 0.6, 0.8, 1.1, 3.};
-	ttptbins = {0., 26.0, 42.0, 60.0, 86.0, 138.0, 800.};
-	metbins = {0., 24.0, 36.0, 48.0, 66.0, 98.0, 400.};
+	topptbins = {0., 40., 55., 65., 75., 85., 95., 105., 115., 125., 135., 145., 155., 170., 185., 200., 220., 240., 265., 300., 350., 400., 800.};
+	topetabins = {0., 0.2, 0.4, 0.6,  0.8,  1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.3, 2.8, 4.0};
+	ttmbins = {250., 350., 370., 390., 410., 430., 450., 470., 490., 510., 530., 550., 575., 600., 630., 670., 720., 770., 900, 1500.};
+	ttybins = {0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 3.};
+	ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 500.};
+	metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
+	
+//	topptbins = {0., 66.0, 100.0, 134.0, 174.0, 234.0, 800.};
+//	topetabins = {0., 0.35, 0.70, 1.05, 1.45, 1.9, 4};
+//	ttmbins = {280., 394.0, 442.0, 494.0, 562.0, 676.0, 2000.};
+//	ttybins = {0., 0.2, 0.4, 0.6, 0.8, 1.1, 3.};
+//	ttptbins = {0., 26.0, 42.0, 60.0, 86.0, 138.0, 800.};
+//	metbins = {0., 24.0, 36.0, 48.0, 66.0, 98.0, 400.};
 
 	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
-	vector<string> testpdf = {"CT10"};
-	pdfunc = new PDFuncertainty("CT10", 0, testpdf);
+	vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118", "MMHT2014nlo68clas118"};
+	pdfunc = new PDFuncertainty("NNPDF30_nlo_as_0118", 0, testpdf);
 
 }
 
@@ -195,16 +201,22 @@ void ttbar::begin()
 	ttp_semi.Init(this);
 	ttp_other.Init(this);
 
-	ttp_hadjets_right.Init(this);
-	ttp_hadjets_wrong.Init(this);
-	ttp_jets_right.Init(this);
-	ttp_jets_wrong.Init(this);
-	ttp_blep_right.Init(this);
-	ttp_blep_wrong.Init(this);
+//	ttp_hadjets_right.Init(this);
+//	ttp_hadjets_wrong.Init(this);
+//	ttp_jets_right.Init(this);
+//	ttp_jets_wrong.Init(this);
+//	ttp_blep_right.Init(this);
+//	ttp_blep_wrong.Init(this);
 	ttp_whad_right.Init(this);
 	ttp_whad_wrong.Init(this);
 	ttp_jetspos_right.Init(this);
 	ttp_jetspos_wrong.Init(this);
+
+	ttp_tlepthad_right.Init(this);
+	ttp_tlep_right.Init(this);
+	ttp_thad_right.Init(this);
+	ttp_nn_right.Init(this);
+	ttp_nsemi_right.Init(this);
 
 	btageff.Init();
 	jetscale.Init("jetscale");
@@ -861,66 +873,26 @@ void ttbar::ttanalysis()
 		ttp_jetspos_wrong.Fill(bestper, lepcharge, weight);
 	}
 
-//	if(bestper.AreHadJetsCorrect(rightper))
-//	{
-//		ttp_hadjets_right.Fill(bestper, lepcharge, weight);
-//		truth1d["response_thadpt_measured"]->Fill(bestper.THad().Pt(), weight);
-//		truth1d["response_thadeta_measured"]->Fill(Abs(bestper.THad().Eta()), weight);
-//		if(SEMILEPACC)
-//		{
-//			truth1d["counter"]->Fill(11.5, weight);
-//			truth2d["response_thadpt_matrix"]->Fill(gentophad.Pt(), bestper.THad().Pt(), weight);
-//			truth1d["response_thadpt_res"]->Fill((bestper.THad().Pt() - gentophad.Pt())/gentophad.Pt(), weight);
-//			truth2d["response_thadeta_matrix"]->Fill(Abs(gentophad.Eta()), Abs(bestper.THad().Eta()), weight);
-//		}
-//	}
-//	else
-//	{
-//		ttp_hadjets_wrong.Fill(bestper, lepcharge, weight);
-//	}
-//
-//	if(bestper.AreJetsCorrect(rightper))
-//	{
-//		ttp_jets_right.Fill(bestper, lepcharge, weight);
-//		truth1d["response_ttm_measured"]->Fill((bestper.THad() + bestper.TLep()).M(), weight);
-//		truth1d["response_tty_measured"]->Fill(Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
-//		truth1d["response_ttpt_measured"]->Fill((bestper.THad() + bestper.TLep()).Pt(), weight);
-//		if(SEMILEPACC)
-//		{
-//			truth1d["counter"]->Fill(12.5, weight);
-//			truth2d["response_ttm_matrix"]->Fill((gentophad + gentoplep).M(), (bestper.THad() + bestper.TLep()).M(), weight);
-//			truth2d["response_tty_matrix"]->Fill(Abs((gentophad + gentoplep).Rapidity()), Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
-//			truth2d["response_ttpt_matrix"]->Fill((gentophad + gentoplep).Pt(), (bestper.THad() + bestper.TLep()).Pt(), weight);
-//		}
-//	}
-//	else
-//	{
-//		ttp_jets_wrong.Fill(bestper, lepcharge, weight);
-//	}
-//
-//	if(bestper.IsBLepCorrect(rightper))
-//	{
-//		ttp_blep_right.Fill(bestper, lepcharge, weight);
-//		truth1d["response_tleppt_measured"]->Fill(bestper.TLep().Pt(), weight);
-//		truth1d["response_tlepeta_measured"]->Fill(Abs(bestper.TLep().Eta()), weight);
-//		if(SEMILEPACC)
-//		{
-//			truth1d["counter"]->Fill(13.5, weight);
-//			truth2d["response_tleppt_matrix"]->Fill(gentoplep.Pt(), bestper.TLep().Pt(), weight);
-//			truth1d["response_tleppt_res"]->Fill((bestper.TLep().Pt() - gentoplep.Pt())/gentoplep.Pt(), weight);
-//			truth2d["response_tlepeta_matrix"]->Fill(Abs(gentoplep.Eta()), Abs(bestper.TLep().Eta()), weight);
-//		}
-//		//Neutrino reconstruction plots
-//		truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(*gennls[0]), weight);
-//		truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - gennls[0]->Pt())/gennls[0]->Pt(), weight);
-//		truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), weight);
-//		truth1d["dRNuMet_right"]->Fill(met.DeltaR(*gennls[0]), weight);
-//		truth1d["dPtNuMet_right"]->Fill((met.Pt() - gennls[0]->Pt())/gennls[0]->Pt(), weight);
-//	}
-//	else
-//	{
-//		ttp_blep_wrong.Fill(bestper, lepcharge, weight);
-//	}
+	if(bestper.IsCorrect(rightper))
+	{
+		ttp_tlepthad_right.Fill(bestper, lepcharge, weight);
+	}
+	else if(bestper.IsTHadCorrect(rightper))
+	{
+		ttp_thad_right.Fill(bestper, lepcharge, weight);
+	}
+	else if(bestper.IsBLepCorrect(rightper))
+	{
+		ttp_tlep_right.Fill(bestper, lepcharge, weight);
+	}
+	else if(SEMILEP)
+	{
+		ttp_nn_right.Fill(bestper, lepcharge, weight);
+	}
+	else
+	{
+		ttp_nsemi_right.Fill(bestper, lepcharge, weight);
+	}
 
 	if(JETSCALEMODE)
 	{

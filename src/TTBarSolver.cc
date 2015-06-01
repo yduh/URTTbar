@@ -1,5 +1,6 @@
 #include "TTBarSolver.h"
 #include "NeutrinoSolver.h"
+#include "IDMet.h"
 
 
 TTBarSolver* TTBarSolver::TTBS = 0; 
@@ -35,7 +36,7 @@ void TTBarSolver::Init(string filename, bool usebtag, bool usens, bool usemass)
 	dir->cd();
 }
 
-void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVector* llep, Met* met)
+void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVector* llep, IDMet* met)
 {
 	bhad_ = bhad;
 	j1had_ = j1had;
@@ -60,6 +61,7 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	res = 1.E10;
 	nstest = 1.E10;
 	masstest = 1.E10;
+	//cout << bhad->csvIncl() << " " << blep->csvIncl() << " " << j1had->csvIncl() << " " << j2had->csvIncl() << endl;
 	btagtest = -1.*Log(BTag_right->Interpolate(bhad->csvIncl())/BTag_wrong->Interpolate(bhad->csvIncl()));
 	btagtest -= Log(BTag_right->Interpolate(blep->csvIncl())/BTag_wrong->Interpolate(blep->csvIncl()));
 	btagtest -= Log(BTag_wrong->Interpolate(j1had->csvIncl())/BTag_right->Interpolate(j1had->csvIncl()));
@@ -133,11 +135,10 @@ double TTBarSolver::Test(double* par)
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
-	double massdisval = WTmass_right->Interpolate(mwhad, mthad);
-	if(mthad < 490. && mwhad < 490. && massdisval > 0.00000001)
-	//if(mthad > 490. || mwhad > 490. || WTmass_right->Interpolate(mwhad, mthad) < 1.)
+	if(mthad < 490. && mwhad < 490.)
 	{
-		masstest = -1.*Log(massdisval);
+		double massdisval = WTmass_right->Interpolate(mwhad, mthad);
+		if(massdisval > 0.00000001) {masstest = -1.*Log(massdisval);}
 		//masstest = -1.*Log(WTmass_right->Interpolate(mwhad, mthad)/Max(1., WTmass_wrong->Interpolate(mwhad, mthad)));
 	}
 

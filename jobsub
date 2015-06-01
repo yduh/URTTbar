@@ -34,6 +34,8 @@ if jobid == 'JOB2':
 	filesperjob = 2
 if jobid == 'JOB3':
 	filesperjob = 20
+if jobid == 'JOB4':
+	filesperjob = 2
 
 for sf in samplefiles:
         infile = os.path.join(inputdir, sf)

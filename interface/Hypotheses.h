@@ -70,7 +70,7 @@ struct TTbarHypothesis {
 		mass_discriminant(-1)
 	{}
 
-	void solve(TTBarSolver &solver, Met &met) {
+	void solve(TTBarSolver &solver, IDMet &met) {
 		Jet *bhad = const_cast<Jet*>((const Jet*) (wplus.isLeptonic ? bbar : b));
 		Jet *blep = const_cast<Jet*>((const Jet*) (wplus.isLeptonic ? b : bbar));
 		Jet *wh1  = const_cast<Jet*>((const Jet*) whad()->first );

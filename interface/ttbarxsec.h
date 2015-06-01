@@ -8,6 +8,7 @@
 #include "IDMuon.h"
 #include "IDElectron.h"
 #include "IDJet.h"
+#include "IDMet.h"
 #include "GenObject.h"
 #include "TTBarGenPlots.h"
 #include "TTBarPlots.h"
@@ -66,7 +67,7 @@ class ttbar : public AnalyzerBase
 		list<IDElectron> selectrons;
 		vector<IDElectron*> looseelectrons;
 		vector<IDElectron*> mediumelectrons;
-		Met met;
+		IDMet met;
 
 		//hists
 		TH1DCollection gen1d;
@@ -88,14 +89,20 @@ class ttbar : public AnalyzerBase
 
 		TTBarPlots ttp_jetspos_right;
 		TTBarPlots ttp_jetspos_wrong;
-		TTBarPlots ttp_hadjets_right;
-		TTBarPlots ttp_hadjets_wrong;
-		TTBarPlots ttp_jets_right;
-		TTBarPlots ttp_jets_wrong;
-		TTBarPlots ttp_blep_right;
-		TTBarPlots ttp_blep_wrong;
+	//	TTBarPlots ttp_hadjets_right;
+	//	TTBarPlots ttp_hadjets_wrong;
+	//	TTBarPlots ttp_jets_right;
+	//	TTBarPlots ttp_jets_wrong;
+	//	TTBarPlots ttp_blep_right;
+	//	TTBarPlots ttp_blep_wrong;
 		TTBarPlots ttp_whad_right;
 		TTBarPlots ttp_whad_wrong;
+
+		TTBarPlots ttp_tlepthad_right;
+		TTBarPlots ttp_tlep_right;
+		TTBarPlots ttp_thad_right;
+		TTBarPlots ttp_nn_right;
+		TTBarPlots ttp_nsemi_right;
 
 		BtagEff btageff;
 

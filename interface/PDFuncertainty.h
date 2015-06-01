@@ -15,6 +15,7 @@ using namespace std;
 using namespace LHAPDF;
 
 class URStreamer;
+class TDirectory;
 
 class PDFuncertainty
 {
@@ -27,6 +28,10 @@ class PDFuncertainty
 		vector< vector<double> > weights;
 		double oldx1;
 		void SetupWeights();
+
+		map<string, TDirectory*> histdir;
+		map< string, vector<TH1D*> > Whist1d;
+
 
 	public:
 		static URStreamer* streamer;

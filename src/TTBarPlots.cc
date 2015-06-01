@@ -90,8 +90,8 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 			plot2d["testb_"+jb.str()+"costhetastar"]->Fill(testb, tCMS.CosTheta(), weight);
 			plot2d["test_"+jb.str()+"njet"]->Fill(test, an->reducedjets.size(), weight);
 			plot2d["testb_"+jb.str()+"njet"]->Fill(test, an->reducedjets.size(), weight);
-			plot2d["test_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
-			plot2d["testb_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
+			plot2d["test_"+jb.str()+"met"]->Fill(test, Sqrt(an->met.px()*an->met.px() + an->met.py()*an->met.py()), weight);
+			plot2d["testb_"+jb.str()+"met"]->Fill(test, Sqrt(an->met.px()*an->met.px() + an->met.py()*an->met.py()), weight);
 		}
 	}
 }

@@ -1,9 +1,10 @@
 #include "Permutation.h"
 #include "TTBarSolver.h"
+#include "IDMet.h"
 
 using namespace std;
 
-Permutation::Permutation(IDJet* wja, IDJet* wjb, IDJet* bjh, IDJet* bjl, TLorentzVector* lep, Met* met) :
+Permutation::Permutation(IDJet* wja, IDJet* wjb, IDJet* bjh, IDJet* bjl, TLorentzVector* lep, IDMet* met) :
 	wja_(wja),
 	wjb_(wjb),
 	bjh_(bjh),
