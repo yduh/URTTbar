@@ -114,6 +114,8 @@ class ttbar : public AnalyzerBase
 		bool PSEUDOTOP;
 		bool BTAGMODE;
 		bool JETSCALEMODE;
+		bool MUONS;
+		bool ELECTRONS;
 		int cnbtag;
 		size_t cnusedjets;
 		double cwjetptsoft;

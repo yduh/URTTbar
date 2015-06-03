@@ -24,11 +24,12 @@ void TTBarPlots::Init(ttbar* analysis)
 	int ta = 60.;
 	double tamin = 6.;
 	double tamax = 18.;
-	int tb = 60.;
+	int tb = 100.;
 	//double tbmin = -20.;
 	//double tbmax = 10.;
 	double tbmin = 0.;
-	double tbmax = 600.;
+	double tbmax = 200.;
+	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -63,8 +64,10 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	TTBarPlotsBase::Fill(per.BHad(), per.WJa(), per.WJb(), per.BLep(), per.L(), &nu, lepcharge, weight);
 	double test = per.MassDiscr();
 	//double testb = per.BDiscr();
-	double testb = (*per.BLep() + *per.L()).Mt(); 
+	double testb = Sqrt(per.NuChisq());
+	//double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
+	plot1d["MET"]->Fill(an->met.Pt(), weight);
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -90,8 +93,8 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 			plot2d["testb_"+jb.str()+"costhetastar"]->Fill(testb, tCMS.CosTheta(), weight);
 			plot2d["test_"+jb.str()+"njet"]->Fill(test, an->reducedjets.size(), weight);
 			plot2d["testb_"+jb.str()+"njet"]->Fill(test, an->reducedjets.size(), weight);
-			plot2d["test_"+jb.str()+"met"]->Fill(test, Sqrt(an->met.px()*an->met.px() + an->met.py()*an->met.py()), weight);
-			plot2d["testb_"+jb.str()+"met"]->Fill(test, Sqrt(an->met.px()*an->met.px() + an->met.py()*an->met.py()), weight);
+			plot2d["test_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
+			plot2d["testb_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
 		}
 	}
 }

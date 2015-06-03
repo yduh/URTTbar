@@ -41,7 +41,9 @@ ttbar::ttbar(const std::string output_filename):
 	PSEUDOTOP(false),
 	BTAGMODE(false), //set true for the b-tag efficiency measurement
 	JETSCALEMODE(false), //set true for the b-tag efficiency measurement
-	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
+	ELECTRONS(true),
+	MUONS(true),
+	cnbtag(1), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(100), //only nused jets, ordered by pT are used for the permutations
 	cwjetptsoft(25.), //min pT of softer W-jet
 	cwjetpthard(35.), //min pT of harder W-jet 
@@ -145,12 +147,12 @@ void ttbar::begin()
 	truth1d.AddHist("btagtest_wrong", 1000, -100, 100., "-Log(p) btag-test", "Events");
 	truth1d.AddHist("masstest_wrong", 1000, -100, 100., "-Log(p) mass-test", "Events");
 	truth1d.AddHist("nstest_wrong", 200, 0, 20., "neutrino-test", "Events");
-	truth1d.AddHist("nschi_wrong", 520, -2, 50., "#chi2 neutrino-test", "Events");
+	truth1d.AddHist("nschi_wrong", 51, -2, 100., "#chi neutrino-test", "Events");
 	truth1d.AddHist("comtest_wrong", 1000, -100, 100., "-Log(p)", "Events");
 	truth1d.AddHist("btagtest_right", 1000, -100, 100., "-Log(p) btag-test", "Events");
 	truth1d.AddHist("masstest_right", 1000, -100, 100., "-Log(p) mass-test", "Events");
 	truth1d.AddHist("nstest_right", 200, 0, 20., "neutrino-test", "Events");
-	truth1d.AddHist("nschi_right", 520, -2, 50., "#chi2 neutrino-test", "Events");
+	truth1d.AddHist("nschi_right", 51, -2, 100., "#chi neutrino-test", "Events");
 	truth1d.AddHist("comtest_right", 1000, -100, 100., "-Log(p)", "Events");
 
 	truth1d.AddHist("response_thadpt_truth", topptbins, "response_thadpt_truth", "Events");
@@ -323,6 +325,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		const vector<Genparticle>& gps = event.genParticles();
 		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
 		{
+			//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
 				//if(gp->pdgId() == 6)
@@ -439,32 +442,38 @@ void ttbar::SelectGenParticles(URStreamer& event)
 
 void ttbar::SelectRecoParticles(URStreamer& event)
 {
-	const vector<Muon>& muons = event.muons();
-	for(vector<Muon>::const_iterator muon = muons.begin(); muon != muons.end(); ++muon)
+	if(MUONS)
 	{
-		IDMuon mu(*muon);
-		if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 10.)
+		const vector<Muon>& muons = event.muons();
+		for(vector<Muon>::const_iterator muon = muons.begin(); muon != muons.end(); ++muon)
 		{
-			smuons.push_back(mu);
-			loosemuons.push_back(&(smuons.back()));
-			if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > clptmin && Abs(mu.Eta()) < cletamax)
+			IDMuon mu(*muon);
+			if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 10.)
 			{
-				tightmuons.push_back(&(smuons.back()));
+				smuons.push_back(mu);
+				loosemuons.push_back(&(smuons.back()));
+				if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > clptmin && Abs(mu.Eta()) < cletamax)
+				{
+					tightmuons.push_back(&(smuons.back()));
+				}
 			}
 		}
 	}
 
-	const vector<Electron>& electrons = event.electrons();
-	for(vector<Electron>::const_iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
+	if(ELECTRONS)
 	{
-		IDElectron el(*electron);
-		if(el.ID(IDElectron::MEDIUM_12) && el.Pt() > 10.)
+		const vector<Electron>& electrons = event.electrons();
+		for(vector<Electron>::const_iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
 		{
-			selectrons.push_back(el);
-			looseelectrons.push_back(&(selectrons.back()));
-			if(el.ID(IDElectron::MEDIUM_12) && el.Pt() > clptmin && Abs(el.Eta()) < cletamax)
+			IDElectron el(*electron);
+			if(el.ID(IDElectron::MEDIUM_15) && el.Pt() > 10.)
 			{
-				mediumelectrons.push_back(&(selectrons.back()));
+				selectrons.push_back(el);
+				looseelectrons.push_back(&(selectrons.back()));
+				if(el.ID(IDElectron::MEDIUM_15) && el.Pt() > clptmin && Abs(el.Eta()) < cletamax)
+				{
+					mediumelectrons.push_back(&(selectrons.back()));
+				}
 			}
 		}
 	}
@@ -752,18 +761,18 @@ void ttbar::ttanalysis()
 						TLorentzVector thad(testper.THad());
 						TLorentzVector wlepmiss(*lep + met);
 						TLorentzVector tlepmiss(wlepmiss + *testper.BLep());
-
+						//cout << ttsolver.NSRes() << " " << ttsolver.BTagRes() << " " << ttsolver.MassRes() << endl;
 						if(rightper.IsComplete())
 						{
 							if(rightper.IsBLepCorrect(testper))
 							{
 								truth1d["nstest_right"]->Fill(ttsolver.NSRes(), weight);
-								truth1d["nschi_right"]->Fill(ttsolver.NSChi2(), weight);
+								truth1d["nschi_right"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
 							}
 							else
 							{
 								truth1d["nstest_wrong"]->Fill(ttsolver.NSRes(), weight);
-								truth1d["nschi_wrong"]->Fill(ttsolver.NSChi2(), weight);
+								truth1d["nschi_wrong"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
 							}
 
 							if(rightper.AreBsCorrect(testper))

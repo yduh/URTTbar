@@ -17,7 +17,25 @@ double IDElectron::CorPFIsolation2012(double eta) const
 	{
 		effarea *= Max(streamer->rho().value(), 0.);
 	}
-	else {effarea = 0; cerr << "inittialize IDElectron::stream = URStreamer object for rho correction" << endl;}
+	else {effarea = 0; cerr << "initialize IDElectron::stream = URStreamer object for rho correction" << endl;}
+	//return((PFR3().Charged() + Max(PFR3().Neutral() + PFR3().Photon() - Max(GLAN->AK5PFRho(), 0.f)*effarea, 0.))/Pt());
+	return(chargedIso() + Max(neutralIso() + photonIso() - effarea, 0.))/Pt();
+}
+
+double IDElectron::CorPFIsolation2015(double eta) const
+{
+	double effarea = 0.;
+	if(eta < 0.8){ effarea = 0.1013;}
+	else if(eta < 1.3){ effarea = 0.0988;}
+	else if(eta < 2.0){ effarea = 0.0572;}
+	else if(eta < 2.2){ effarea = 0.0842;}
+	else if(eta < 2.5){ effarea = 0.1530;}
+
+	if(streamer != 0)
+	{
+		effarea *= Max(streamer->rho().value(), 0.);
+	}
+	else {effarea = 0; cerr << "initialize IDElectron::stream = URStreamer object for rho correction" << endl;}
 	//return((PFR3().Charged() + Max(PFR3().Neutral() + PFR3().Photon() - Max(GLAN->AK5PFRho(), 0.f)*effarea, 0.))/Pt());
 	return(chargedIso() + Max(neutralIso() + photonIso() - effarea, 0.))/Pt();
 }
@@ -91,6 +109,68 @@ bool IDElectron::ID(IDS idtyp)
 			if(idtyp == LOOSE_12Db && PFIsoDb()/Pt()> 0.15){return(false);}
 			if(idtyp == LOOSE_12 && CorPFIsolation2012(sceta) > 0.15){return(false);}
 			if(!passConversionVeto()){return(false);}
+			return(true);
+		}
+	}
+	else if(idtyp == MEDIUM_15)
+	{
+		if(isEB())
+		{
+			if(Abs(DEtaSCTrk()) > 0.008925){return(false);}
+			if(Abs(DPhiSCTrk()) > 0.035973){return(false);}
+			if(sigmaIEtaIEta() > 0.009996){return(false);}
+			if(hadronicOverEM() > 0.050537){return(false);}
+			if(Abs(dB()) > 0.012235){return(false);}
+			if(Abs(dz()) > 0.042020){return(false);}
+			if(Abs((1. - ESCOverETrack())/energy()) > 0.091942){return(false);}
+			if(CorPFIsolation2015(sceta) > 0.107587){return(false);}
+			if(!passConversionVeto()){return(false);}
+			if(nMissingInnerHits() > 1){return(false);}
+			return(true);
+		}
+		if(isEE())
+		{
+			if(Abs(DEtaSCTrk()) > 0.007429){return(false);}
+			if(Abs(DPhiSCTrk()) > 0.067879){return(false);}
+			if(sigmaIEtaIEta() > 0.030135){return(false);}
+			if(hadronicOverEM() > 0.086782){return(false);}
+			if(Abs(dB()) > 0.036719){return(false);}
+			if(Abs(dz()) > 0.138142){return(false);}
+			if(Abs((1. - ESCOverETrack())/energy()) > 0.100683){return(false);}
+			if(CorPFIsolation2015(sceta) > 0.113254){return(false);}
+			if(!passConversionVeto()){return(false);}
+			if(nMissingInnerHits() > 1){return(false);}
+			return(true);
+		}
+	}
+	else if(idtyp == LOOSE_15)
+	{
+		if(isEB())
+		{
+			if(Abs(DEtaSCTrk()) > 0.009277){return(false);}
+			if(Abs(DPhiSCTrk()) > 0.094739){return(false);}
+			if(sigmaIEtaIEta() > 0.010331){return(false);}
+			if(hadronicOverEM() > 0.093068){return(false);}
+			if(Abs(dB()) > 0.035904){return(false);}
+			if(Abs(dz()) > 0.075496){return(false);}
+			if(Abs((1. - ESCOverETrack())/energy()) > 0.189968){return(false);}
+			if(CorPFIsolation2015(sceta) > 0.130136){return(false);}
+			if(!passConversionVeto()){return(false);}
+			if(nMissingInnerHits() > 1){return(false);}
+			return(true);
+		}
+		if(isEE())
+		{
+			if(Abs(DEtaSCTrk()) > 0.009833){return(false);}
+			if(Abs(DPhiSCTrk()) > 0.149934){return(false);}
+			if(sigmaIEtaIEta() > 0.031838){return(false);}
+			if(hadronicOverEM() > 0.115754){return(false);}
+			if(Abs(dB()) > 0.099266){return(false);}
+			if(Abs(dz()) > 0.197897){return(false);}
+			if(Abs((1. - ESCOverETrack())/energy()) > 0.140662){return(false);}
+			if(CorPFIsolation2015(sceta) > 0.163368){return(false);}
+			if(!passConversionVeto()){return(false);}
+			if(nMissingInnerHits() > 1){return(false);}
 			return(true);
 		}
 	}

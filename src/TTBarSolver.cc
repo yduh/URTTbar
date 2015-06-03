@@ -51,10 +51,11 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	uj2had_ = 0.05;
 	ublep_ = 0.05;
 	ullep_ = 0.01;
-	//umetx_ = 0.05*met->Px();//Sqrt(met_->pxUnc());
+	umetx_ = Sqrt(met->pxunc()*met->pxunc() + met->pxuncjet()*met->pxuncjet());
+	umety_ = Sqrt(met->pyunc()*met->pyunc() + met->pyuncjet()*met->pyuncjet());
 	//umety_ = 0.05*met->Py();//Sqrt(met_->pyUnc());
-	umetx_ = 25;//Sqrt(met_->pxUnc());
-	umety_ = 25;//Sqrt(met_->pyUnc());
+	//umetx_ = 25;//Sqrt(met_->pxUnc());
+	//umety_ = 25;//Sqrt(met_->pyUnc());
 	rhomet_ = 0.;//met_->pxpyUnc()/(umetx_*umety_);
 
 	nschi = -1;
@@ -128,9 +129,13 @@ double TTBarSolver::Test(double* par)
 	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0]);
 	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
 	//cout << nschi << " NS " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
-	if(nschi > -0.1 && nschi < 50.)
+	if(nschi > -0.01 && nschi < 100.)
 	{
 		nstest = -1.*Log(N_right->Interpolate(nschi)/N_wrong->Interpolate(nschi));
+	}
+	else if(nschi >= 100.)
+	{
+		nstest = -1.*Log(N_right->GetBinContent(N_right->GetNbinsX()+1)/N_wrong->GetBinContent(N_wrong->GetNbinsX()+1));
 	}
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
