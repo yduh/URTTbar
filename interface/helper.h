@@ -31,7 +31,7 @@ class TH1DCollection
 	public:
 		TH1DCollection(string _prefix);
 		TH1D* AddHist(string name, Int_t bins, Double_t min, Double_t max, string xlabel, string ylabel);
-		TH1D* AddHist(string name, vector<Double_t>& bins, string xlabel, string ylabel);
+		TH1D* AddHist(string name, const vector<Double_t>& bins, string xlabel, string ylabel);
 
 		TH1D* Get(string name);
 		TH1D* operator[](string name);

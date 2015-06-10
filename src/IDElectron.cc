@@ -2,6 +2,8 @@
 #include <TMath.h>
 #include <iostream>
 
+using namespace TMath;
+
 double IDElectron::CorPFIsolation2012(double eta) const
 {
 	double effarea = 0.;

@@ -27,12 +27,17 @@ void TTBarSolver::Init(string filename, bool usebtag, bool usens, bool usemass)
 	TDirectory* dir = gDirectory;
 	probfile = new TFile(filename.c_str(), "READ");
 	WTmass_right = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_right"));
-	WTmass_right->Scale(1./WTmass_right->Integral());
+	WTmass_right->Scale(1./WTmass_right->Integral("width"));
 	WTmass_wrong = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_wrong"));
+	WTmass_wrong->Scale(1./WTmass_wrong->Integral("width"));
 	BTag_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_true"));
+	BTag_right->Scale(1./BTag_right->Integral("width"));
 	BTag_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_wrong"));
+	BTag_wrong->Scale(1./BTag_wrong->Integral("width"));
 	N_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_right"));
+	N_right->Scale(1./N_right->Integral("width"));
 	N_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_wrong"));
+	N_wrong->Scale(1./N_wrong->Integral("width"));
 	dir->cd();
 }
 
@@ -129,21 +134,17 @@ double TTBarSolver::Test(double* par)
 	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0]);
 	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
 	//cout << nschi << " NS " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
-	if(nschi > -0.01 && nschi < 100.)
+	if(nschi > 0. && nschi < 10000.)
 	{
-		nstest = -1.*Log(N_right->Interpolate(nschi)/N_wrong->Interpolate(nschi));
-	}
-	else if(nschi >= 100.)
-	{
-		nstest = -1.*Log(N_right->GetBinContent(N_right->GetNbinsX()+1)/N_wrong->GetBinContent(N_wrong->GetNbinsX()+1));
+		nstest = -1.*Log(N_right->Interpolate(Sqrt(nschi))/N_wrong->Interpolate(Sqrt(nschi)));
 	}
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
-	if(mthad < 490. && mwhad < 490.)
+	if(mthad < 500. && mwhad < 500.)
 	{
 		double massdisval = WTmass_right->Interpolate(mwhad, mthad);
-		if(massdisval > 0.00000001) {masstest = -1.*Log(massdisval);}
+		if(massdisval > 1.0E-10) {masstest = -1.*Log(massdisval);}
 		//masstest = -1.*Log(WTmass_right->Interpolate(mwhad, mthad)/Max(1., WTmass_wrong->Interpolate(mwhad, mthad)));
 	}
 

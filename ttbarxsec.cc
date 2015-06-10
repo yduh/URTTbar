@@ -37,13 +37,14 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_thad_right("ttp_thad_right"),
 	ttp_nn_right("ttp_nn_right"),
 	ttp_nsemi_right("ttp_nsemi_right"),
+	response("response", this),
 	DATASIM(false),
 	PSEUDOTOP(false),
 	BTAGMODE(false), //set true for the b-tag efficiency measurement
 	JETSCALEMODE(false), //set true for the b-tag efficiency measurement
 	ELECTRONS(true),
 	MUONS(true),
-	cnbtag(1), //1: one thight b-jet, 2: two medium b-jets
+	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(100), //only nused jets, ordered by pT are used for the permutations
 	cwjetptsoft(25.), //min pT of softer W-jet
 	cwjetpthard(35.), //min pT of harder W-jet 
@@ -57,41 +58,48 @@ ttbar::ttbar(const std::string output_filename):
 	cout << output_filename << endl;
 	if(output_filename.find("WJets") != string::npos)
 	{
-		selectionprob = lumi*61524./10017462.;
+		selectionprob = lumi*61524./14113879.;
 	}
-	else if(output_filename.find("ZJets") != string::npos)
+	else if(output_filename.find("DYJets") != string::npos)
 	{
-		selectionprob = lumi*6024./2499142.;
+		selectionprob = lumi*6024./2429156.;
 	}
-	else if(output_filename.find("singlet") != string::npos)
+	else if(output_filename.find("Wtbar") != string::npos)
 	{
-		selectionprob = lumi*35.6/986100.;
+		selectionprob = lumi*35.6/499999.;
 	}
-	else if(output_filename.find("singletbar") != string::npos)
+	else if(output_filename.find("Wt") != string::npos)
 	{
-		selectionprob = lumi*35.6/971800.;
+		selectionprob = lumi*35.6/500000.;
 	}
-	else if(output_filename.find("ttJets") != string::npos)
+	else if(output_filename.find("STt") != string::npos)
 	{
-		//selectionprob = lumi*806./25246993.;
-		selectionprob = lumi*806./21587302.;
+		selectionprob = lumi*217./860071.;
+	}
+	else if(output_filename.find("tt_PowhegP8") != string::npos)
+	{
+		selectionprob = lumi*806./4502964.;
+	}
+	else if(output_filename.find("tt_aMCatNLO") != string::npos)
+	{
+		selectionprob = lumi*806./1525140.;
 	}
 
 	jetptmin = min(cwjetptsoft, cbjetptsoft);
 	if(PSEUDOTOP){cnbtag = 2;}
-	topptbins = {0., 40., 55., 65., 75., 85., 95., 105., 115., 125., 135., 145., 155., 170., 185., 200., 220., 240., 265., 300., 350., 400., 800.};
-	topetabins = {0., 0.2, 0.4, 0.6,  0.8,  1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.3, 2.8, 4.0};
-	ttmbins = {250., 350., 370., 390., 410., 430., 450., 470., 490., 510., 530., 550., 575., 600., 630., 670., 720., 770., 900, 1500.};
-	ttybins = {0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 3.};
-	ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 500.};
-	metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
+//	topptbins = {0., 40., 55., 65., 75., 85., 95., 105., 115., 125., 135., 145., 155., 170., 185., 200., 220., 240., 265., 300., 350., 400., 800.};
+//	topetabins = {0., 0.2, 0.4, 0.6,  0.8,  1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.3, 2.8, 4.0};
+//	ttmbins = {250., 350., 370., 390., 410., 430., 450., 470., 490., 510., 530., 550., 575., 600., 630., 670., 720., 770., 900, 1500.};
+//	ttybins = {0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 3.};
+//	ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 500.};
+//	metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
 	
-//	topptbins = {0., 66.0, 100.0, 134.0, 174.0, 234.0, 800.};
-//	topetabins = {0., 0.35, 0.70, 1.05, 1.45, 1.9, 4};
-//	ttmbins = {280., 394.0, 442.0, 494.0, 562.0, 676.0, 2000.};
-//	ttybins = {0., 0.2, 0.4, 0.6, 0.8, 1.1, 3.};
-//	ttptbins = {0., 26.0, 42.0, 60.0, 86.0, 138.0, 800.};
-//	metbins = {0., 24.0, 36.0, 48.0, 66.0, 98.0, 400.};
+	topptbins = {0., 66.0, 100.0, 134.0, 174.0, 234.0, 800.};
+	topetabins = {0., 0.35, 0.70, 1.05, 1.45, 1.9, 4};
+	ttmbins = {280., 394.0, 442.0, 494.0, 562.0, 676.0, 2000.};
+	ttybins = {0., 0.2, 0.4, 0.6, 0.8, 1.1, 3.};
+	ttptbins = {0., 26.0, 42.0, 60.0, 86.0, 138.0, 800.};
+	metbins = {0., 24.0, 36.0, 48.0, 66.0, 98.0, 400.};
 
 	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
 	vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118", "MMHT2014nlo68clas118"};
@@ -155,47 +163,21 @@ void ttbar::begin()
 	truth1d.AddHist("nschi_right", 51, -2, 100., "#chi neutrino-test", "Events");
 	truth1d.AddHist("comtest_right", 1000, -100, 100., "-Log(p)", "Events");
 
-	truth1d.AddHist("response_thadpt_truth", topptbins, "response_thadpt_truth", "Events");
+	response.AddMatrix("thadpt", topptbins, topptbins, "p_{T}(t_{h}) [GeV]");
+	response.AddMatrix("thadeta", topetabins, topetabins, "#eta(t_{h})");
+	response.AddMatrix("tleppt", topptbins, topptbins, "p_{T}(t_{l}) [GeV]");
+	response.AddMatrix("tlepeta", topetabins, topetabins, "#eta(t_{l})");
+	response.AddMatrix("ttm", ttmbins, ttmbins, "m(t#bar{t}) [GeV]");
+	response.AddMatrix("ttpt", ttptbins, ttptbins, "p_{T}(t#bar{t}) [GeV]");
+	response.AddMatrix("tty", ttybins, ttybins, "y(t#bar{t})");
+
 	pdfunc->Add1dHist("pdfunc_thadpt", topptbins, "p_{T}(t_{h}) [GeV]", "Events");
-	truth1d.AddHist("response_thadpt_measured", topptbins, "response_thadpt_measured", "Events");
-	truth2d.AddHist("response_thadpt_matrix", topptbins, topptbins, "gen", "reco");
-	truth1d.AddHist("response_thadpt_res", 200, -2., 2., "(p_{T,rec}(t_{h}) - p_{T,gen}(t_{h}))/p_{T,gen}(t_{h})", "Events");
-
-	truth1d.AddHist("response_tleppt_truth", topptbins, "response_tleppt_truth", "Events");
 	pdfunc->Add1dHist("pdfunc_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
-	truth1d.AddHist("response_tleppt_measured", topptbins, "response_tleppt_measured", "Events");
-	truth2d.AddHist("response_tleppt_matrix", topptbins, topptbins, "gen", "reco");
-	truth1d.AddHist("response_tleppt_res", 200, -2., 2., "(p_{T,rec}(t_{l}) - p_{T,gen}(t_{l}))/p_{T,gen}(t_{l})", "Events");
-
-	truth1d.AddHist("response_thadeta_truth", topetabins, "response_thadeta_truth", "Events");
 	pdfunc->Add1dHist("pdfunc_thadeta", topetabins, "#eta(t_{h}) [GeV]", "Events");
-	truth1d.AddHist("response_thadeta_measured", topetabins, "response_thadeta_measured", "Events");
-	truth2d.AddHist("response_thadeta_matrix", topetabins, topetabins, "gen", "reco");
-
-	truth1d.AddHist("response_tlepeta_truth", topetabins, "response_tlepeta_truth", "Events");
 	pdfunc->Add1dHist("pdfunc_tlepeta", topetabins, "#eta(t_{l}) [GeV]", "Events");
-	truth1d.AddHist("response_tlepeta_measured", topetabins, "response_tlepeta_measured", "Events");
-	truth2d.AddHist("response_tlepeta_matrix", topetabins, topetabins, "gen", "reco");
-
-	truth1d.AddHist("response_ttm_truth", ttmbins, "response_ttm_truth", "Events");
 	pdfunc->Add1dHist("pdfunc_ttm", ttmbins, "M(t#bar{t}) [GeV]", "Events");
-	truth1d.AddHist("response_ttm_measured", ttmbins, "response_ttm_measured", "Events");
-	truth2d.AddHist("response_ttm_matrix", ttmbins, ttmbins, "gen", "reco");
-
-	truth1d.AddHist("response_tty_truth", ttybins, "response_tty_truth", "Events");
 	pdfunc->Add1dHist("pdfunc_tty", ttybins, "y(t#bar{t})", "Events");
-	truth1d.AddHist("response_tty_measured", ttybins, "response_tty_measured", "Events");
-	truth2d.AddHist("response_tty_matrix", ttybins, ttybins, "gen", "reco");
-
-	truth1d.AddHist("response_ttpt_truth", ttptbins, "response_ttpt_truth", "Events");
 	pdfunc->Add1dHist("pdfunc_ttpt", ttptbins, "p_{T}(t#bar{t}) [GeV]", "Events");
-	truth1d.AddHist("response_ttpt_measured", ttptbins, "response_ttpt_measured", "Events");
-	truth2d.AddHist("response_ttpt_matrix", ttptbins, ttptbins, "gen", "reco");
-
-	truth1d.AddHist("response_met_truth", metbins, "response_met_truth", "Events");
-	pdfunc->Add1dHist("pdfunc_met", metbins, "p_{T}(t#bar{t}) [GeV]", "Events");
-	truth1d.AddHist("response_met_measured", metbins, "response_met_measured", "Events");
-	truth2d.AddHist("response_met_matrix", metbins, metbins, "gen", "reco");
 
 	ttp_truth.Init(this);
 	ttp_right.Init(this);
@@ -244,7 +226,7 @@ void ttbar::begin()
 	}
 	else
 	{
-		ttsolver.Init(probfilename, true, true);
+		ttsolver.Init(probfilename, false, true, true);
 		//ttsolver.Init(probfilename, false, true);
 	}
 
@@ -328,10 +310,10 @@ void ttbar::SelectGenParticles(URStreamer& event)
 			//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
-				//if(gp->pdgId() == 6)
-				//{
-				//	weight *= 1.-(gp->Pt()-200.)/1000.;
-				//}
+				if(gp->pdgId() == 6)
+				{
+					weight *= 1.+(gp->Pt()-200.)/1000.;
+				}
 				if(Abs(gp->pdgId()) == 6)
 				{
 					topcounter++;
@@ -594,20 +576,23 @@ void ttbar::ttanalysis()
 	{
 		ttp_genacc.Fill(genbh, genwpartons[0], genwpartons[1], genbl, gencls[0], gennls[0], gencls[0]->pdgId(), weight);
 		truth1d["counter"]->Fill(2.5, weight);
-		truth1d["response_thadpt_truth"]->Fill(gentophad.Pt(), weight);
+
+		response.FillTruth("thadpt", gentophad.Pt(), weight);
+		response.FillTruth("thadeta", Abs(gentophad.Eta()), weight);
+		response.FillTruth("tleppt", gentoplep.Pt(), weight);
+		response.FillTruth("tlepeta", Abs(gentoplep.Eta()), weight);
+		response.FillTruth("ttm", (gentophad + gentoplep).M(), weight);
+		response.FillTruth("ttpt", (gentophad + gentoplep).Pt(), weight);
+		response.FillTruth("tty", Abs((gentophad + gentoplep).Rapidity()), weight);
+
 		pdfunc->Fill1d("pdfunc_thadpt", gentophad.Pt(), weight);
-		truth1d["response_tleppt_truth"]->Fill(gentoplep.Pt(), weight);
 		pdfunc->Fill1d("pdfunc_tleppt", gentoplep.Pt(), weight);
-		truth1d["response_thadeta_truth"]->Fill(Abs(gentophad.Eta()), weight);
 		pdfunc->Fill1d("pdfunc_thadeta", Abs(gentophad.Eta()), weight);
-		truth1d["response_tlepeta_truth"]->Fill(Abs(gentoplep.Eta()), weight);
 		pdfunc->Fill1d("pdfunc_tlepeta", Abs(gentoplep.Eta()), weight);
-		truth1d["response_ttm_truth"]->Fill((gentophad + gentoplep).M(), weight);
 		pdfunc->Fill1d("pdfunc_ttm", (gentophad + gentoplep).M(), weight);
-		truth1d["response_tty_truth"]->Fill(Abs((gentophad + gentoplep).Rapidity()), weight);
 		pdfunc->Fill1d("pdfunc_tty", Abs((gentophad + gentoplep).Rapidity()), weight);
-		truth1d["response_ttpt_truth"]->Fill((gentophad + gentoplep).Pt(), weight);
 		pdfunc->Fill1d("pdfunc_ttpt", (gentophad + gentoplep).Pt(), weight);
+
 		if(Abs(gencls[0]->pdgId()) == 11) {truth2d["Ne_Nmu"]->Fill(mediumelectrons.size()+0.5, tightmuons.size()+0.5, weight);}
 		if(Abs(gencls[0]->pdgId()) == 13) {truth2d["Nmu_Ne"]->Fill(tightmuons.size()+0.5, mediumelectrons.size()+0.5, weight);}
 	}
@@ -761,7 +746,7 @@ void ttbar::ttanalysis()
 						TLorentzVector thad(testper.THad());
 						TLorentzVector wlepmiss(*lep + met);
 						TLorentzVector tlepmiss(wlepmiss + *testper.BLep());
-						//cout << ttsolver.NSRes() << " " << ttsolver.BTagRes() << " " << ttsolver.MassRes() << endl;
+						//cout << per++ << " " << ttsolver.NSRes() << " " << ttsolver.BTagRes() << " " << ttsolver.MassRes() << endl;
 						if(rightper.IsComplete())
 						{
 							if(rightper.IsBLepCorrect(testper))
@@ -849,27 +834,23 @@ void ttbar::ttanalysis()
 	if(bestper.IsCorrect(rightper))
 	{
 		ttp_jetspos_right.Fill(bestper, lepcharge, weight);
-		truth1d["response_met_measured"]->Fill(met.Pt(), weight);
-		truth1d["response_ttm_measured"]->Fill((bestper.THad() + bestper.TLep()).M(), weight);
-		truth1d["response_tty_measured"]->Fill(Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
-		truth1d["response_ttpt_measured"]->Fill((bestper.THad() + bestper.TLep()).Pt(), weight);
-		truth1d["response_thadpt_measured"]->Fill(bestper.THad().Pt(), weight);
-		truth1d["response_thadeta_measured"]->Fill(Abs(bestper.THad().Eta()), weight);
-		truth1d["response_tleppt_measured"]->Fill(bestper.TLep().Pt(), weight);
-		truth1d["response_tlepeta_measured"]->Fill(Abs(bestper.TLep().Eta()), weight);
+		response.FillFake("thadpt", bestper.THad().Pt(), weight);
+		response.FillFake("thadeta", bestper.THad().Eta(), weight);
+		response.FillFake("tleppt", bestper.TLep().Pt(), weight);
+		response.FillFake("tlepeta", bestper.TLep().Pt(), weight);
+		response.FillFake("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
+		response.FillFake("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
+		response.FillFake("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
 		if(SEMILEPACC)
 		{
 			truth1d["counter"]->Fill(10.5, weight);
-			truth2d["response_met_matrix"]->Fill(gennls[0]->Pt(), met.Pt(), weight);
-			truth2d["response_ttm_matrix"]->Fill((gentophad + gentoplep).M(), (bestper.THad() + bestper.TLep()).M(), weight);
-			truth2d["response_tty_matrix"]->Fill(Abs((gentophad + gentoplep).Rapidity()), Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
-			truth2d["response_ttpt_matrix"]->Fill((gentophad + gentoplep).Pt(), (bestper.THad() + bestper.TLep()).Pt(), weight);
-			truth2d["response_thadpt_matrix"]->Fill(gentophad.Pt(), bestper.THad().Pt(), weight);
-			truth1d["response_thadpt_res"]->Fill((bestper.THad().Pt() - gentophad.Pt())/gentophad.Pt(), weight);
-			truth2d["response_thadeta_matrix"]->Fill(Abs(gentophad.Eta()), Abs(bestper.THad().Eta()), weight);
-			truth2d["response_tleppt_matrix"]->Fill(gentoplep.Pt(), bestper.TLep().Pt(), weight);
-			truth1d["response_tleppt_res"]->Fill((bestper.TLep().Pt() - gentoplep.Pt())/gentoplep.Pt(), weight);
-			truth2d["response_tlepeta_matrix"]->Fill(Abs(gentoplep.Eta()), Abs(bestper.TLep().Eta()), weight);
+			response.FillTruthReco("thadpt", gentophad.Pt(), bestper.THad().Pt(), weight);
+			response.FillTruthReco("thadeta", Abs(gentophad.Eta()), Abs(bestper.THad().Eta()), weight);
+			response.FillTruthReco("tleppt", gentoplep.Pt(), bestper.TLep().Pt(), weight);
+			response.FillTruthReco("tlepeta", Abs(gentoplep.Eta()), Abs(bestper.TLep().Eta()), weight);
+			response.FillTruthReco("ttm", (gentophad + gentoplep).M(), (bestper.THad() + bestper.TLep()).M(), weight);
+			response.FillTruthReco("ttpt", (gentophad + gentoplep).Pt(), (bestper.THad() + bestper.TLep()).Pt(), weight);
+			response.FillTruthReco("tty", Abs((gentophad + gentoplep).Rapidity()), Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
 			truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(*gennls[0]), weight);
 			truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - gennls[0]->Pt())/gennls[0]->Pt(), weight);
 			truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), weight);
@@ -928,18 +909,19 @@ void ttbar::analyze()
 	int nevent = 0;
 	URStreamer event(tree_);
 	IDElectron::streamer = &event;
+	IDMuon::streamer = &event;
 	PDFuncertainty::streamer = &event;
 	TRandom3 rand(12311);
 	while(event.next())
 	{
 		nevent++;
-		if(nevent % 1000 == 0)cout << "Event:" << nevent << " " << selectionprob << endl;
+		if(nevent % 1000 == 0)cout << "Event:" << nevent << endl;
 		truth1d["counter"]->Fill(0.5);
 		weight = 1.;	
 
 		double npu = event.PUInfos()[0].nPU();
 		truth1d["npuorig"]->Fill(npu, weight);
-		if(npu > 12)
+		if(npu > 0)
 		{
 			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
 		}

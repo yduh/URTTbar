@@ -21,15 +21,17 @@ TTBarPlots::~TTBarPlots()
 void TTBarPlots::Init(ttbar* analysis)
 {
 	TTBarPlotsBase::Init(analysis);
-	int ta = 60.;
+	int ta = 40.;
 	double tamin = 6.;
 	double tamax = 18.;
-	int tb = 100.;
+	int tb = 40.;
 	//double tbmin = -20.;
 	//double tbmax = 10.;
 	double tbmin = 0.;
-	double tbmax = 200.;
+	double tbmax = 80.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
+	plot1d.AddHist("DPhiMET_Nu", 100, -4., 4, "#Delta#Phi(#nu, MET)", "Events");
+	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET (GeV)", "#chi");
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -68,11 +70,13 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	//double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
+	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
+	plot1d["DPhiMET_Nu"]->Fill(nu.DeltaPhi(an->met), weight);
 	for(int jn : jetbins)
 	{
 		stringstream jb;
 		if(jn != -1) jb << jn << "_";
-		if((jn == -1) || (an->reducedjets.size() - 4 == jn) || (jn == jetbins.back() && an->reducedjets.size() - 4 > jn))
+		if((jn == -1) || (an->reducedjets.size() - 4 == size_t(jn)) || (jn == jetbins.back() && an->reducedjets.size() - 4 > size_t(jn)))
 		{
 			plot2d["test_"+jb.str()+"testb"]->Fill(test, testb, weight);
 			plot2d["test_"+jb.str()+"thadpt"]->Fill(test, thad.Pt(), weight);
@@ -92,9 +96,9 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 			plot2d["test_"+jb.str()+"costhetastar"]->Fill(test, tCMS.CosTheta(), weight);
 			plot2d["testb_"+jb.str()+"costhetastar"]->Fill(testb, tCMS.CosTheta(), weight);
 			plot2d["test_"+jb.str()+"njet"]->Fill(test, an->reducedjets.size(), weight);
-			plot2d["testb_"+jb.str()+"njet"]->Fill(test, an->reducedjets.size(), weight);
+			plot2d["testb_"+jb.str()+"njet"]->Fill(testb, an->reducedjets.size(), weight);
 			plot2d["test_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
-			plot2d["testb_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
+			plot2d["testb_"+jb.str()+"met"]->Fill(testb, an->met.Pt(), weight);
 		}
 	}
 }

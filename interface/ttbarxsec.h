@@ -13,6 +13,7 @@
 #include "TTBarGenPlots.h"
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
+#include "TTBarResponse.h"
 #include "Permutation.h"
 #include "BtagEff.h"
 #include "JetScale.h"
@@ -24,6 +25,7 @@ class ttbar : public AnalyzerBase
 {
 	friend class TTBarGenPlots;
     friend class TTBarPlots;
+    friend class TTBarResponse;
 
 	private:
 		double selectionprob;
@@ -103,6 +105,8 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_thad_right;
 		TTBarPlots ttp_nn_right;
 		TTBarPlots ttp_nsemi_right;
+
+		TTBarResponse response;
 
 		BtagEff btageff;
 

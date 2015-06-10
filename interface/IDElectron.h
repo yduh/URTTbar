@@ -2,10 +2,6 @@
 #define IDELECTRON_H
 #include "URStreamer.h"
 #include "MCMatchable.h"
-#include <TMath.h>
-
-using namespace TMath;
-using namespace std;
 
 class IDElectron : public Electron, public MCMatchable
 {
