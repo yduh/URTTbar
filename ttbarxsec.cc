@@ -310,10 +310,10 @@ void ttbar::SelectGenParticles(URStreamer& event)
 			//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
-				if(gp->pdgId() == 6)
-				{
-					weight *= 1.+(gp->Pt()-200.)/1000.;
-				}
+				//if(gp->pdgId() == 6)
+				//{
+				//	weight *= 1.+(gp->Pt()-200.)/1000.;
+				//}
 				if(Abs(gp->pdgId()) == 6)
 				{
 					topcounter++;
