@@ -21,12 +21,12 @@ void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const ve
 	dir->cd();
 
 	plot1d.AddHist(name + "_truth", Tbins, "Truth " + label, "Events");
-	plot1d.AddHist(name + "_fake", Mbins, label, "Events");
+	plot1d.AddHist(name + "_reco", Mbins, label, "Events");
 	plot2d.AddHist(name + "_matrix", Tbins, Mbins, "gen " + label, "reco " + label);
 	for(int njet = 0 ; njet < 4 ; ++njet)
 	{
 		stringstream hname;
-		hname << name << "_fake_" << njet;
+		hname << name << "_reco_" << njet;
 		plot1d.AddHist(hname.str(), Mbins, label, "Events");
 		hname.str("");
 		hname << name << "_matrix_" << njet;
@@ -41,13 +41,13 @@ void TTBarResponse::FillTruth(string name, double val, double weight)
 	plot1d[name + "_truth"]->Fill(val, weight);
 }
 
-void TTBarResponse::FillFake(string name, double val, double weight)
+void TTBarResponse::FillReco(string name, double val, double weight)
 {
 	int njet = Min(an_->reducedjets.size() - 4, size_t(3));
 	stringstream hname;
-	hname << name << "_fake_" << njet;
+	hname << name << "_reco_" << njet;
 	plot1d[hname.str()]->Fill(val, weight);
-	plot1d[name+"_fake"]->Fill(val, weight);
+	plot1d[name+"_reco"]->Fill(val, weight);
 }
 
 void TTBarResponse::FillTruthReco(string name, double tval, double rval, double weight)

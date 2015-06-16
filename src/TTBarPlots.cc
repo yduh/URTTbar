@@ -30,7 +30,8 @@ void TTBarPlots::Init(ttbar* analysis)
 	double tbmin = 0.;
 	double tbmax = 80.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
-	plot1d.AddHist("DPhiMET_Nu", 100, -4., 4, "#Delta#Phi(#nu, MET)", "Events");
+	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
+	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET (GeV)", "#Delta#Phi(#nu, MET)");
 	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET (GeV)", "#chi");
 	for(int jn : jetbins)
 	{
@@ -71,7 +72,8 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
-	plot1d["DPhiMET_Nu"]->Fill(nu.DeltaPhi(an->met), weight);
+	plot1d["DPhiMET_Nu"]->Fill(Abs(nu.DeltaPhi(an->met)), weight);
+	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(nu.DeltaPhi(an->met)), weight);
 	for(int jn : jetbins)
 	{
 		stringstream jb;

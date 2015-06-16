@@ -23,7 +23,7 @@ class TTBarResponse
 		~TTBarResponse();
 		void AddMatrix(string name, const vector<double>& Mbins, const vector<double>& Tbins, string label);
 		void FillTruth(string name, double val, double weight);
-		void FillFake(string name, double val, double weight);
+		void FillReco(string name, double val, double weight);
 		void FillTruthReco(string name, double tval, double rval, double weight);
 };
 

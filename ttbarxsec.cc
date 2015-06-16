@@ -3,6 +3,7 @@
 
 #include "Permutation.h"
 #include "PDFuncertainty.h"
+#include "NeutrinoSolver.h"
 
 using namespace std;
 
@@ -144,6 +145,8 @@ void ttbar::begin()
 	truth1d.AddHist("dRNu_right", 200, 0., 10., "#DeltaR(#nu_{gen}, #nu_{rec})", "Events");
 	truth1d.AddHist("dPtNu_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
 	truth1d.AddHist("dPzNu_right", 200, -2., 2., "#Deltap_{z}/p_{z}", "Events");
+	truth2d.AddHist("dPzNu_dPhi_right", 200, -2., 2., 100, 0., 3.15, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
+	truth2d.AddHist("dPzNu_chi2_right", 200, -2., 2., 100, 0., 100, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
 	truth1d.AddHist("dRNuMet_right", 200, 0., 10., "#DeltaR(#nu_{gen}, #nu_{rec})", "Events");
 	truth1d.AddHist("dPtNuMet_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
 	truth2d.AddHist("Wmasshad_tmasshad_right", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
@@ -656,6 +659,8 @@ void ttbar::ttanalysis()
 	//check for b-jets
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
 	if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && reducedjets[1]->csvIncl() < 0.814)){return;}
+	//int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [](IDJet* A){if(A->csvIncl() > 0.814){return true;} return false;});
+	//cout << nbjets << endl;
 	//if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && (reducedjets[0]->csvIncl() < 0.941 || reducedjets[1]->csvIncl() < 0.814))){return;}
 	//if(reducedjets[0]->csvIncl() > 0.814){return;}
 	//if(reducedjets[0]->csvIncl() < 0.941) {return;}
@@ -834,13 +839,13 @@ void ttbar::ttanalysis()
 	if(bestper.IsCorrect(rightper))
 	{
 		ttp_jetspos_right.Fill(bestper, lepcharge, weight);
-		response.FillFake("thadpt", bestper.THad().Pt(), weight);
-		response.FillFake("thadeta", bestper.THad().Eta(), weight);
-		response.FillFake("tleppt", bestper.TLep().Pt(), weight);
-		response.FillFake("tlepeta", bestper.TLep().Pt(), weight);
-		response.FillFake("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
-		response.FillFake("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
-		response.FillFake("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
+		response.FillReco("thadpt", bestper.THad().Pt(), weight);
+		response.FillReco("thadeta", bestper.THad().Eta(), weight);
+		response.FillReco("tleppt", bestper.TLep().Pt(), weight);
+		response.FillReco("tlepeta", bestper.TLep().Pt(), weight);
+		response.FillReco("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
+		response.FillReco("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
+		response.FillReco("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
 		if(SEMILEPACC)
 		{
 			truth1d["counter"]->Fill(10.5, weight);
@@ -854,6 +859,19 @@ void ttbar::ttanalysis()
 			truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(*gennls[0]), weight);
 			truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - gennls[0]->Pt())/gennls[0]->Pt(), weight);
 			truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), weight);
+			truth2d["dPzNu_dPhi_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), Abs(bestper.Nu().DeltaPhi(met)), weight);
+			truth2d["dPzNu_chi2_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), Sqrt(bestper.NuChisq()), weight);
+			//if(Abs((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz()) < 0.2)
+			//{
+			//	cout << (bestper.Nu() + *(bestper.BLep()) + *(bestper.L())).M() << " " << bestper.Nu().Pz() << " " << gennls[0]->Pz() << " "  << bestper.Nu().Pt() << " " << met.Pt() << " " << met.DeltaPhi(bestper.Nu()) << " " << bestper.NuChisq() << endl;
+			//	cout << met.Px() << " " << met.Py() << endl;
+			//	cout << gennls[0]->Px() << " " << gennls[0]->Py() << " " <<gennls[0]->Pz() << endl;
+			//	cout << bestper.Nu().Px() << " " << bestper.Nu().Py() << " " <<bestper.Nu().Pz() << endl;
+			//	NeutrinoSolver NS(bestper.L(), bestper.BLep(), 80, 173);
+			//	double tchi;
+			//	TLorentzVector tv(NS.GetBest(met.Px(), met.Py(), Sqrt(met.pxunc()*met.pxunc() + met.pxuncjet()*met.pxuncjet()), Sqrt(met.pyunc()*met.pyunc() + met.pyuncjet()*met.pyuncjet()), 0., tchi, true));
+			//	cout << tchi << " " << tv.Pz() << " " << tv.Pt() << endl;
+			//}
 			truth1d["dRNuMet_right"]->Fill(met.DeltaR(*gennls[0]), weight);
 			truth1d["dPtNuMet_right"]->Fill((met.Pt() - gennls[0]->Pt())/gennls[0]->Pt(), weight);
 		}

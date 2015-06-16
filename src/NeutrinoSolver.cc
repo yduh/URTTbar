@@ -220,7 +220,7 @@ pair<double, double> NeutrinoSolver::Extrem(double t, bool MIN)
 	return pair<double, double>(t, old);
 }
 
-TLorentzVector NeutrinoSolver::GetBest(double metx, double mety, double metxerr, double metyerr, double metxyrho, double& test)
+TLorentzVector NeutrinoSolver::GetBest(double metx, double mety, double metxerr, double metyerr, double metxyrho, double& test, bool INFO)
 {
 	if(ERROR){ test = -1; return(TLorentzVector(0.,0.,0.,0.));}
 
@@ -233,6 +233,17 @@ TLorentzVector NeutrinoSolver::GetBest(double metx, double mety, double metxerr,
 	VM(0,1) = metxerr*metyerr*metxyrho;
 		
 	VM.Invert();
+
+	if(INFO)
+	{
+	for(double tb = 0 ; tb < 6.4 ; tb+=0.1)
+	{
+		double test = Chi2(tb);
+		TLorentzVector tv(GetSolution(tb));
+		//cout << tb << " " << test << " " << tv.Pz() << " " << tv.Pt() << endl;
+		cout << tb << " " << test << " " << tv.Px() << " " << tv.Py()  << " " << tv.Pz() << endl;
+	}
+	}
 
 	pair<double, double> maximum = Extrem(0., false);
 	pair<double, double> minimuma = Extrem(maximum.first+0.1, true);
