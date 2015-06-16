@@ -136,7 +136,7 @@ double TTBarSolver::Test(double* par)
 	//cout << nschi << " NS " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
 	if(nschi > 0. && nschi < 10000.)
 	{
-		nstest = -1.*Log(N_right->Interpolate(Sqrt(nschi))/N_wrong->Interpolate(Sqrt(nschi)));
+		nstest = -1.*Log(N_right->Interpolate(Sqrt(nschi)));
 	}
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
