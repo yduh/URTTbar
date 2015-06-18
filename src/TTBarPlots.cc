@@ -30,6 +30,7 @@ void TTBarPlots::Init(ttbar* analysis)
 	double tbmin = 0.;
 	double tbmax = 80.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
+	plot1d.AddHist("njets", 15, 0, 15, "n-jets", "Events");
 	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
 	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET (GeV)", "#Delta#Phi(#nu, MET)");
 	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET (GeV)", "#chi");
@@ -53,8 +54,8 @@ void TTBarPlots::Init(ttbar* analysis)
 		plot2d.AddHist("testb_"+jb.str()+"ttpt", tb, tbmin, tbmax, an->ttptbins, "testb", "p_{T}(tt) [GeV]");
 		plot2d.AddHist("test_"+jb.str()+"costhetastar", ta, tamin, tamax, 10, -1., 1., "test", "cos(#Theta*)");
 		plot2d.AddHist("testb_"+jb.str()+"costhetastar", tb, tbmin, tbmax, 10, -1., 1., "testb", "cos(#Theta*)");
-		plot2d.AddHist("test_"+jb.str()+"njet", ta, tamin, tamax, 20, 0., 20., "test", "n-jets");
-		plot2d.AddHist("testb_"+jb.str()+"njet", tb, tbmin, tbmax, 20, 0., 20., "testb", "n-jets");
+		plot2d.AddHist("test_"+jb.str()+"njet", ta, tamin, tamax, an->jetbins, "test", "n-jets");
+		plot2d.AddHist("testb_"+jb.str()+"njet", tb, tbmin, tbmax, an->jetbins, "testb", "n-jets");
 		plot2d.AddHist("test_"+jb.str()+"met", ta, tamin, tamax, an->metbins, "test", "MET [GeV]");
 		plot2d.AddHist("testb_"+jb.str()+"met", tb, tbmin, tbmax, an->metbins, "testb", "MET [GeV]");
 		plot2d.AddHist("test_"+jb.str()+"testb", ta, tamin, tamax, tb, tbmin, tbmax, "test", "testb");
@@ -71,6 +72,7 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	//double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
+	plot1d["njets"]->Fill(an->cleanedjets.size()-4, weight);
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
 	plot1d["DPhiMET_Nu"]->Fill(Abs(nu.DeltaPhi(an->met)), weight);
 	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(nu.DeltaPhi(an->met)), weight);
@@ -97,8 +99,8 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 			plot2d["testb_"+jb.str()+"ttpt"]->Fill(testb, tt.Pt(), weight);
 			plot2d["test_"+jb.str()+"costhetastar"]->Fill(test, tCMS.CosTheta(), weight);
 			plot2d["testb_"+jb.str()+"costhetastar"]->Fill(testb, tCMS.CosTheta(), weight);
-			plot2d["test_"+jb.str()+"njet"]->Fill(test, an->reducedjets.size(), weight);
-			plot2d["testb_"+jb.str()+"njet"]->Fill(testb, an->reducedjets.size(), weight);
+			plot2d["test_"+jb.str()+"njet"]->Fill(test, an->cleanedjets.size()-4, weight);
+			plot2d["testb_"+jb.str()+"njet"]->Fill(testb, an->cleanedjets.size()-4, weight);
 			plot2d["test_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);
 			plot2d["testb_"+jb.str()+"met"]->Fill(testb, an->met.Pt(), weight);
 		}

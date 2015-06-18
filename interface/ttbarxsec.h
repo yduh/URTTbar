@@ -48,6 +48,9 @@ class ttbar : public AnalyzerBase
 		TLorentzVector gentoplep;
 		TLorentzVector gentophad;
 
+		list<Genjet> sgenjets;
+		vector<Genjet*> genaddjets;
+
 		//matched
 		//vector<Jet*> recbjets;
 		//vector<Jet*> recwjets;
@@ -141,6 +144,7 @@ class ttbar : public AnalyzerBase
 		vector<double> ttybins;
 		vector<double> ttptbins;
 		vector<double> metbins;
+		vector<double> jetbins;
 
 		JetScale jetscale;
 
@@ -156,7 +160,7 @@ class ttbar : public AnalyzerBase
 
 		void SelectGenParticles(URStreamer& event);
 		void SelectRecoParticles(URStreamer& event);
-		void ttanalysis();
+		void ttanalysis(URStreamer& event);
 
 		static void setOptions() {}
 };

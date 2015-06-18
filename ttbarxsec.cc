@@ -53,7 +53,7 @@ ttbar::ttbar(const std::string output_filename):
 	cbjetpthard(35.), //min pT of harder b-jets
 	cjetetamax(2.4),//max |eta| for jets
 	clptmin(30.), //min pT of lepton (el or mu)
-	cletamax(2.4)//max |eta| of leptons (max allowed value is 2.4) 
+	cletamax(2.1)//max |eta| of leptons (max allowed value is 2.4) 
 {
 	double lumi = 1000;
 	cout << output_filename << endl;
@@ -101,6 +101,7 @@ ttbar::ttbar(const std::string output_filename):
 	ttybins = {0., 0.2, 0.4, 0.6, 0.8, 1.1, 3.};
 	ttptbins = {0., 26.0, 42.0, 60.0, 86.0, 138.0, 800.};
 	metbins = {0., 24.0, 36.0, 48.0, 66.0, 98.0, 400.};
+	jetbins = {-0.5, 0.5, 1.5, 2.5, 10.};
 
 	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
 	vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118", "MMHT2014nlo68clas118"};
@@ -173,6 +174,7 @@ void ttbar::begin()
 	response.AddMatrix("ttm", ttmbins, ttmbins, "m(t#bar{t}) [GeV]");
 	response.AddMatrix("ttpt", ttptbins, ttptbins, "p_{T}(t#bar{t}) [GeV]");
 	response.AddMatrix("tty", ttybins, ttybins, "y(t#bar{t})");
+	response.AddMatrix("njet", jetbins, jetbins, "n-jets");
 
 	pdfunc->Add1dHist("pdfunc_thadpt", topptbins, "p_{T}(t_{h}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
@@ -181,6 +183,7 @@ void ttbar::begin()
 	pdfunc->Add1dHist("pdfunc_ttm", ttmbins, "M(t#bar{t}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_tty", ttybins, "y(t#bar{t})", "Events");
 	pdfunc->Add1dHist("pdfunc_ttpt", ttptbins, "p_{T}(t#bar{t}) [GeV]", "Events");
+	pdfunc->Add1dHist("pdfunc_njet", jetbins, "n-jets", "Events");
 
 	ttp_truth.Init(this);
 	ttp_right.Init(this);
@@ -423,42 +426,55 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		genbbar = 0;
 	}
 
+	if(SEMILEP)
+	{
+		const vector<Genjet>& genjets = event.genjets();
+		for(vector<Genjet>::const_iterator gj = genjets.begin(); gj != genjets.end(); ++gj)
+		{
+			if(gj->Pt() < jetptmin || Abs(gj->Eta()) > cjetetamax) {continue;}
+			if(gj->DeltaR(*gencls[0]) < 0.5){ continue;}
+			if(gj->DeltaR(*genwpartons[0]) < 0.5){ continue;}
+			if(gj->DeltaR(*genwpartons[1]) < 0.5){ continue;}
+			if(gj->DeltaR(*genbbar) < 0.5){ continue;}
+			if(gj->DeltaR(*genb) < 0.5){ continue;}
+
+			sgenjets.push_back(Genjet(*gj));
+			genaddjets.push_back(&(sgenjets.back()));
+		}
+	}
+
 }
 
 void ttbar::SelectRecoParticles(URStreamer& event)
 {
-	if(MUONS)
+	const vector<Muon>& muons = event.muons();
+	for(vector<Muon>::const_iterator muon = muons.begin(); muon != muons.end(); ++muon)
 	{
-		const vector<Muon>& muons = event.muons();
-		for(vector<Muon>::const_iterator muon = muons.begin(); muon != muons.end(); ++muon)
+		IDMuon mu(*muon);
+		//if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 15.)
+		if(mu.ID(IDMuon::LOOSE_12) && mu.Pt() > 15.)
 		{
-			IDMuon mu(*muon);
-			if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 10.)
+			smuons.push_back(mu);
+			loosemuons.push_back(&(smuons.back()));
+			if(MUONS && mu.ID(IDMuon::TIGHT_12) && mu.Pt() > clptmin && Abs(mu.Eta()) < cletamax)
 			{
-				smuons.push_back(mu);
-				loosemuons.push_back(&(smuons.back()));
-				if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > clptmin && Abs(mu.Eta()) < cletamax)
-				{
-					tightmuons.push_back(&(smuons.back()));
-				}
+				tightmuons.push_back(&(smuons.back()));
 			}
 		}
 	}
 
-	if(ELECTRONS)
+	const vector<Electron>& electrons = event.electrons();
+	for(vector<Electron>::const_iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
 	{
-		const vector<Electron>& electrons = event.electrons();
-		for(vector<Electron>::const_iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
+		IDElectron el(*electron);
+		//if(el.ID(IDElectron::MEDIUM_15) && el.Pt() > 15.)
+		if(el.ID(IDElectron::LOOSE_15) && el.Pt() > 15.)
 		{
-			IDElectron el(*electron);
-			if(el.ID(IDElectron::MEDIUM_15) && el.Pt() > 10.)
+			selectrons.push_back(el);
+			looseelectrons.push_back(&(selectrons.back()));
+			if(ELECTRONS && el.ID(IDElectron::MEDIUM_15) && el.Pt() > clptmin && Abs(el.Eta()) < cletamax)
 			{
-				selectrons.push_back(el);
-				looseelectrons.push_back(&(selectrons.back()));
-				if(el.ID(IDElectron::MEDIUM_15) && el.Pt() > clptmin && Abs(el.Eta()) < cletamax)
-				{
-					mediumelectrons.push_back(&(selectrons.back()));
-				}
+				mediumelectrons.push_back(&(selectrons.back()));
 			}
 		}
 	}
@@ -566,7 +582,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	}
 }
 
-void ttbar::ttanalysis()
+void ttbar::ttanalysis(URStreamer& event)
 {
 	truth1d["counter"]->Fill(19.5, weight);
 	reco1d["counter"]->Fill(0.5, weight);
@@ -587,6 +603,7 @@ void ttbar::ttanalysis()
 		response.FillTruth("ttm", (gentophad + gentoplep).M(), weight);
 		response.FillTruth("ttpt", (gentophad + gentoplep).Pt(), weight);
 		response.FillTruth("tty", Abs((gentophad + gentoplep).Rapidity()), weight);
+		response.FillTruth("njet", genaddjets.size(), weight);
 
 		pdfunc->Fill1d("pdfunc_thadpt", gentophad.Pt(), weight);
 		pdfunc->Fill1d("pdfunc_tleppt", gentoplep.Pt(), weight);
@@ -595,6 +612,7 @@ void ttbar::ttanalysis()
 		pdfunc->Fill1d("pdfunc_ttm", (gentophad + gentoplep).M(), weight);
 		pdfunc->Fill1d("pdfunc_tty", Abs((gentophad + gentoplep).Rapidity()), weight);
 		pdfunc->Fill1d("pdfunc_ttpt", (gentophad + gentoplep).Pt(), weight);
+		pdfunc->Fill1d("pdfunc_njet", genaddjets.size(), weight);
 
 		if(Abs(gencls[0]->pdgId()) == 11) {truth2d["Ne_Nmu"]->Fill(mediumelectrons.size()+0.5, tightmuons.size()+0.5, weight);}
 		if(Abs(gencls[0]->pdgId()) == 13) {truth2d["Nmu_Ne"]->Fill(tightmuons.size()+0.5, mediumelectrons.size()+0.5, weight);}
@@ -609,12 +627,12 @@ void ttbar::ttanalysis()
 	//check for lepton:
 	TLorentzVector* lep = 0;
 	int lepcharge = 0;
-	if(tightmuons.size() == 1 && mediumelectrons.size() == 0)
+	if(tightmuons.size() == 1 && loosemuons.size() == 1 && looseelectrons.size() == 0)
 	{
 		lep = dynamic_cast<TLorentzVector*>(tightmuons[0]);
 		lepcharge = tightmuons[0]->charge();
 	}
-	if(tightmuons.size() == 0 && mediumelectrons.size() == 1)
+	if(loosemuons.size() == 0 && mediumelectrons.size() == 1 && looseelectrons.size() == 1)
 	{
 		lep = dynamic_cast<TLorentzVector*>(mediumelectrons[0]);
 		lepcharge = mediumelectrons[0]->charge();
@@ -674,6 +692,8 @@ void ttbar::ttanalysis()
 	{
 		truth2d["tt_jets"]->Fill(rightper.NumBJets()+0.5, rightper.NumWJets()+0.5, weight);
 	}
+
+	cout << "SYNC " << event.run << " " << event.lumi << " " << event.evt << endl;
 
 	//reconstruction
 	Permutation bestper;
@@ -846,6 +866,7 @@ void ttbar::ttanalysis()
 		response.FillReco("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
 		response.FillReco("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
 		response.FillReco("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
+		response.FillReco("njet", cleanedjets.size() - 4, weight);
 		if(SEMILEPACC)
 		{
 			truth1d["counter"]->Fill(10.5, weight);
@@ -856,6 +877,7 @@ void ttbar::ttanalysis()
 			response.FillTruthReco("ttm", (gentophad + gentoplep).M(), (bestper.THad() + bestper.TLep()).M(), weight);
 			response.FillTruthReco("ttpt", (gentophad + gentoplep).Pt(), (bestper.THad() + bestper.TLep()).Pt(), weight);
 			response.FillTruthReco("tty", Abs((gentophad + gentoplep).Rapidity()), Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
+			response.FillTruthReco("njet", genaddjets.size(), cleanedjets.size() - 4, weight);
 			truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(*gennls[0]), weight);
 			truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - gennls[0]->Pt())/gennls[0]->Pt(), weight);
 			truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), weight);
@@ -958,6 +980,9 @@ void ttbar::analyze()
 		genbl = 0;
 		genbh = 0;
 
+		sgenjets.clear();
+		genaddjets.clear();
+
 		rightper.Reset();
 
 		//recbjets.clear();
@@ -982,14 +1007,14 @@ void ttbar::analyze()
 			if(selectionprob > 1.){weight *= selectionprob;}
 			SelectGenParticles(event);
 			SelectRecoParticles(event);
-			ttanalysis();
+			ttanalysis(event);
 		}
 
 		else if(!DATASIM)
 		{
 			SelectGenParticles(event);
 			SelectRecoParticles(event);
-			ttanalysis();
+			ttanalysis(event);
 		}
 
 	}
