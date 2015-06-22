@@ -32,8 +32,8 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "n-jets", "Events");
 	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
-	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET (GeV)", "#Delta#Phi(#nu, MET)");
-	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET (GeV)", "#chi");
+	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET [GeV]", "#Delta#Phi(#nu, MET)");
+	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET [GeV]", "#chi");
 	for(int jn : jetbins)
 	{
 		stringstream jb;

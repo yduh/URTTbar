@@ -122,7 +122,7 @@ void ttbar::begin()
 	//gen2d.AddHist("t_pt", 200, 0, 600, 200, 0., 600, "t p_{T,min} [GeV]", "t p_{T,max} [GeV]");
 	//gen1d.AddHist("bjets_dr", 100, 0, 5, "b-jets #DeltaR", "Events");
 	//gen1d.AddHist("wjets_dr", 100, 0, 5, "W-jets #DeltaR", "Events");
-	//gen2d.AddHist("Wmasshad_tmasshad", 2000, 0., 500., 2000, 0., 500, "M(W) (GeV)", "M(t) (GeV)");
+	//gen2d.AddHist("Wmasshad_tmasshad", 2000, 0., 500., 2000, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
     ttp_genall.Init(this);
     ttp_genacc.Init(this);
 
@@ -484,7 +484,8 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	{
 		IDJet jet(*jetit);
 		//double sf = gRandom->Gaus(1., 0.05);
-		double sf = 1.0;
+		double sigma = 0;
+		double sf = 1. + sigma*0.177829 * Power(jet.Pt(), -0.58647);
 		jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
 		if(jet.Pt() < jetptmin || Abs(jet.Eta()) > cjetetamax) {continue;}
 		if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
@@ -693,7 +694,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		truth2d["tt_jets"]->Fill(rightper.NumBJets()+0.5, rightper.NumWJets()+0.5, weight);
 	}
 
-	cout << "SYNC " << event.run << " " << event.lumi << " " << event.evt << endl;
+	//cout << "SYNC " << event.run << " " << event.lumi << " " << event.evt << endl;
 
 	//reconstruction
 	Permutation bestper;
@@ -888,6 +889,8 @@ void ttbar::ttanalysis(URStreamer& event)
 			//	cout << (bestper.Nu() + *(bestper.BLep()) + *(bestper.L())).M() << " " << bestper.Nu().Pz() << " " << gennls[0]->Pz() << " "  << bestper.Nu().Pt() << " " << met.Pt() << " " << met.DeltaPhi(bestper.Nu()) << " " << bestper.NuChisq() << endl;
 			//	cout << met.Px() << " " << met.Py() << endl;
 			//	cout << gennls[0]->Px() << " " << gennls[0]->Py() << " " <<gennls[0]->Pz() << endl;
+			//	cout << bestper.Nu().Px() << " " << bestper.Nu().Py() << " " <<bestper.Nu().Pz() << endl;
+			//	NeutrinoSolver NS(bestper.L(), bestper.BLep(), 80, 173);
 			//	cout << bestper.Nu().Px() << " " << bestper.Nu().Py() << " " <<bestper.Nu().Pz() << endl;
 			//	NeutrinoSolver NS(bestper.L(), bestper.BLep(), 80, 173);
 			//	double tchi;

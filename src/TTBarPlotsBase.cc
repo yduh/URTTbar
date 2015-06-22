@@ -17,32 +17,32 @@ TTBarPlotsBase::~TTBarPlotsBase()
 void TTBarPlotsBase::Init(ttbar* analysis)
 {
 	an = analysis;
-    plot2d.AddHist("bjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(b)_{min} (GeV)", "p_{T}(b)_{max} (GeV)");
-    plot2d.AddHist("wjets_pt", 500, 0., 500., 500, 0., 500., "p_{T} (GeV)", "p_{T} (GeV)");
-    plot2d.AddHist("Whad_M_thad_M", 500, 0., 500., 500, 0., 500., "M(W_{had}) (GeV)", "M(t_{had}) (GeV)");
-    plot2d.AddHist("Wlep_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(W_{lep}) (GeV)", "M(t_{lep}) (GeV)");
-    plot2d.AddHist("thad_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(t_{had}) (GeV)", "M(t_{lep}) (GeV)");
-    plot1d.AddHist("lep_pt", 500, 0., 500., "p_{T}(l) (GeV)", "Events");
-    plot1d.AddHist("nu_pt", 500, 0., 500., "p_{T}(#nu) (GeV)", "Events");
+    plot2d.AddHist("bjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(b)_{min} [GeV]", "p_{T}(b)_{max} [GeV]");
+    plot2d.AddHist("wjets_pt", 500, 0., 500., 500, 0., 500., "p_{T} [GeV]", "p_{T} [GeV]");
+    plot2d.AddHist("Whad_M_thad_M", 500, 0., 500., 500, 0., 500., "M(W_{had}) [GeV]", "M(t_{had}) [GeV]");
+    plot2d.AddHist("Wlep_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(W_{lep}) [GeV]", "M(t_{lep}) [GeV]");
+    plot2d.AddHist("thad_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(t_{had}) [GeV]", "M(t_{lep}) [GeV]");
+    plot1d.AddHist("lep_pt", 500, 0., 500., "p_{T}(l) [GeV]", "Events");
+    plot1d.AddHist("nu_pt", 500, 0., 500., "p_{T}(#nu) [GeV]", "Events");
     plot1d.AddHist("nu_eta", 200, -5, 5., "#eta(#nu)", "Events");
     plot1d.AddHist("lepp_eta", 200, -5, 5., "#eta(l+)", "Events");
     plot1d.AddHist("lepm_eta", 200, -5, 5., "#eta(l-)", "Events");
-    plot1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{had}) (GeV)", "Events");
-    plot1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{lep}) (GeV)", "Events");
+    plot1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{had}) [GeV]", "Events");
+    plot1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{lep}) [GeV]", "Events");
     plot1d.AddHist("thad_eta", 200, -5, 5, "#eta(t_{had})", "Events");
     plot1d.AddHist("tlep_eta", 200, -5, 5, "#eta(t_{lep})", "Events");
     plot1d.AddHist("thad_y", 200, -5, 5, "y(t_{had})", "Events");
     plot1d.AddHist("tlep_y", 200, -5, 5, "y(t_{lep})", "Events");
-    plot1d.AddHist("tt_M", 1000, 0, 2000, "M(t#bar{t}) (GeV)", "Events");
-    plot1d.AddHist("tt_pt", 250, 0, 500, "p_{T}(t#bar{t}) (GeV)", "Events");
+    plot1d.AddHist("tt_M", 1000, 0, 2000, "M(t#bar{t}) [GeV]", "Events");
+    plot1d.AddHist("tt_pt", 250, 0, 500, "p_{T}(t#bar{t}) [GeV]", "Events");
     plot1d.AddHist("tt_y", 200, 0, 10., "y(t#bar{t})", "Events");
     plot1d.AddHist("tt_DeltaPhi", 200, -Pi(), Pi(), "#Delta#Phi(t#bar{t})", "Events");
-    plot1d.AddHist("whad_pt", 100, 0, 200, "p_{T}(W_{had}) (GeV)", "Events");
+    plot1d.AddHist("whad_pt", 100, 0, 200, "p_{T}(W_{had}) [GeV]", "Events");
     plot1d.AddHist("wj_dphi", 100, -Pi(), Pi(), "#Delta#phi(j_{whad})", "Events");
     plot1d.AddHist("wj_dr", 100, 0., 5., "#Delta#R(j_{whad})", "Events");
-    plot1d.AddHist("bjet_pt", 100, 0., 500., "p_{T}(b) (GeV)", "Events");
+    plot1d.AddHist("bjet_pt", 100, 0., 500., "p_{T}(b) [GeV]", "Events");
     plot1d.AddHist("bjet_eta", 100, -2.5, 2.5, "#eta(b)", "Events");
-    plot1d.AddHist("wjet_pt", 100, 0., 500., "p_{T}(wj) (GeV)", "Events");
+    plot1d.AddHist("wjet_pt", 100, 0., 500., "p_{T}(wj) [GeV]", "Events");
     plot1d.AddHist("wjet_eta", 100, -2.5, 2.5, "#eta(wj)", "Events");
 	plot1d.AddHist("costhetastar", 20, -1., 1., "cos(#theta*)", "Events");
 }
