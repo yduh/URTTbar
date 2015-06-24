@@ -139,7 +139,7 @@ class ttbar : public AnalyzerBase
 
 		//binning vectors
 		vector<double> topptbins;
-		vector<double> topetabins;
+		vector<double> topybins;
 		vector<double> ttmbins;
 		vector<double> ttybins;
 		vector<double> ttptbins;

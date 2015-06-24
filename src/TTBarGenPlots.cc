@@ -22,8 +22,8 @@ void TTBarGenPlots::Init(ttbar* analysis)
 
     plot1d.AddHist("toppthad", an->topptbins, "toppthad", "Events");
 	plot1d.AddHist("topptlep", an->topptbins, "topptlep", "Events");
-	plot1d.AddHist("topetahad", an->topetabins, "topetahad", "Events");
-	plot1d.AddHist("topetalep", an->topetabins, "topetalep", "Events");
+	plot1d.AddHist("topetahad", an->topybins, "topetahad", "Events");
+	plot1d.AddHist("topetalep", an->topybins, "topetalep", "Events");
 	plot1d.AddHist("ttm", an->ttmbins, "ttm", "Events");
 	plot1d.AddHist("ttpt", an->ttptbins, "ttpt", "Events");
 
