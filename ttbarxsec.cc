@@ -39,6 +39,7 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_nn_right("ttp_nn_right"),
 	ttp_nsemi_right("ttp_nsemi_right"),
 	response("response", this),
+	jetscaler("jetuncertainty.root"),
 	DATASIM(false),
 	PSEUDOTOP(false),
 	BTAGMODE(false), //set true for the b-tag efficiency measurement
@@ -79,7 +80,7 @@ ttbar::ttbar(const std::string output_filename):
 	}
 	else if(output_filename.find("tt_PowhegP8") != string::npos)
 	{
-		selectionprob = lumi*806./4702963.;
+		selectionprob = lumi*806./19086610;
 	}
 	else if(output_filename.find("tt_aMCatNLO") != string::npos)
 	{
@@ -95,12 +96,12 @@ ttbar::ttbar(const std::string output_filename):
 //	ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 500.};
 //	metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
 	
-	topptbins = {0., 66.0, 100.0, 134.0, 174.0, 234.0, 800.};
-	topybins = {0., 0.35, 0.70, 1.05, 1.45, 1.9, 4};
-	ttmbins = {280., 394.0, 442.0, 494.0, 562.0, 676.0, 2000.};
-	ttybins = {0., 0.2, 0.4, 0.6, 0.8, 1.1, 3.};
-	ttptbins = {0., 26.0, 42.0, 60.0, 86.0, 138.0, 800.};
-	metbins = {0., 24.0, 36.0, 48.0, 66.0, 98.0, 400.};
+	topptbins = {0.0, 66.0, 102.0, 136.0, 178.0, 242.0, 775.0};
+	topybins = {0.0, 0.23, 0.48, 0.73, 1.0, 1.4, 2.5};
+	ttmbins = {280., 400.0, 452.0, 510.0, 586.0, 716.0, 2000.0};
+	ttybins = {0.0, 0.2, 0.4, 0.6, 0.85, 1.25, 2.5};
+	ttptbins = {0.0, 26.0, 42.0, 60.0, 86.0, 144.0, 500.0};
+	metbins = {0.0, 28.0, 44.0, 60.0, 80.0, 120.0, 580.0};
 	jetbins = {-0.5, 0.5, 1.5, 2.5, 10.};
 
 	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
@@ -325,10 +326,10 @@ void ttbar::SelectGenParticles(URStreamer& event)
 			//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
-				//if(gp->pdgId() == 6)
-				//{
-				//	weight *= 1.+(gp->Pt()-200.)/1000.;
-				//}
+			//	if(gp->pdgId() == 6)
+			//	{
+			//		weight *= 1.+(gp->Pt()-200.)/1000.;
+			//	}
 				if(Abs(gp->pdgId()) == 6)
 				{
 					topcounter++;
@@ -473,7 +474,6 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 			if(MUONS && mu.ID(IDMuon::TIGHT_12) && mu.Pt() > clptmin && Abs(mu.Eta()) < cletamax)
 			{
 				tightmuons.push_back(&(smuons.back()));
-	cout << "SYNC " << event.run << " " << event.lumi << " " << event.evt << endl;
 			}
 		}
 	}
@@ -508,8 +508,12 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	{
 		IDJet jet(*jetit);
 		//double sf = gRandom->Gaus(1., 0.05);
-		double sigma = 0;
-		double sf = 1. + sigma*0.177829 * Power(jet.Pt(), -0.58647);
+		double sf = 0;
+		if(sf < 0.){sf *= jetscaler.GetUncM(jet);}
+		if(sf > 0.){sf *= jetscaler.GetUncP(jet);}
+
+		sf += 1;
+		//double sf = 1. + sigma*0.177829 * Power(jet.Pt(), -0.58647);
 		metcorrx -= (sf-1)*jet.Px(); 
 		metcorry -= (sf-1)*jet.Py(); 
 		jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
@@ -780,14 +784,22 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 	else
 	{
-		for(size_t i = cnbtag ; i < reducedjets.size() ; ++i)
+		if(rightper.IsComplete())
 		{
-			for(size_t j = cnbtag ; j < i ; ++j)
+			rightper.Solve(ttsolver);
+			truth1d["nschi_right"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
+			truth2d["Wmasshad_tmasshad_right"]->Fill(rightper.WHad().M(), rightper.THad().M(), weight);
+		}
+
+		int nbtaglocal = cnbtag;
+		for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
+		{
+			for(size_t j = nbtaglocal ; j < i ; ++j)
 			{
-				for(size_t k = 0 ; k < (cnbtag == 2 ? 2 : reducedjets.size()) ; ++k)
+				for(size_t k = 0 ; k < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++k)
 				{
 					if(i == k || j == k) continue;
-					for(size_t l = 0 ; l < (cnbtag == 2 ? 2 : reducedjets.size()) ; ++l)
+					for(size_t l = 0 ; l < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++l)
 					{
 						if(i == l || j == l || k == l) continue;
 						Permutation testper(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, &met);
@@ -807,7 +819,6 @@ void ttbar::ttanalysis(URStreamer& event)
 							if(rightper.IsBLepCorrect(testper))
 							{
 								truth1d["nstest_right"]->Fill(ttsolver.NSRes(), weight);
-								truth1d["nschi_right"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
 							}
 							else
 							{
@@ -826,7 +837,6 @@ void ttbar::ttanalysis(URStreamer& event)
 
 							if(rightper.IsCorrect(testper))
 							{
-								truth2d["Wmasshad_tmasshad_right"]->Fill(whad.M(), thad.M(), weight);
 								truth2d["Wmasslep_tmasslep_right"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
 								truth1d["masstest_right"]->Fill(ttsolver.MassRes(), weight);
 								truth1d["comtest_right"]->Fill(ttsolver.Res(), weight);

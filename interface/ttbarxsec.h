@@ -17,6 +17,7 @@
 #include "Permutation.h"
 #include "BtagEff.h"
 #include "JetScale.h"
+#include "JetScaler.h"
 
 using namespace std;
 class PDFuncertainty;
@@ -115,6 +116,8 @@ class ttbar : public AnalyzerBase
 
 		//ttbar solver
 		TTBarSolver ttsolver;
+
+		JetScaler jetscaler;
 
 		//configuration
 		bool DATASIM;
