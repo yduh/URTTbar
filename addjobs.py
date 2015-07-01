@@ -10,11 +10,14 @@ for dir in jobdirs:
 	print dir
 	if dir + '.root' in allfiles:
 		 continue
-	confile = open(dir+'/condor.jdl', 'r')
-	info = confile.read().split('\n')
-	confile.close()
-	info = [l.strip() for l in info if 'Queue' in l]
-	num =  int(info[0].split('Queue')[1].strip())
+	
+	files = os.listdir(dir)
+	nums = [int(f.split('_')[-1].split('.jdl')[0]) for f in files if '.jdl' in f]
+	#confile = open(dir+'/condor.jdl', 'r')
+	#info = confile.read().split('\n')
+	#confile.close()
+	#info = [l.strip() for l in info if 'Queue' in l]
+	num =  max(nums)+1
 	files = os.listdir(dir)
 	files = [f for f in files if ('%s_out_' % dir) in f]
 	print num, len(files)

@@ -31,6 +31,7 @@ void TTBarPlots::Init(ttbar* analysis)
 	double tbmax = 80.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "n-jets", "Events");
+	plot1d.AddHist("ptaddjets", 200, 0, 400, "p_{T}(add. jets) [GeV]", "Events");
 	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
 	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET [GeV]", "#Delta#Phi(#nu, MET)");
 	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET [GeV]", "#chi");
@@ -40,6 +41,8 @@ void TTBarPlots::Init(ttbar* analysis)
 		if(jn != -1) jb << jn << "_";
 		plot2d.AddHist("test_"+jb.str()+"thadpt", ta, tamin, tamax, an->topptbins, "test", "p_{T}(t_{had}) [GeV]");
 		plot2d.AddHist("testb_"+jb.str()+"thadpt", tb, tbmin, tbmax, an->topptbins, "testb", "p_{T}(t_{had}) [GeV]");
+		plot2d.AddHist("test_"+jb.str()+"nobin", ta, tamin, tamax, an->nobins, "test", "all");
+		plot2d.AddHist("testb_"+jb.str()+"nobin", tb, tbmin, tbmax, an->nobins, "testb", "all");
 		plot2d.AddHist("test_"+jb.str()+"tleppt", ta, tamin, tamax, an->topptbins, "test", "p_{T}(t_{lep}) [GeV]");
 		plot2d.AddHist("testb_"+jb.str()+"tleppt", tb, tbmin, tbmax, an->topptbins, "testb", "p_{T}(t_{lep}) [GeV]");
 		plot2d.AddHist("test_"+jb.str()+"thady", ta, tamin, tamax, an->topybins, "test", "|y(t_{had})|");
@@ -73,6 +76,10 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
 	plot1d["njets"]->Fill(an->cleanedjets.size()-4, weight);
+	for(size_t j = 0 ; j < an->cleanedjets.size() ; ++j)
+	{
+		plot1d["ptaddjets"]->Fill(an->cleanedjets[j]->Pt(), weight);
+	}
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
 	plot1d["DPhiMET_Nu"]->Fill(Abs(nu.DeltaPhi(an->met)), weight);
 	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(nu.DeltaPhi(an->met)), weight);
@@ -85,6 +92,8 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 			plot2d["test_"+jb.str()+"testb"]->Fill(test, testb, weight);
 			plot2d["test_"+jb.str()+"thadpt"]->Fill(test, thad.Pt(), weight);
 			plot2d["testb_"+jb.str()+"thadpt"]->Fill(testb, thad.Pt(), weight);
+			plot2d["test_"+jb.str()+"nobin"]->Fill(test, thad.Pt(), weight);
+			plot2d["testb_"+jb.str()+"nobin"]->Fill(testb, thad.Pt(), weight);
 			plot2d["test_"+jb.str()+"tleppt"]->Fill(test, tlep.Pt(), weight);
 			plot2d["testb_"+jb.str()+"tleppt"]->Fill(testb, tlep.Pt(), weight);
 			plot2d["test_"+jb.str()+"thady"]->Fill(test, Abs(thad.Rapidity()), weight);

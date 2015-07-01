@@ -20,12 +20,15 @@ void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const ve
 	}
 	dir->cd();
 
-	plot1d.AddHist(name + "_truth", Tbins, "Truth " + label, "Events");
+	plot1d.AddHist(name + "_truth", Tbins, label, "Events");
 	plot1d.AddHist(name + "_reco", Mbins, label, "Events");
 	plot2d.AddHist(name + "_matrix", Tbins, Mbins, "gen " + label, "reco " + label);
 	for(int njet = 0 ; njet < 4 ; ++njet)
 	{
 		stringstream hname;
+		hname << name << "_truth_" << njet;
+		plot1d.AddHist(hname.str(), Tbins, label, "Events");
+		hname.str("");
 		hname << name << "_reco_" << njet;
 		plot1d.AddHist(hname.str(), Mbins, label, "Events");
 		hname.str("");
@@ -38,6 +41,10 @@ void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const ve
 
 void TTBarResponse::FillTruth(string name, double val, double weight)
 {
+	int njet = Min(an_->genaddjets.size(), size_t(3));
+	stringstream hname;
+	hname << name << "_truth_" << njet;
+	plot1d[hname.str()]->Fill(val, weight);
 	plot1d[name + "_truth"]->Fill(val, weight);
 }
 

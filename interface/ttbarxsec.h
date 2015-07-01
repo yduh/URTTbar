@@ -135,6 +135,9 @@ class ttbar : public AnalyzerBase
 		double cjetetamax;
 		double clptmin;
 		double cletamax;
+		double csigmajet;
+		double csigmamet;
+		double ctopptweight;
 		//
 		double jetptmin;
 	
@@ -148,6 +151,7 @@ class ttbar : public AnalyzerBase
 		vector<double> ttptbins;
 		vector<double> metbins;
 		vector<double> jetbins;
+		vector<double> nobins;
 
 		JetScale jetscale;
 
