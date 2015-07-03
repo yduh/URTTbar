@@ -17,6 +17,8 @@ if os.path.isdir(jobdir):
 	sys.exit(-1)
 os.mkdir(jobdir)
 
+os.system('cp ttbarxsec.cfg ' + jobdir)
+
 p = subprocess.Popen(['which', exe], stdout=subprocess.PIPE)
 exe = p.stdout.read().split('\n')[0]
 cpcomm = 'cp ' + exe + ' ' + jobdir

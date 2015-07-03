@@ -126,6 +126,8 @@ class ttbar : public AnalyzerBase
 		bool JETSCALEMODE;
 		bool MUONS;
 		bool ELECTRONS;
+		double B_TIGHT;
+		double B_MEDIUM;
 		int cnbtag;
 		size_t cnusedjets;
 		double cwjetptsoft;
@@ -138,6 +140,7 @@ class ttbar : public AnalyzerBase
 		double csigmajet;
 		double csigmamet;
 		double ctopptweight;
+		int crandomseed;
 		//
 		double jetptmin;
 	

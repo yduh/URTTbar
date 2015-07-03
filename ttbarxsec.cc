@@ -4,6 +4,7 @@
 #include "Permutation.h"
 #include "PDFuncertainty.h"
 #include "NeutrinoSolver.h"
+#include "ConfigParser.h"
 
 using namespace std;
 
@@ -41,11 +42,13 @@ ttbar::ttbar(const std::string output_filename):
 	response("response", this),
 	jetscaler("jetuncertainty.root"),
 	DATASIM(false),
-	PSEUDOTOP(false),
+	PSEUDOTOP(true),
 	BTAGMODE(false), //set true for the b-tag efficiency measurement
 	JETSCALEMODE(false), //set true for the b-tag efficiency measurement
 	ELECTRONS(true),
 	MUONS(true),
+	B_TIGHT(0.97),
+	B_MEDIUM(0.89),
 	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(100), //only nused jets, ordered by pT are used for the permutations
 	cwjetptsoft(25.), //min pT of softer W-jet
@@ -59,7 +62,26 @@ ttbar::ttbar(const std::string output_filename):
 	csigmamet(0.),
 	ctopptweight(0.)
 {
-	double lumi = 1000;
+	
+	ConfigParser CP("ttbarxsec.cfg");
+	PSEUDOTOP = CP.Get<bool>("PSEUDOTOP");
+	ELECTRONS = CP.Get<bool>("ELECTRONS");
+	MUONS = CP.Get<bool>("MUONS");
+	cnbtag = CP.Get<int>("nbtag");
+	cwjetptsoft = CP.Get<double>("wjetptsoft"); 
+	cwjetpthard = CP.Get<double>("wjetpthard"); 
+	cbjetptsoft = CP.Get<double>("bjetptsoft"); 
+	cbjetpthard = CP.Get<double>("bjetpthard"); 
+	cjetetamax = CP.Get<double>("jetetamax");
+	clptmin = CP.Get<double>("lptmin"); 
+	cletamax = CP.Get<double>("letamax");
+	csigmajet = CP.Get<double>("sigmajet");
+	csigmamet = CP.Get<double>("sigmamet");
+	ctopptweight = CP.Get<double>("topptweight");
+
+	DATASIM = CP.Get<bool>("DATASIM");
+	double lumi = CP.Get<double>("lumi");
+	crandomseed = CP.Get<int>("randomseed");
 	cout << output_filename << endl;
 	if(output_filename.find("WJets") != string::npos)
 	{
@@ -91,7 +113,6 @@ ttbar::ttbar(const std::string output_filename):
 	}
 
 	jetptmin = min(cwjetptsoft, cbjetptsoft);
-	if(PSEUDOTOP){cnbtag = 2;}
 //	topptbins = {0., 40., 55., 65., 75., 85., 95., 105., 115., 125., 135., 145., 155., 170., 185., 200., 220., 240., 265., 300., 350., 400., 800.};
 //	topetabins = {0., 0.2, 0.4, 0.6,  0.8,  1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.3, 2.8, 4.0};
 //	ttmbins = {250., 350., 370., 390., 410., 430., 450., 470., 490., 510., 530., 550., 575., 600., 630., 670., 720., 770., 900, 1500.};
@@ -267,7 +288,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	weight *= info.weight()/Abs(info.weight());
 	int lepdecays = 0;
 	int topcounter = 0;
-	
+	vector<Genparticle> bpartons;	
 	if(PSEUDOTOP)
 	{
 		const vector<Pst>& pseudotops = event.PSTs();
@@ -333,7 +354,12 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		const vector<Genparticle>& gps = event.genParticles();
 		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
 		{
-			//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
+			//if(Abs(gp->pdgId()) == 5 && gp->status() <=70 && gp->status() > 21)
+			if(Abs(gp->pdgId()) > 500 && Abs(gp->pdgId()) < 600)
+			{
+				bpartons.push_back(*gp);
+					//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
+			}
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
 				if(gp->pdgId() == 6)
@@ -418,24 +444,111 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	if(topcounter == 2 && genwpartons.size() == 2 && gencls.size() == 1 && gennls.size() == 1 && genb != 0 && genbbar != 0)//no tau
 	{
 		SEMILEP = true;
-		sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});
-		if(gencls[0]->pdgId() > 0){genbl = genbbar; genbh = genb;}
-		else {genbh = genbbar; genbl = genb;}
-		gentophad = (*genwpartons[0] + *genwpartons[1] + *genbh);
-		//if(gentophad.M() > 150. && gentophad.M() < 194.) {weight /= reweighthist->Interpolate(gentophad.M());}
-		//if(gentophad.M() < 150.) {weight = 0.;}
-		gentoplep = (*gencls[0] + *gennls[0] + *genbl);
-		if(Abs(gencls[0]->Eta()) < cletamax && gencls[0]->Pt() > clptmin && Abs(genwpartons[0]->Eta()) < cjetetamax && Abs(genwpartons[1]->Eta()) < cjetetamax && Abs(genb->Eta()) < cjetetamax && Abs(genbbar->Eta()) < cjetetamax)
+		if(gencls[0]->pdgId() > 0){genbl = genbbar; genbh = genb;} else {genbh = genbbar; genbl = genb;}
+		if(false)
 		{
-			if(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetptsoft && Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetpthard && Min(genb->Pt(), genbbar->Pt()) > cbjetptsoft && Max(genb->Pt(), genbbar->Pt()) > cbjetpthard)
+			const vector<Genjet>& genjets = event.genjets();
+			vector<Genjet> genbjets;
+			vector<Genjet> genlightjets;
+			for(vector<Genjet>::const_iterator gja = genjets.begin(); gja != genjets.end(); ++gja)
 			{
-				if(genwpartons[0]->DeltaR(*genwpartons[1]) > 0.4 && genwpartons[0]->DeltaR(*genb) > 0.4 && genwpartons[0]->DeltaR(*genbbar) > 0.4 && genwpartons[1]->DeltaR(*genb) > 0.4 && genwpartons[1]->DeltaR(*genbbar) > 0.4 && genb->DeltaR(*genbbar) > 0.4)
+				if(gja->Pt() < 20. || Abs(gja->Eta()) > 2.5){continue;}
+				if(gja->DeltaR(*gencls[0]) < 0.4) {continue;}
+				if(gja->DeltaR(*gennls[0]) < 0.4) {continue;}
+				for(int bp = 0 ; bp < bpartons.size() ; ++bp)
 				{
-					SEMILEPACC = true;
+					if(bpartons[bp].DeltaR(*gja) < 0.4)
+					{
+						genbjets.push_back(*gja);
+						goto nextjet;
+					}
 				}
+				genlightjets.push_back(*gja);
+nextjet: continue;
+			}
+			//cout << bpartons.size() << " " << genbjets.size() << endl;
+			if(genbjets.size() < 2 || genlightjets.size() < 2)
+			{
+				SEMILEP = false;
+			}
+			else
+			{		
+				double vmin = 1000000000; 
+				vector<Genjet> res(4);
+				for(size_t wja = 0 ; wja < genlightjets.size() ; ++wja)
+				{
+					for(size_t wjb = 0 ; wjb < wja ; ++wjb)
+					{
+						for(size_t bja = 0 ; bja < genbjets.size();  ++bja)
+						{
+							for(size_t bjb = 0 ; bjb < genbjets.size();  ++bjb)
+							{
+								if(bja == bjb) continue;
+								//if(gjd->DeltaR(*genbl) > 1.) continue;
+
+								double mw = (genlightjets[wja] + genlightjets[wjb]).M();
+								double mth = (genlightjets[wja] + genlightjets[wjb] + genbjets[bja]).M();
+								double mtl = (*genfincls[0] + *gennls[0] + genbjets[bjb]).M();
+								double v = Power(mw-80., 2) + Power(mth-172.5, 2) + Power(mtl-172.5, 2);
+								if(vmin > v)
+								{
+									vmin = v;
+									res[0] = genlightjets[wja];
+									res[1] = genlightjets[wjb];
+									res[2] = genbjets[bja];
+									res[3] = genbjets[bjb];
+								}
+							}
+						}
+					}
+				}
+			//	if(res[0].DeltaR(*genwpartons[0]) < 0.4 || res[0].DeltaR(*genwpartons[1]) < 0.4)
+			//	{
+			//		cout << "WA" << endl;
+			//	}
+			//	if(res[1].DeltaR(*genwpartons[0]) < 0.4 || res[1].DeltaR(*genwpartons[1]) < 0.4)
+			//	{
+			//		cout << "WB" << endl;
+			//	}
+			//	if(res[2].DeltaR(*genbh) < 0.4)
+			//	{
+			//		cout << "Bh" << endl;
+			//	}
+			//	if(res[3].DeltaR(*genbl) < 0.4)
+			//	{
+			//		cout << "Bl" << endl;
+			//	}
+			//	cout << vmin << " " << bpartons.size() << " " << genbjets.size() << " " << genlightjets.size() << endl;
+				sgenparticles.push_back(res[0]);
+				genwpartons[0] = &(sgenparticles.back());
+				sgenparticles.push_back(res[1]);
+				genwpartons[1] = &(sgenparticles.back());
+				sgenparticles.push_back(res[2]);
+				genbh = &(sgenparticles.back());
+				sgenparticles.push_back(res[3]);
+				genbl = &(sgenparticles.back());
+				if(gencls[0]->pdgId() > 0) {genbbar = genbl; genb = genbh;} else {genb = genbl; genbbar = genbh;}
 			}
 		}
 
+		if(SEMILEP)
+		{
+			sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});
+			gentophad = (*genwpartons[0] + *genwpartons[1] + *genbh);
+			//if(gentophad.M() > 150. && gentophad.M() < 194.) {weight /= reweighthist->Interpolate(gentophad.M());}
+			//if(gentophad.M() < 150.) {weight = 0.;}
+			gentoplep = (*gencls[0] + *gennls[0] + *genbl);
+			if(Abs(gencls[0]->Eta()) < cletamax && gencls[0]->Pt() > clptmin && Abs(genwpartons[0]->Eta()) < cjetetamax && Abs(genwpartons[1]->Eta()) < cjetetamax && Abs(genb->Eta()) < cjetetamax && Abs(genbbar->Eta()) < cjetetamax)
+			{
+				if(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetptsoft && Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetpthard && Min(genb->Pt(), genbbar->Pt()) > cbjetptsoft && Max(genb->Pt(), genbbar->Pt()) > cbjetpthard)
+				{
+					if(genwpartons[0]->DeltaR(*genwpartons[1]) > 0.4 && genwpartons[0]->DeltaR(*genb) > 0.4 && genwpartons[0]->DeltaR(*genbbar) > 0.4 && genwpartons[1]->DeltaR(*genb) > 0.4 && genwpartons[1]->DeltaR(*genbbar) > 0.4 && genb->DeltaR(*genbbar) > 0.4)
+					{
+						SEMILEPACC = true;
+					}
+				}
+			}
+		}
 	}
 	else
 	{
@@ -469,10 +582,8 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		bool wb = false;
 		bool ba = false;
 		bool bb = false;
-		cout << genjets.size() << endl;
 		for(vector<Genjet>::const_iterator gj = genjets.begin(); gj != genjets.end(); ++gj)
 		{
-			cout << gj->Pt() << " " << gj->Eta() << endl;
 			if(gj->Pt() < jetptmin || Abs(gj->Eta()) > cjetetamax) {continue;}
 			if(gj->DeltaR(*gencls[0]) < 0.4)
 			{
@@ -514,7 +625,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	{
 		IDMuon mu(*muon);
 		//if(mu.ID(IDMuon::TIGHT_12) && mu.Pt() > 15.)
-		if(gencls.size() == 1 && mu.DeltaR(*gencls[0]))
+		if(gencls.size() == 1 && mu.DeltaR(*gencls[0]) < 0.4)
 		{
 			double eta = Abs(mu.Eta());
 			if(eta < 0.8){truth2d["Murho_iso_1"]->Fill(event.rho().value(), mu.neutralIso() + mu.photonIso(), weight);}
@@ -537,11 +648,12 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(vector<Electron>::const_iterator electron = electrons.begin(); electron != electrons.end(); ++electron)
 	{
 		IDElectron el(*electron);
-		if(gencls.size() == 1 && el.DeltaR(*gencls[0]))
+		if(gencls.size() == 1 && el.DeltaR(*gencls[0]) < 0.4)
 		{
-			double eta = Abs(el.Eta());
+			double eta = Abs(TVector3(el.x(), el.y(), el.z()).Eta());
 			if(eta < 0.8){truth2d["Elrho_iso_1"]->Fill(event.rho().value(), el.neutralIso() + el.photonIso(), weight);}
-			else if(eta < 1.5){truth2d["Elrho_iso_2"]->Fill(event.rho().value(), el.neutralIso() + el.photonIso(), weight);}
+			else if(eta < 1.4442){truth2d["Elrho_iso_2"]->Fill(event.rho().value(), el.neutralIso() + el.photonIso(), weight);}
+			else if(eta < 1.566){}
 			else if(eta < 2.1){truth2d["Elrho_iso_3"]->Fill(event.rho().value(), el.neutralIso() + el.photonIso(), weight);}
 			else if(eta < 2.5){truth2d["Elrho_iso_4"]->Fill(event.rho().value(), el.neutralIso() + el.photonIso(), weight);}
 		}
@@ -637,12 +749,13 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 				if(gencls[0]->pdgId() < 0)
 				{
 					rightper.BLep(jet);
+					if(SEMILEPACC && !ba){ba = true; truth1d["found"]->Fill(0.5, weight);}
 				}
 				else if(gencls[0]->pdgId() > 0)
 				{
 					rightper.BHad(jet);
+					if(SEMILEPACC && !ba){ba = true; truth1d["found"]->Fill(0.5, weight);}
 				}
-				if(SEMILEPACC && !ba){ba = true; truth1d["found"]->Fill(0.5, weight);}
 			}
 			if(jet->DeltaR(*genbbar) < 0.4 && jet->Pt() > ptbbarmax)
 			{
@@ -650,12 +763,13 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 				if(gencls[0]->pdgId() < 0)
 				{
 					rightper.BHad(jet);
+					if(SEMILEPACC && !bb){bb = true; truth1d["found"]->Fill(1.5, weight);}
 				}
 				else if(gencls[0]->pdgId() > 0)
 				{
 					rightper.BLep(jet);
+					if(SEMILEPACC && !bb){bb = true; truth1d["found"]->Fill(1.5, weight);}
 				}
-				if(SEMILEPACC && !bb){bb = true; truth1d["found"]->Fill(1.5, weight);}
 			}
 			if(jet->DeltaR(*genwpartons[0]) < 0.4 && jet->Pt() > wjptmax[0])
 			{
@@ -773,13 +887,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
 	//check for b-jets
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
-	if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && reducedjets[1]->csvIncl() < 0.814)){return;}
-	//int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [](IDJet* A){if(A->csvIncl() > 0.814){return true;} return false;});
-	//cout << nbjets << endl;
-	//if((cnbtag == 1 && reducedjets[0]->csvIncl() < 0.941) || (cnbtag == 2 && (reducedjets[0]->csvIncl() < 0.941 || reducedjets[1]->csvIncl() < 0.814))){return;}
-	//if(reducedjets[0]->csvIncl() > 0.814){return;}
-	//if(reducedjets[0]->csvIncl() < 0.941) {return;}
-	//if(reducedjets[1]->csvIncl() > 0.814 && reducedjets[2]->csvIncl() < 0.814) {cnbtag = 2;} else{cnbtag = 1;}
+	if((cnbtag == 1 && reducedjets[0]->csvIncl() < B_TIGHT) || (cnbtag == 2 && reducedjets[1]->csvIncl() < B_MEDIUM)){return;}
 
 	reco1d["counter"]->Fill(3.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
@@ -797,135 +905,84 @@ void ttbar::ttanalysis(URStreamer& event)
 
 	if(SEMILEPACC && rightper.IsComplete()) truth1d["counter"]->Fill(6.5, weight);
 
-	if(PSEUDOTOP)
+	if(rightper.IsComplete())
 	{
-		vector<IDJet*> bjets;
-		vector<IDJet*> lightjets;
-
-		for(IDJet* j : reducedjets)
-		{
-			if(j->csvIncl() < 0.814) {lightjets.push_back(j);} else {bjets.push_back(j);}
-		} 
-		//sort(bjets.begin(), bjets.end(), [](IDJet* A, IDJet* B){return(A->Pt() > B->Pt());});
-		bestper.L(lep);
-		bestper.MET(&met);
-		Permutation testper = bestper;
-		double bestmassdiff = 100000.;
-		for(int wja = 0 ; wja < lightjets.size() ; ++wja)
-		{
-			for(int wjb = 0 ; wjb < wja ; ++wjb)
-			{
-				testper.WJa(lightjets[wja]);
-				testper.WJb(lightjets[wjb]);
-				double testmassdiff = Abs(testper.WHad().M() - 80.);
-				if(testmassdiff < bestmassdiff)
-				{
-					bestmassdiff = testmassdiff;
-					bestper = testper;
-				}
-			}
-		}
-		bestmassdiff = 100000.;
-		testper = bestper;
-		for(int bja = 0 ; bja < bjets.size() ; ++bja)
-		{
-			for(int bjb = 0 ; bjb < bjets.size() ; ++bjb)
-			{
-				if(bja == bjb) continue;
-				testper.BLep(bjets[bja]);
-				testper.BHad(bjets[bjb]);
-				if(!testper.IsComplete()) {return;}
-				testper.Solve(ttsolver);
-				double testmassdiff = Abs(testper.THad().M()-172.) + Abs(testper.TLep().M()-172.);
-				if(testmassdiff < bestmassdiff)
-				{
-					bestmassdiff = testmassdiff;
-					bestper = testper;
-				}
-			}
-		}
+		rightper.Solve(ttsolver);
+		truth1d["nschi_right"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
+		truth2d["Wmasshad_tmasshad_right"]->Fill(rightper.WHad().M(), rightper.THad().M(), weight);
 	}
-	else
+
+	int nbtaglocal = cnbtag;
+	for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
 	{
-		if(rightper.IsComplete())
+		for(size_t j = nbtaglocal ; j < i ; ++j)
 		{
-			rightper.Solve(ttsolver);
-			truth1d["nschi_right"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
-			truth2d["Wmasshad_tmasshad_right"]->Fill(rightper.WHad().M(), rightper.THad().M(), weight);
-		}
-
-		int nbtaglocal = cnbtag;
-		for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
-		{
-			for(size_t j = nbtaglocal ; j < i ; ++j)
+			for(size_t k = 0 ; k < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++k)
 			{
-				for(size_t k = 0 ; k < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++k)
+				if(i == k || j == k) continue;
+				for(size_t l = 0 ; l < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++l)
 				{
-					if(i == k || j == k) continue;
-					for(size_t l = 0 ; l < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++l)
+					if(i == l || j == l || k == l) continue;
+					Permutation testper(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, &met);
+					if(testper.WJa()->Pt() < cwjetpthard && testper.WJb()->Pt() < cwjetpthard) continue;
+					if(testper.WJa()->Pt() < cwjetptsoft || testper.WJb()->Pt() < cwjetptsoft) continue;
+					if(testper.BHad()->Pt() < cbjetpthard && testper.BLep()->Pt() < cbjetpthard) continue;
+					if(testper.BHad()->Pt() < cbjetptsoft || testper.BLep()->Pt() < cbjetptsoft) continue;
+					testper.Solve(ttsolver);
+
+					TLorentzVector whad(testper.WHad());
+					TLorentzVector thad(testper.THad());
+					TLorentzVector wlepmiss(*lep + met);
+					TLorentzVector tlepmiss(wlepmiss + *testper.BLep());
+					//cout << per++ << " " << ttsolver.NSRes() << " " << ttsolver.BTagRes() << " " << ttsolver.MassRes() << endl;
+					if(rightper.IsComplete())
 					{
-						if(i == l || j == l || k == l) continue;
-						Permutation testper(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, &met);
-						if(testper.WJa()->Pt() < cwjetpthard && testper.WJb()->Pt() < cwjetpthard) continue;
-						if(testper.WJa()->Pt() < cwjetptsoft || testper.WJb()->Pt() < cwjetptsoft) continue;
-						if(testper.BHad()->Pt() < cbjetpthard && testper.BLep()->Pt() < cbjetpthard) continue;
-						if(testper.BHad()->Pt() < cbjetptsoft || testper.BLep()->Pt() < cbjetptsoft) continue;
-						testper.Solve(ttsolver);
-
-						TLorentzVector whad(testper.WHad());
-						TLorentzVector thad(testper.THad());
-						TLorentzVector wlepmiss(*lep + met);
-						TLorentzVector tlepmiss(wlepmiss + *testper.BLep());
-						//cout << per++ << " " << ttsolver.NSRes() << " " << ttsolver.BTagRes() << " " << ttsolver.MassRes() << endl;
-						if(rightper.IsComplete())
+						if(rightper.IsBLepCorrect(testper))
 						{
-							if(rightper.IsBLepCorrect(testper))
-							{
-								truth1d["nstest_right"]->Fill(ttsolver.NSRes(), weight);
-							}
-							else
-							{
-								truth1d["nstest_wrong"]->Fill(ttsolver.NSRes(), weight);
-								truth1d["nschi_wrong"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
-							}
-
-							if(rightper.AreBsCorrect(testper))
-							{
-								truth1d["btagtest_right"]->Fill(ttsolver.BTagRes(), weight);
-							}
-							else
-							{
-								truth1d["btagtest_wrong"]->Fill(ttsolver.BTagRes(), weight);
-							}
-
-							if(rightper.IsCorrect(testper))
-							{
-								truth2d["Wmasslep_tmasslep_right"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
-								truth1d["masstest_right"]->Fill(ttsolver.MassRes(), weight);
-								truth1d["comtest_right"]->Fill(ttsolver.Res(), weight);
-							}
-							else
-							{
-								if(rightper.IsWHadCorrect(testper))
-								{
-									truth2d["Wmasshad_tmasshad_rightw"]->Fill(whad.M(), thad.M(), weight);
-								}
-								else
-								{
-									truth2d["Wmasshad_tmasshad_wrongw"]->Fill(whad.M(), thad.M(), weight);
-								}
-								truth2d["Wmasshad_tmasshad_wrong"]->Fill(whad.M(), thad.M(), weight);
-								truth2d["Wmasslep_tmasslep_wrong"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
-								truth1d["masstest_wrong"]->Fill(ttsolver.MassRes(), weight);
-								truth1d["comtest_wrong"]->Fill(ttsolver.Res(), weight);
-							}
-
+							truth1d["nstest_right"]->Fill(ttsolver.NSRes(), weight);
+						}
+						else
+						{
+							truth1d["nstest_wrong"]->Fill(ttsolver.NSRes(), weight);
+							truth1d["nschi_wrong"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
 						}
 
-						if(testper < bestper)
+						if(rightper.AreBsCorrect(testper))
 						{
-							bestper = testper;
+							truth1d["btagtest_right"]->Fill(ttsolver.BTagRes(), weight);
 						}
+						else
+						{
+							truth1d["btagtest_wrong"]->Fill(ttsolver.BTagRes(), weight);
+						}
+
+						if(rightper.IsCorrect(testper))
+						{
+							truth2d["Wmasslep_tmasslep_right"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
+							truth1d["masstest_right"]->Fill(ttsolver.MassRes(), weight);
+							truth1d["comtest_right"]->Fill(ttsolver.Res(), weight);
+						}
+						else
+						{
+							if(rightper.IsWHadCorrect(testper))
+							{
+								truth2d["Wmasshad_tmasshad_rightw"]->Fill(whad.M(), thad.M(), weight);
+							}
+							else
+							{
+								truth2d["Wmasshad_tmasshad_wrongw"]->Fill(whad.M(), thad.M(), weight);
+							}
+							truth2d["Wmasshad_tmasshad_wrong"]->Fill(whad.M(), thad.M(), weight);
+							truth2d["Wmasslep_tmasslep_wrong"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
+							truth1d["masstest_wrong"]->Fill(ttsolver.MassRes(), weight);
+							truth1d["comtest_wrong"]->Fill(ttsolver.Res(), weight);
+						}
+
+					}
+
+					if(testper < bestper)
+					{
+						bestper = testper;
 					}
 				}
 			}
@@ -1070,7 +1127,7 @@ void ttbar::analyze()
 	IDElectron::streamer = &event;
 	IDMuon::streamer = &event;
 	PDFuncertainty::streamer = &event;
-	TRandom3 rand(12311);
+	TRandom3 rand(crandomseed);
 	while(event.next())
 	{
 		nevent++;
@@ -1104,13 +1161,7 @@ void ttbar::analyze()
 
 		rightper.Reset();
 
-		//recbjets.clear();
-		//recwjets.clear();
 		recotherjets.clear();
-		//recbjet = 0;
-		//recbbarjet = 0;
-		//recbhjet = 0;
-		//recbljet = 0;
 
 		sjets.clear();
 		cleanedjets.clear();
@@ -1121,6 +1172,7 @@ void ttbar::analyze()
 		selectrons.clear();
 		mediumelectrons.clear();
 		looseelectrons.clear();
+
 		if(DATASIM && selectionprob > rand.Uniform())
 		{
 			if(selectionprob > 1.){weight *= selectionprob;}
@@ -1132,8 +1184,11 @@ void ttbar::analyze()
 		else if(!DATASIM)
 		{
 			SelectGenParticles(event);
-			SelectRecoParticles(event);
-			ttanalysis(event);
+			if(event.trigger().HLT_IsoMu27() == 1 || event.trigger().HLT_Ele27_WP85_Gsf())
+			{
+				SelectRecoParticles(event);
+				ttanalysis(event);
+			}
 		}
 
 	}
