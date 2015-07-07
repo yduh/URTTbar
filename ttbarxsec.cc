@@ -60,7 +60,9 @@ ttbar::ttbar(const std::string output_filename):
 	cletamax(2.1),//max |eta| of leptons (max allowed value is 2.4) 
 	csigmajet(0.),
 	csigmamet(0.),
-	ctopptweight(0.)
+	ctopptweight(0.),
+	crenscale(0),
+	cfacscale(0)
 {
 	
 	ConfigParser CP("ttbarxsec.cfg");
@@ -78,6 +80,11 @@ ttbar::ttbar(const std::string output_filename):
 	csigmajet = CP.Get<double>("sigmajet");
 	csigmamet = CP.Get<double>("sigmamet");
 	ctopptweight = CP.Get<double>("topptweight");
+	if(output_filename.find("tt_PowhegP8") != string::npos)
+	{
+		cfacscale = CP.Get<int>("facscale");
+		crenscale = CP.Get<int>("renscale");
+	}
 
 	DATASIM = CP.Get<bool>("DATASIM");
 	double lumi = CP.Get<double>("lumi");
@@ -284,11 +291,9 @@ void ttbar::begin()
 
 void ttbar::SelectGenParticles(URStreamer& event)
 {
-	const Geninfo& info = event.genInfo();
-	weight *= info.weight()/Abs(info.weight());
 	int lepdecays = 0;
 	int topcounter = 0;
-	vector<Genparticle> bpartons;	
+	//vector<Genparticle> bpartons;	
 	if(PSEUDOTOP)
 	{
 		const vector<Pst>& pseudotops = event.PSTs();
@@ -355,11 +360,11 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
 		{
 			//if(Abs(gp->pdgId()) == 5 && gp->status() <=70 && gp->status() > 21)
-			if(Abs(gp->pdgId()) > 500 && Abs(gp->pdgId()) < 600)
-			{
-				bpartons.push_back(*gp);
-					//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
-			}
+		//	if(Abs(gp->pdgId()) > 500 && Abs(gp->pdgId()) < 600)
+		//	{
+		//		bpartons.push_back(*gp);
+		//			//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
+		//	}
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
 				if(gp->pdgId() == 6)
@@ -445,91 +450,91 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	{
 		SEMILEP = true;
 		if(gencls[0]->pdgId() > 0){genbl = genbbar; genbh = genb;} else {genbh = genbbar; genbl = genb;}
-		if(false)
-		{
-			const vector<Genjet>& genjets = event.genjets();
-			vector<Genjet> genbjets;
-			vector<Genjet> genlightjets;
-			for(vector<Genjet>::const_iterator gja = genjets.begin(); gja != genjets.end(); ++gja)
-			{
-				if(gja->Pt() < 20. || Abs(gja->Eta()) > 2.5){continue;}
-				if(gja->DeltaR(*gencls[0]) < 0.4) {continue;}
-				if(gja->DeltaR(*gennls[0]) < 0.4) {continue;}
-				for(int bp = 0 ; bp < bpartons.size() ; ++bp)
-				{
-					if(bpartons[bp].DeltaR(*gja) < 0.4)
-					{
-						genbjets.push_back(*gja);
-						goto nextjet;
-					}
-				}
-				genlightjets.push_back(*gja);
-nextjet: continue;
-			}
-			//cout << bpartons.size() << " " << genbjets.size() << endl;
-			if(genbjets.size() < 2 || genlightjets.size() < 2)
-			{
-				SEMILEP = false;
-			}
-			else
-			{		
-				double vmin = 1000000000; 
-				vector<Genjet> res(4);
-				for(size_t wja = 0 ; wja < genlightjets.size() ; ++wja)
-				{
-					for(size_t wjb = 0 ; wjb < wja ; ++wjb)
-					{
-						for(size_t bja = 0 ; bja < genbjets.size();  ++bja)
-						{
-							for(size_t bjb = 0 ; bjb < genbjets.size();  ++bjb)
-							{
-								if(bja == bjb) continue;
-								//if(gjd->DeltaR(*genbl) > 1.) continue;
+		//if(false)
+		//{
+		//	const vector<Genjet>& genjets = event.genjets();
+		//	vector<Genjet> genbjets;
+		//	vector<Genjet> genlightjets;
+		//	for(vector<Genjet>::const_iterator gja = genjets.begin(); gja != genjets.end(); ++gja)
+		//	{
+		//		if(gja->Pt() < 20. || Abs(gja->Eta()) > 2.5){continue;}
+		//		if(gja->DeltaR(*gencls[0]) < 0.4) {continue;}
+		//		if(gja->DeltaR(*gennls[0]) < 0.4) {continue;}
+		//		for(int bp = 0 ; bp < bpartons.size() ; ++bp)
+		//		{
+		//			if(bpartons[bp].DeltaR(*gja) < 0.4)
+		//			{
+		//				genbjets.push_back(*gja);
+		//				goto nextjet;
+		//			}
+		//		}
+		//		genlightjets.push_back(*gja);
+nextjet:// continue;
+		//	}
+		//	//cout << bpartons.size() << " " << genbjets.size() << endl;
+		//	if(genbjets.size() < 2 || genlightjets.size() < 2)
+		//	{
+		//		SEMILEP = false;
+		//	}
+		//	else
+		//	{		
+		//		double vmin = 1000000000; 
+		//		vector<Genjet> res(4);
+		//		for(size_t wja = 0 ; wja < genlightjets.size() ; ++wja)
+		//		{
+		//			for(size_t wjb = 0 ; wjb < wja ; ++wjb)
+		//			{
+		//				for(size_t bja = 0 ; bja < genbjets.size();  ++bja)
+		//				{
+		//					for(size_t bjb = 0 ; bjb < genbjets.size();  ++bjb)
+		//					{
+		//						if(bja == bjb) continue;
+		//						//if(gjd->DeltaR(*genbl) > 1.) continue;
 
-								double mw = (genlightjets[wja] + genlightjets[wjb]).M();
-								double mth = (genlightjets[wja] + genlightjets[wjb] + genbjets[bja]).M();
-								double mtl = (*genfincls[0] + *gennls[0] + genbjets[bjb]).M();
-								double v = Power(mw-80., 2) + Power(mth-172.5, 2) + Power(mtl-172.5, 2);
-								if(vmin > v)
-								{
-									vmin = v;
-									res[0] = genlightjets[wja];
-									res[1] = genlightjets[wjb];
-									res[2] = genbjets[bja];
-									res[3] = genbjets[bjb];
-								}
-							}
-						}
-					}
-				}
-			//	if(res[0].DeltaR(*genwpartons[0]) < 0.4 || res[0].DeltaR(*genwpartons[1]) < 0.4)
-			//	{
-			//		cout << "WA" << endl;
-			//	}
-			//	if(res[1].DeltaR(*genwpartons[0]) < 0.4 || res[1].DeltaR(*genwpartons[1]) < 0.4)
-			//	{
-			//		cout << "WB" << endl;
-			//	}
-			//	if(res[2].DeltaR(*genbh) < 0.4)
-			//	{
-			//		cout << "Bh" << endl;
-			//	}
-			//	if(res[3].DeltaR(*genbl) < 0.4)
-			//	{
-			//		cout << "Bl" << endl;
-			//	}
-			//	cout << vmin << " " << bpartons.size() << " " << genbjets.size() << " " << genlightjets.size() << endl;
-				sgenparticles.push_back(res[0]);
-				genwpartons[0] = &(sgenparticles.back());
-				sgenparticles.push_back(res[1]);
-				genwpartons[1] = &(sgenparticles.back());
-				sgenparticles.push_back(res[2]);
-				genbh = &(sgenparticles.back());
-				sgenparticles.push_back(res[3]);
-				genbl = &(sgenparticles.back());
-				if(gencls[0]->pdgId() > 0) {genbbar = genbl; genb = genbh;} else {genb = genbl; genbbar = genbh;}
-			}
-		}
+		//						double mw = (genlightjets[wja] + genlightjets[wjb]).M();
+		//						double mth = (genlightjets[wja] + genlightjets[wjb] + genbjets[bja]).M();
+		//						double mtl = (*genfincls[0] + *gennls[0] + genbjets[bjb]).M();
+		//						double v = Power(mw-80., 2) + Power(mth-172.5, 2) + Power(mtl-172.5, 2);
+		//						if(vmin > v)
+		//						{
+		//							vmin = v;
+		//							res[0] = genlightjets[wja];
+		//							res[1] = genlightjets[wjb];
+		//							res[2] = genbjets[bja];
+		//							res[3] = genbjets[bjb];
+		//						}
+		//					}
+		//				}
+		//			}
+		//		}
+		//	//	if(res[0].DeltaR(*genwpartons[0]) < 0.4 || res[0].DeltaR(*genwpartons[1]) < 0.4)
+		//	//	{
+		//	//		cout << "WA" << endl;
+		//	//	}
+		//	//	if(res[1].DeltaR(*genwpartons[0]) < 0.4 || res[1].DeltaR(*genwpartons[1]) < 0.4)
+		//	//	{
+		//	//		cout << "WB" << endl;
+		//	//	}
+		//	//	if(res[2].DeltaR(*genbh) < 0.4)
+		//	//	{
+		//	//		cout << "Bh" << endl;
+		//	//	}
+		//	//	if(res[3].DeltaR(*genbl) < 0.4)
+		//	//	{
+		//	//		cout << "Bl" << endl;
+		//	//	}
+		//	//	cout << vmin << " " << bpartons.size() << " " << genbjets.size() << " " << genlightjets.size() << endl;
+		//		sgenparticles.push_back(res[0]);
+		//		genwpartons[0] = &(sgenparticles.back());
+		//		sgenparticles.push_back(res[1]);
+		//		genwpartons[1] = &(sgenparticles.back());
+		//		sgenparticles.push_back(res[2]);
+		//		genbh = &(sgenparticles.back());
+		//		sgenparticles.push_back(res[3]);
+		//		genbl = &(sgenparticles.back());
+		//		if(gencls[0]->pdgId() > 0) {genbbar = genbl; genb = genbh;} else {genb = genbl; genbbar = genbh;}
+		//	}
+		//}
 
 		if(SEMILEP)
 		{
@@ -1132,20 +1137,6 @@ void ttbar::analyze()
 	{
 		nevent++;
 		if(nevent % 1000 == 0)cout << "Event:" << nevent << endl;
-		truth1d["counter"]->Fill(0.5);
-		weight = 1.;	
-
-		double npu = event.PUInfos()[0].nPU();
-		truth1d["npuorig"]->Fill(npu, weight);
-		if(npu > 0)
-		{
-			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
-		}
-		else
-		{
-			weight = 0.;
-		}
-		truth1d["npu"]->Fill(npu, weight);
 		sgenparticles.clear();
 		genwpartons.clear();
 		gencls.clear();
@@ -1172,6 +1163,28 @@ void ttbar::analyze()
 		selectrons.clear();
 		mediumelectrons.clear();
 		looseelectrons.clear();
+
+		truth1d["counter"]->Fill(0.5);
+		weight = 1.;	
+		const Geninfo& info = event.genInfo();
+		weight *= info.weight()/Abs(info.weight());
+		const vector<Mcweight>& ws =  event.MCWeights();
+		if(cfacscale == -1) weight *= weight*ws[2].weights()/ws[0].weights();
+		else if(cfacscale == 1) weight *= weight*ws[1].weights()/ws[0].weights();
+		if(crenscale == -1) weight *= weight*ws[6].weights()/ws[0].weights();
+		else if(crenscale == 1) weight *= weight*ws[3].weights()/ws[0].weights();
+
+		double npu = event.PUInfos()[0].nPU();
+		truth1d["npuorig"]->Fill(npu, weight);
+		if(npu > 0)
+		{
+			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
+		}
+		else
+		{
+			weight = 0.;
+		}
+		truth1d["npu"]->Fill(npu, weight);
 
 		if(DATASIM && selectionprob > rand.Uniform())
 		{

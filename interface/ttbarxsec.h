@@ -140,6 +140,8 @@ class ttbar : public AnalyzerBase
 		double csigmajet;
 		double csigmamet;
 		double ctopptweight;
+		int cfacscale;
+		int crenscale;
 		int crandomseed;
 		//
 		double jetptmin;
