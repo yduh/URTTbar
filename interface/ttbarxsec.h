@@ -61,7 +61,6 @@ class ttbar : public AnalyzerBase
 		//Jet* recbljet;
 		//int nttjets;
 		Permutation rightper;
-		vector<IDJet*> recotherjets;
 
 		//reco
 		list<IDJet> sjets;
@@ -137,6 +136,13 @@ class ttbar : public AnalyzerBase
 		double cjetetamax;
 		double clptmin;
 		double cletamax;
+		double cpwjetptsoft;
+		double cpwjetpthard;
+		double cpbjetptsoft;
+		double cpbjetpthard;
+		double cpjetetamax;
+		double cplptmin;
+		double cpletamax;
 		double csigmajet;
 		double csigmamet;
 		double ctopptweight;

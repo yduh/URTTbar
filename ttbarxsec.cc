@@ -58,6 +58,13 @@ ttbar::ttbar(const std::string output_filename):
 	cjetetamax(2.4),//max |eta| for jets
 	clptmin(30.), //min pT of lepton (el or mu)
 	cletamax(2.1),//max |eta| of leptons (max allowed value is 2.4) 
+	cpwjetptsoft(25.), //min pT of softer W-jet
+	cpwjetpthard(35.), //min pT of harder W-jet 
+	cpbjetptsoft(25.), //min pT of softer b-jets
+	cpbjetpthard(35.), //min pT of harder b-jets
+	cpjetetamax(2.4),//max |eta| for jets
+	cplptmin(30.), //min pT of lepton (el or mu)
+	cpletamax(2.1),//max |eta| of leptons (max allowed value is 2.4) 
 	csigmajet(0.),
 	csigmamet(0.),
 	ctopptweight(0.),
@@ -67,9 +74,11 @@ ttbar::ttbar(const std::string output_filename):
 	
 	ConfigParser CP("ttbarxsec.cfg");
 	PSEUDOTOP = CP.Get<bool>("PSEUDOTOP");
+	BTAGMODE = CP.Get<bool>("BTAGMODE");
 	ELECTRONS = CP.Get<bool>("ELECTRONS");
 	MUONS = CP.Get<bool>("MUONS");
 	cnbtag = CP.Get<int>("nbtag");
+
 	cwjetptsoft = CP.Get<double>("wjetptsoft"); 
 	cwjetpthard = CP.Get<double>("wjetpthard"); 
 	cbjetptsoft = CP.Get<double>("bjetptsoft"); 
@@ -77,6 +86,15 @@ ttbar::ttbar(const std::string output_filename):
 	cjetetamax = CP.Get<double>("jetetamax");
 	clptmin = CP.Get<double>("lptmin"); 
 	cletamax = CP.Get<double>("letamax");
+
+	cpwjetptsoft = CP.Get<double>("Pwjetptsoft"); 
+	cpwjetpthard = CP.Get<double>("Pwjetpthard"); 
+	cpbjetptsoft = CP.Get<double>("Pbjetptsoft"); 
+	cpbjetpthard = CP.Get<double>("Pbjetpthard"); 
+	cpjetetamax = CP.Get<double>("Pjetetamax");
+	cplptmin = CP.Get<double>("Plptmin"); 
+	cpletamax = CP.Get<double>("Pletamax");
+
 	csigmajet = CP.Get<double>("sigmajet");
 	csigmamet = CP.Get<double>("sigmamet");
 	ctopptweight = CP.Get<double>("topptweight");
@@ -272,6 +290,7 @@ void ttbar::begin()
 	if(PSEUDOTOP){probfilename = "Prob_pseudo.root";}
 	if(BTAGMODE)
 	{
+		cnbtag = 1;
 		ttsolver.Init(probfilename, false, true, true);//for btag
 	}
 	if(JETSCALEMODE)
@@ -469,7 +488,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		//			}
 		//		}
 		//		genlightjets.push_back(*gja);
-nextjet:// continue;
+//nextjet:// continue;
 		//	}
 		//	//cout << bpartons.size() << " " << genbjets.size() << endl;
 		//	if(genbjets.size() < 2 || genlightjets.size() < 2)
@@ -536,21 +555,17 @@ nextjet:// continue;
 		//	}
 		//}
 
-		if(SEMILEP)
+		sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});
+		gentophad = (*genwpartons[0] + *genwpartons[1] + *genbh);
+		gentoplep = (*gencls[0] + *gennls[0] + *genbl);
+
+		if(Abs(gencls[0]->Eta()) < cpletamax && gencls[0]->Pt() > cplptmin && Abs(genwpartons[0]->Eta()) < cpjetetamax && Abs(genwpartons[1]->Eta()) < cpjetetamax && Abs(genb->Eta()) < cpjetetamax && Abs(genbbar->Eta()) < cpjetetamax)
 		{
-			sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});
-			gentophad = (*genwpartons[0] + *genwpartons[1] + *genbh);
-			//if(gentophad.M() > 150. && gentophad.M() < 194.) {weight /= reweighthist->Interpolate(gentophad.M());}
-			//if(gentophad.M() < 150.) {weight = 0.;}
-			gentoplep = (*gencls[0] + *gennls[0] + *genbl);
-			if(Abs(gencls[0]->Eta()) < cletamax && gencls[0]->Pt() > clptmin && Abs(genwpartons[0]->Eta()) < cjetetamax && Abs(genwpartons[1]->Eta()) < cjetetamax && Abs(genb->Eta()) < cjetetamax && Abs(genbbar->Eta()) < cjetetamax)
+			if(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cpwjetptsoft && Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cpwjetpthard && Min(genb->Pt(), genbbar->Pt()) > cpbjetptsoft && Max(genb->Pt(), genbbar->Pt()) > cpbjetpthard)
 			{
-				if(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetptsoft && Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cwjetpthard && Min(genb->Pt(), genbbar->Pt()) > cbjetptsoft && Max(genb->Pt(), genbbar->Pt()) > cbjetpthard)
+				if(genwpartons[0]->DeltaR(*genwpartons[1]) > 0.4 && genwpartons[0]->DeltaR(*genb) > 0.4 && genwpartons[0]->DeltaR(*genbbar) > 0.4 && genwpartons[1]->DeltaR(*genb) > 0.4 && genwpartons[1]->DeltaR(*genbbar) > 0.4 && genb->DeltaR(*genbbar) > 0.4)
 				{
-					if(genwpartons[0]->DeltaR(*genwpartons[1]) > 0.4 && genwpartons[0]->DeltaR(*genb) > 0.4 && genwpartons[0]->DeltaR(*genbbar) > 0.4 && genwpartons[1]->DeltaR(*genb) > 0.4 && genwpartons[1]->DeltaR(*genbbar) > 0.4 && genb->DeltaR(*genbbar) > 0.4)
-					{
-						SEMILEPACC = true;
-					}
+					SEMILEPACC = true;
 				}
 			}
 		}
@@ -620,7 +635,6 @@ nextjet:// continue;
 		}
 		if(wa && wb && ba && bb){truth1d["foundgen"]->Fill(4.5, weight);}
 	}
-
 }
 
 void ttbar::SelectRecoParticles(URStreamer& event)
@@ -788,7 +802,6 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 				rightper.WJb(jet);
 				if(SEMILEPACC && !wb){wb = true; truth1d["found"]->Fill(3.5, weight);}
 			}
-			recotherjets.push_back(jet);
 		}
 		if(SEMILEPACC && rightper.IsComplete()){truth1d["found"]->Fill(6.5, weight);} 
 		//cout << rightper.IsValid() << endl;
@@ -1151,8 +1164,6 @@ void ttbar::analyze()
 		genaddjets.clear();
 
 		rightper.Reset();
-
-		recotherjets.clear();
 
 		sjets.clear();
 		cleanedjets.clear();
