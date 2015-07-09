@@ -1,0 +1,131 @@
+BeginClass: IOEventInfo
+i: EventNumber, LumiSectionNumber, RunNumber, TimeUnix, TimeMuSec
+b: TriggerHLT[150]
+F: AK5PFRho, AK5PFSigma 
+EndClass
+Branch IOEventInfo: IOEventInfo[1]
+
+BeginClass: IOBeamSpot
+F: Vx, Vy, Vz, XWidth, YWidth, ZWidth
+EndClass
+Branch IOBeamSpot: IOBeamSpot[1]
+
+BeginClass: IOMET
+F: px, py
+F: pxUnc, pyUnc, pxpyUnc
+EndClass
+Branch IOMET: IOMET[10]
+
+BeginClass: IOTrack
+F: px, py, pz, ChiQ, NDOF, Dxy, DxyUnc, Dz, DzUnc, DeDx
+I: VertexNumber
+B: Charge
+b: NStripHits, NPixelHits, NMissingHits, NMissingInnerHits, NPixelLayers, NStripLayers 
+EndClass
+Branch IOTrack: IOTrack[1000]
+
+BeginClass: PrimaryVertex
+F: Vx, Vy, Vz, ChiQ, NDOF, SumPtQ
+b: NumTracks
+EndClass
+Branch PrimaryVertex: PrimaryVertex[200]
+
+BeginClass: IOMuon
+F: px, py, pz, PtUnc, ChiQ, NDOF, ECalEnergy, HCalEnergy
+I: VertexNumber, NumChambers, NumChambersWithSegments, NumValidMuonHits, NumMatchedStations
+i: TriggerMatching
+i: Info
+MemberClass IOTrack: InnerTrack[1] 
+MemberClass PFIsolation: PFR4
+MemberClass DetIsolation: DetR3
+EndClass
+Branch IOMuon: IOMuon[200]
+
+BeginClass: IOPFJet
+F: px, py, pz, e, Area, Mass
+i: TriggerMatching
+F: ChargedHadronEnergy, NeutralHadronEnergy, PhotonEnergy, ElectronEnergy, MuonEnergy, ForwardEM, ForwardHad
+I: NumChargedHadrons, NumNeutralHadrons, NumPhotons, NumElectrons, NumMuons, NumForwardEMs, NumForwardHads
+F: ChargedPtMomPA, ChargedPtMomPB, ConstituentPtMomPA, ConstituentPtMomPB
+F: PtFractionWrongPrimaryVertex, MaxChargedPtFraction, MaxPtFraction
+F: EnergyCorrection, EnergyCorrectionUnc
+F: BTagCSV, BTagCSVv2
+EndClass
+Branch IOPFJet: IOPFJet[200]
+
+BeginClass: IOElectron
+F: px, py, pz
+i: TriggerMatching
+MemberClass IOTrack: GSFTrack
+F: DeltaEtaSCTrack, DeltaPhiSCTrack, ESCOverETrack, ECalEnergy
+F: E1x5, E2x5, E5x5, R9
+F: SigmaIEtaIEta, SigmaIPhiIPhi, SigmaIEtaIPhi, Full5x5SigmaIEtaIEta
+F: EHCalTowerOverECalD1, EHCalTowerOverECalD2
+i: Info
+MemberClass PFIsolation: PFR3
+MemberClass IOSuperCluster: SC
+EndClass
+Branch IOElectron: IOElectron[200]
+
+BeginClass: IOPhoton
+F: px, py, pz
+i: TriggerMatching
+F: E1x5, E2x5, E3x3, E5x5, MaxCrystalEnergy
+F: SigmaIEtaIEta, SigmaIPhiIPhi, SigmaIEtaIPhi
+F: EHCalTowerOverECalD1, EHCalTowerOverECalD2
+i: Info
+MemberClass PFIsolation: PFR3
+MemberClass IOSuperCluster: SC
+EndClass
+Branch IOPhoton: IOPhoton[200]
+
+BeginClass: GenInfo
+F: Weight, x1, x2, RenScale, FacScale
+I: PDGID1, PDGID2
+F: METx, METy
+I: NumPUInteractions, NumPUInteractionsBefore, NumPUInteractionsAfter
+F: NumTrueInteractions
+EndClass
+Branch GenInfo: GenInfo[1]
+
+BeginClass: AllGenParticle
+F: px, py, pz, e, vx, vy, vz
+I: PDGID, Status, Mother[100], Daughter[100]
+EndClass
+Branch AllGenParticle: AllGenParticle[10000]
+
+BeginClass: SelectedGenParticle
+F: px, py, pz, e
+I: PDGID, Status, Info, IndirectMother, Mother
+EndClass
+Branch SelectedGenParticle: SelectedGenParticle[10000]
+
+BeginClass: IOGenAK4Jet
+F: e, px, py, pz, einvisible
+EndClass
+Branch IOGenAK4Jet: IOGenAK4Jet[200]
+
+BeginClass: PFIsolation
+F: Charged, Neutral, Hadron, Photon, ChargedPU
+#I: NumCharged, NumNeutral, NumHadron, NumPhoton
+EndClass
+
+BeginClass: DetIsolation
+F: Track, ECal, HCal
+#I: NumTrack, NumECal, NumHCal
+EndClass
+
+#BeginClass: IOPosition
+#D: x, y, z
+#EndClass
+
+BeginClass: IOSuperCluster
+F: x, y, z
+F: Energy, RawEnergy
+F: PhiWidth, EtaWidth
+EndClass
+
+BeginClass: IOString
+B: str[100]
+EndClass
+
