@@ -32,6 +32,8 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "n-jets", "Events");
 	plot1d.AddHist("ptaddjets", 200, 0, 400, "p_{T}(add. jets) [GeV]", "Events");
+	plot1d.AddHist("DRminWjets", 200, 0, 10, "#DeltaR_{min W-jet)", "Events");
+	plot1d.AddHist("DRminbjets", 200, 0, 10, "#DeltaR_{min b-jet)", "Events");
 	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
 	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET [GeV]", "#Delta#Phi(#nu, MET)");
 	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET [GeV]", "#chi");
@@ -76,10 +78,19 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
 	plot1d["njets"]->Fill(an->cleanedjets.size()-4, weight);
+	double drminw = 100.;
+	double drminb = 100.;
 	for(size_t j = 0 ; j < an->cleanedjets.size() ; ++j)
 	{
+		if(per.IsJetIn(an->cleanedjets[j])) continue;
+		if(drminw > per.WJa()->DeltaR(*an->cleanedjets[j])) {drminw = per.WJa()->DeltaR(*an->cleanedjets[j]);}
+		if(drminw > per.WJb()->DeltaR(*an->cleanedjets[j])) {drminw = per.WJb()->DeltaR(*an->cleanedjets[j]);}
+		if(drminb > per.BHad()->DeltaR(*an->cleanedjets[j])) {drminb = per.BHad()->DeltaR(*an->cleanedjets[j]);}
+		if(drminb > per.BLep()->DeltaR(*an->cleanedjets[j])) {drminb = per.BLep()->DeltaR(*an->cleanedjets[j]);}
 		plot1d["ptaddjets"]->Fill(an->cleanedjets[j]->Pt(), weight);
 	}
+	plot1d["DRminWjets"]->Fill(drminw, weight);
+	plot1d["DRminbjets"]->Fill(drminb, weight);
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
 	plot1d["DPhiMET_Nu"]->Fill(Abs(nu.DeltaPhi(an->met)), weight);
 	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(nu.DeltaPhi(an->met)), weight);

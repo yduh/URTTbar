@@ -112,6 +112,10 @@ class Permutation
 		{
 			return(IsBLepCorrect(other) && IsTHadCorrect(other));
 		}
+		bool IsJetIn(IDJet* jet)
+		{
+			return(jet == WJa() || jet == WJb() || jet == BHad() || jet == BLep());
+		}
 
 		
 		

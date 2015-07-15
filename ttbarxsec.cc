@@ -145,12 +145,12 @@ ttbar::ttbar(const std::string output_filename):
 //	ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 500.};
 //	metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
 	
-	topptbins = {0.0, 66.0, 102.0, 136.0, 178.0, 242.0, 775.0};
-	topybins = {0.0, 0.23, 0.48, 0.73, 1.0, 1.4, 2.5};
-	ttmbins = {280., 400.0, 452.0, 510.0, 586.0, 716.0, 2000.0};
+	topptbins = {0.0, 65.0, 100.0, 135.0, 175.0, 240.0, 775.0};
+	topybins = {0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.5};
+	ttmbins = {280., 400.0, 450.0, 510.0, 580.0, 720.0, 2000.0};
 	ttybins = {0.0, 0.2, 0.4, 0.6, 0.85, 1.25, 2.5};
-	ttptbins = {0.0, 26.0, 42.0, 60.0, 86.0, 144.0, 500.0};
-	metbins = {0.0, 28.0, 44.0, 60.0, 80.0, 120.0, 580.0};
+	ttptbins = {0.0, 25.0, 40.0, 60.0, 85.0, 150.0, 500.0};
+	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
 	jetbins = {-0.5, 0.5, 1.5, 2.5, 10.};
 	nobins = {0., 13000.};
 
@@ -231,6 +231,7 @@ void ttbar::begin()
 	truth2d.AddHist("Murho_iso_4", 10, 0., 50., 100, 0., 150, "rho", "iso");
 	truth1d.AddHist("TTRECO", 20, 0, 20, "ttreco", "Events");
 
+
 	response.AddMatrix("thadpt", topptbins, topptbins, "p_{T}(t_{h}) [GeV]");
 	response.AddMatrix("thady", topybins, topybins, "|y(t_{h})|");
 	response.AddMatrix("tleppt", topptbins, topptbins, "p_{T}(t_{l}) [GeV]");
@@ -280,6 +281,13 @@ void ttbar::begin()
 	TDirectory* dir_reco = outFile_.mkdir("RECO");
 	dir_reco->cd();
 	reco1d.AddHist("counter", 20, 0., 20., "counter", "Events");
+	reco2d.AddHist("Wmasshad_tmasshad", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
+	reco1d.AddHist("btag_high", 100, 0., 1., "btag", "Events");
+	reco1d.AddHist("btag_low", 100, 0., 1., "btag", "Events");
+	reco1d.AddHist("btagtest", 1000, -100, 100., "-Log(p) btag-test", "Events");
+	reco1d.AddHist("masstest", 1000, -100, 100., "-Log(p) mass-test", "Events");
+	reco1d.AddHist("nstest", 200, 0, 20., "neutrino-test", "Events");
+	reco1d.AddHist("nschi", 51, -2, 100., "#chi neutrino-test", "Events");
 	ttp_all.Init(this);
 
 	//string probfilename("Prob_parton.root");
@@ -905,6 +913,8 @@ void ttbar::ttanalysis(URStreamer& event)
 
 	//check for b-jets
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
+	reco1d["btag_high"]->Fill(reducedjets[0]->csvIncl(), weight);
+	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
 	if((cnbtag == 1 && reducedjets[0]->csvIncl() < B_TIGHT) || (cnbtag == 2 && reducedjets[1]->csvIncl() < B_MEDIUM)){return;}
 
 	reco1d["counter"]->Fill(3.5, weight);
@@ -952,6 +962,7 @@ void ttbar::ttanalysis(URStreamer& event)
 					TLorentzVector thad(testper.THad());
 					TLorentzVector wlepmiss(*lep + met);
 					TLorentzVector tlepmiss(wlepmiss + *testper.BLep());
+					reco2d["Wmasshad_tmasshad"]->Fill(whad.M(), thad.M());
 					//cout << per++ << " " << ttsolver.NSRes() << " " << ttsolver.BTagRes() << " " << ttsolver.MassRes() << endl;
 					if(rightper.IsComplete())
 					{
@@ -997,6 +1008,10 @@ void ttbar::ttanalysis(URStreamer& event)
 						}
 
 					}
+					reco1d["btagtest"]->Fill(ttsolver.BTagRes(), weight);
+					reco1d["masstest"]->Fill(ttsolver.MassRes(), weight);
+					reco1d["nstest"]->Fill(ttsolver.NSRes(), weight);
+					reco1d["nschi"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())));
 
 					if(testper < bestper)
 					{
@@ -1149,7 +1164,7 @@ void ttbar::analyze()
 	while(event.next())
 	{
 		nevent++;
-		if(nevent % 1000 == 0)cout << "Event:" << nevent << endl;
+		if(nevent % 1000 == 0)cout << "Event:" << nevent << " " << event.run << endl;
 		sgenparticles.clear();
 		genwpartons.clear();
 		gencls.clear();
@@ -1177,25 +1192,24 @@ void ttbar::analyze()
 
 		truth1d["counter"]->Fill(0.5);
 		weight = 1.;	
-		const Geninfo& info = event.genInfo();
-		weight *= info.weight()/Abs(info.weight());
-		const vector<Mcweight>& ws =  event.MCWeights();
-		if(cfacscale == -1) weight *= weight*ws[2].weights()/ws[0].weights();
-		else if(cfacscale == 1) weight *= weight*ws[1].weights()/ws[0].weights();
-		if(crenscale == -1) weight *= weight*ws[6].weights()/ws[0].weights();
-		else if(crenscale == 1) weight *= weight*ws[3].weights()/ws[0].weights();
+		if(event.PUInfos().size() > 0)
+		{
+			const Geninfo& info = event.genInfo();
+			weight *= info.weight()/Abs(info.weight());
+			const vector<Mcweight>& ws =  event.MCWeights();
+			if(cfacscale == -1) weight *= weight*ws[2].weights()/ws[0].weights();
+			else if(cfacscale == 1) weight *= weight*ws[1].weights()/ws[0].weights();
+			if(crenscale == -1) weight *= weight*ws[6].weights()/ws[0].weights();
+			else if(crenscale == 1) weight *= weight*ws[3].weights()/ws[0].weights();
 
-		double npu = event.PUInfos()[0].nPU();
-		truth1d["npuorig"]->Fill(npu, weight);
-		if(npu > 0)
-		{
-			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
+			double npu = event.PUInfos()[0].nPU();
+			truth1d["npuorig"]->Fill(npu, weight);
+			if(npu > 0)
+			{
+				weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
+			}
+			truth1d["npu"]->Fill(npu, weight);
 		}
-		else
-		{
-			weight = 0.;
-		}
-		truth1d["npu"]->Fill(npu, weight);
 
 		if(DATASIM && selectionprob > rand.Uniform())
 		{
@@ -1205,10 +1219,17 @@ void ttbar::analyze()
 			ttanalysis(event);
 		}
 
+		if(Abs(event.trigger().HLT_IsoMu24_eta2p1()) != 1) cout << "No mu trigger" << endl;
+		if(Abs(event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf()) != 1) cout << "No el trigger" << endl;
+
 		else if(!DATASIM)
 		{
 			SelectGenParticles(event);
-			if(event.trigger().HLT_IsoMu27() == 1 || event.trigger().HLT_Ele27_WP85_Gsf())
+			if(
+(event.trigger().HLT_IsoMu27() == 1 || event.trigger().HLT_Ele27_WP85_Gsf()) //MC
+|| event.trigger().HLT_IsoMu24_eta2p1() == 1
+|| (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
+)
 			{
 				SelectRecoParticles(event);
 				ttanalysis(event);
