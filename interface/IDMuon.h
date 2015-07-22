@@ -9,6 +9,7 @@ private:
 
 public:
 	static URStreamer* streamer;
+	static bool USEISO;
 	enum IDS {TIGHT_12, LOOSE_12, TIGHT_12Db, LOOSE_12Db};
 	IDMuon(const Muon mu);
 	double PFIsoDb();

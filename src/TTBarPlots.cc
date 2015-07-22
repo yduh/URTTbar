@@ -32,11 +32,13 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "n-jets", "Events");
 	plot1d.AddHist("ptaddjets", 200, 0, 400, "p_{T}(add. jets) [GeV]", "Events");
-	plot1d.AddHist("DRminWjets", 200, 0, 10, "#DeltaR_{min W-jet)", "Events");
-	plot1d.AddHist("DRminbjets", 200, 0, 10, "#DeltaR_{min b-jet)", "Events");
+	plot1d.AddHist("DRminWjets", 200, 0, 10, "#DeltaR_{min W-jet}", "Events");
+	plot1d.AddHist("DRminbjets", 200, 0, 10, "#DeltaR_{min b-jet}", "Events");
 	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
 	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET [GeV]", "#Delta#Phi(#nu, MET)");
 	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET [GeV]", "#chi");
+	plot1d.AddHist("Mt_W", 500, 0, 500, "M_{t}(W) [GeV]", "Events");
+	plot2d.AddHist("METunc", 100, 0, 0.5, 100, 0., .5, "#sigma(MET_{x})/MET_{x}", "#sigma(MET_{y})/MET_{y}");
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -94,6 +96,9 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
 	plot1d["DPhiMET_Nu"]->Fill(Abs(nu.DeltaPhi(an->met)), weight);
 	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(nu.DeltaPhi(an->met)), weight);
+	double Mt_W = Sqrt(2.*an->met.Pt()*per.L()->Pt()-2.*(an->met.Px()*per.L()->Px() + an->met.Py()*per.L()->Py()));
+	plot1d["Mt_W"]->Fill(Mt_W, weight);
+	plot2d["METunc"]->Fill(an->met.pxunctot()/an->met.Px(), an->met.pyunctot()/an->met.Py(), weight);
 	for(int jn : jetbins)
 	{
 		stringstream jb;

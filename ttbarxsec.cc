@@ -77,6 +77,8 @@ ttbar::ttbar(const std::string output_filename):
 	BTAGMODE = CP.Get<bool>("BTAGMODE");
 	ELECTRONS = CP.Get<bool>("ELECTRONS");
 	MUONS = CP.Get<bool>("MUONS");
+	IDMuon::USEISO = CP.Get<bool>("LEPTONISO");
+	IDElectron::USEISO = CP.Get<bool>("LEPTONISO");
 	cnbtag = CP.Get<int>("nbtag");
 
 	cwjetptsoft = CP.Get<double>("wjetptsoft"); 
@@ -214,12 +216,12 @@ void ttbar::begin()
 	truth1d.AddHist("btagtest_wrong", 1000, -100, 100., "-Log(p) btag-test", "Events");
 	truth1d.AddHist("masstest_wrong", 1000, -100, 100., "-Log(p) mass-test", "Events");
 	truth1d.AddHist("nstest_wrong", 200, 0, 20., "neutrino-test", "Events");
-	truth1d.AddHist("nschi_wrong", 51, -2, 100., "#chi neutrino-test", "Events");
+	truth1d.AddHist("nschi_wrong", 75, 0., 150., "#chi neutrino-test", "Events");
 	truth1d.AddHist("comtest_wrong", 1000, -100, 100., "-Log(p)", "Events");
 	truth1d.AddHist("btagtest_right", 1000, -100, 100., "-Log(p) btag-test", "Events");
 	truth1d.AddHist("masstest_right", 1000, -100, 100., "-Log(p) mass-test", "Events");
 	truth1d.AddHist("nstest_right", 200, 0, 20., "neutrino-test", "Events");
-	truth1d.AddHist("nschi_right", 51, -2, 100., "#chi neutrino-test", "Events");
+	truth1d.AddHist("nschi_right", 75, 0., 150., "#chi neutrino-test", "Events");
 	truth1d.AddHist("comtest_right", 1000, -100, 100., "-Log(p)", "Events");
 	truth2d.AddHist("Elrho_iso_1", 10, 0., 50., 100, 0., 150, "rho", "iso");
 	truth2d.AddHist("Elrho_iso_2", 10, 0., 50., 100, 0., 150, "rho", "iso");
@@ -287,7 +289,12 @@ void ttbar::begin()
 	reco1d.AddHist("btagtest", 1000, -100, 100., "-Log(p) btag-test", "Events");
 	reco1d.AddHist("masstest", 1000, -100, 100., "-Log(p) mass-test", "Events");
 	reco1d.AddHist("nstest", 200, 0, 20., "neutrino-test", "Events");
-	reco1d.AddHist("nschi", 51, -2, 100., "#chi neutrino-test", "Events");
+	reco1d.AddHist("nschi", 75, 0, 150., "#chi neutrino-test", "Events");
+	reco1d.AddHist("MuIsolation", 200, 0, 2, "rel. iso #mu", "Events");
+	reco1d.AddHist("ElIsolation", 200, 0, 2, "rel. iso el", "Events");
+	reco1d.AddHist("NumVertices", 200, 0, 200, "num vertices", "Events");
+	reco1d.AddHist("NumVerticesWeighted", 200, 0, 200, "num vertices", "Events");
+	reco1d.AddHist("Mt_W", 200, 0, 200, "M_{t}(W) [GeV]", "Events");
 	ttp_all.Init(this);
 
 	//string probfilename("Prob_parton.root");
@@ -314,6 +321,53 @@ void ttbar::begin()
 	TFile* f = TFile::Open("PUweight.root");
 	puhist = (TH1D*)f->Get("PUweight");
 
+}
+
+ttbar::~ttbar()
+{
+	
+	int lscounter = 0;
+	for(map<int, set<int> >::const_iterator ita = runinfo.begin() ; ita != runinfo.end() ; ++ita)
+	{
+		cout << "\"" << ita->first << "\": [[";
+		int last = -2;
+		int counter = 0;
+		for(set<int>::const_iterator itb = ita->second.begin() ; itb != ita->second.end() ; ++itb)
+		{
+			lscounter++;
+			counter++;
+			int newval = *itb;
+			if(counter == 1 && ita->second.size() == 1)
+			{
+				cout << newval << "," << newval << "]";
+				continue;
+			}
+			if(counter == 1)
+			{
+				cout << newval;
+				last = newval;
+				continue;
+			}
+			if(counter == ita->second.size())
+			{
+				cout << "," << newval << "]";
+				continue;
+			}
+			if(newval == last+1)
+			{
+				last = newval;
+				continue;
+			}
+			else
+			{
+				cout<< "," << last <<"],[" << newval;
+				last = newval;
+				continue;
+			}
+		}
+		cout << "]," << endl;
+	}
+	cout << "Number of LS: " << lscounter << endl;
 }
 
 void ttbar::SelectGenParticles(URStreamer& event)
@@ -477,7 +531,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	{
 		SEMILEP = true;
 		if(gencls[0]->pdgId() > 0){genbl = genbbar; genbh = genb;} else {genbh = genbbar; genbl = genb;}
-		if(true)
+		if(false)
 		{
 			const vector<Genjet>& genjets = event.genjets();
 			vector<Genjet> genbjets;
@@ -876,6 +930,22 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 	if(SEMILEPACC && rightper.IsComplete()){ttp_truth.Fill(rightper, lepcharge, weight);}
 	if(lep == 0){return;}
+
+	double nvtx = event.vertexs().size();
+	reco1d["NumVertices"]->Fill(nvtx , weight);
+
+	if(event.PUInfos().size() > 0)
+	{
+		double npu = event.vertexs().size();
+		truth1d["npuorig"]->Fill(npu, weight);
+		if(npu > 4)
+		{
+			weight *= puhist->Interpolate(npu);
+		}
+		truth1d["npu"]->Fill(npu, weight);
+	}
+	reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
+
 	reco1d["counter"]->Fill(1.5, weight);
 	if(SEMILEPACC)
 	{
@@ -888,7 +958,6 @@ void ttbar::ttanalysis(URStreamer& event)
 		truth2d["dPtbJet_right"]->Fill(genbh->Pt(), (rightper.BHad()->Pt() - genbh->Pt())/genbh->Pt(), weight);
 		truth2d["dPtbJet_right"]->Fill(genbl->Pt(), (rightper.BLep()->Pt() - genbl->Pt())/genbl->Pt(), weight);
 	}
-
 	//jet number plots
 	if(SEMILEP)
 	{
@@ -910,6 +979,16 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(BTAGMODE && cleanedjets.size() > 5){return;}
 	reco1d["counter"]->Fill(2.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
+	if(tightmuons.size() == 1)
+	{
+		reco1d["MuIsolation"]->Fill(tightmuons[0]->trackiso()/tightmuons[0]->Pt() , weight);
+	}
+	else
+	{
+		reco1d["ElIsolation"]->Fill(mediumelectrons[0]->CorPFIsolation2015(), weight);
+	}
+	double Mt_W = Sqrt(2.*met.Pt()*lep->Pt()-2.*(met.Px()*lep->Px() + met.Py()*lep->Py()));
+	reco1d["Mt_W"]->Fill(Mt_W, weight);
 
 	//check for b-jets
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
@@ -1202,13 +1281,18 @@ void ttbar::analyze()
 			if(crenscale == -1) weight *= weight*ws[6].weights()/ws[0].weights();
 			else if(crenscale == 1) weight *= weight*ws[3].weights()/ws[0].weights();
 
-			double npu = event.PUInfos()[0].nPU();
-			truth1d["npuorig"]->Fill(npu, weight);
-			if(npu > 0)
-			{
-				weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
-			}
-			truth1d["npu"]->Fill(npu, weight);
+			//double npu = event.PUInfos()[0].nInteractions();
+			//truth1d["npuorig"]->Fill(npu, weight);
+			//if(npu > 0)
+			//{
+			//	weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
+			//}
+			//truth1d["npu"]->Fill(npu, weight);
+		}
+		else
+		{
+			if(event.run < 251244) {return;}
+			runinfo[event.run].insert(event.lumi);
 		}
 
 		if(DATASIM && selectionprob > rand.Uniform())
@@ -1219,14 +1303,14 @@ void ttbar::analyze()
 			ttanalysis(event);
 		}
 
-		if(Abs(event.trigger().HLT_IsoMu24_eta2p1()) != 1) cout << "No mu trigger" << endl;
-		if(Abs(event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf()) != 1) cout << "No el trigger" << endl;
+		//if(Abs(event.trigger().HLT_IsoMu24_eta2p1()) != 1) cout << "No mu trigger" << endl;
+		//if(Abs(event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf()) != 1) cout << "No el trigger" << endl;
 
 		else if(!DATASIM)
 		{
 			SelectGenParticles(event);
 			if(
-(event.trigger().HLT_IsoMu27() == 1 || event.trigger().HLT_Ele27_WP85_Gsf()) //MC
+(event.trigger().HLT_IsoMu27() == 1 || event.trigger().HLT_Ele27_WP85_Gsf() == 1) //MC
 || event.trigger().HLT_IsoMu24_eta2p1() == 1
 || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
 )

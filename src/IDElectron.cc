@@ -24,8 +24,9 @@ double IDElectron::CorPFIsolation2012(double eta) const
 	return(chargedIso() + Max(neutralIso() + photonIso() - effarea, 0.))/Pt();
 }
 
-double IDElectron::CorPFIsolation2015(double eta) const
+double IDElectron::CorPFIsolation2015() const
 {
+	double eta = Abs(TVector3(x(), y(), z()).Eta());
 	double effarea = 0.;
 	if(eta < 0.8){ effarea = 0.1013;}
 	else if(eta < 1.3){ effarea = 0.0988;}
@@ -125,7 +126,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(dB()) > 0.012235){return(false);}
 			if(Abs(dz()) > 0.042020){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.091942){return(false);}
-			if(CorPFIsolation2015(sceta) > 0.107587){return(false);}
+			if(USEISO && CorPFIsolation2015() > 0.107587){return(false);}
 			//if(chargedIso()/Pt() > 0.05){return(false);}
 			if(!passConversionVeto()){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
@@ -140,7 +141,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(dB()) > 0.036719){return(false);}
 			if(Abs(dz()) > 0.138142){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.100683){return(false);}
-			if(CorPFIsolation2015(sceta) > 0.113254){return(false);}
+			if(USEISO && CorPFIsolation2015() > 0.113254){return(false);}
 			//if(chargedIso()/Pt() > 0.05){return(false);}
 			if(!passConversionVeto()){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
@@ -158,7 +159,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(dB()) > 0.035904){return(false);}
 			if(Abs(dz()) > 0.075496){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.189968){return(false);}
-			if(CorPFIsolation2015(sceta) > 0.130136){return(false);}
+			if(USEISO && CorPFIsolation2015() > 0.130136){return(false);}
 			//if(chargedIso()/Pt() > 0.1){return(false);}
 			if(!passConversionVeto()){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
@@ -173,7 +174,7 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(dB()) > 0.099266){return(false);}
 			if(Abs(dz()) > 0.197897){return(false);}
 			if(Abs((1. - ESCOverETrack())/energy()) > 0.140662){return(false);}
-			if(CorPFIsolation2015(sceta) > 0.163368){return(false);}
+			if(USEISO && CorPFIsolation2015() > 0.163368){return(false);}
 			//if(chargedIso()/Pt() > 0.1){return(false);}
 			if(!passConversionVeto()){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
@@ -184,4 +185,5 @@ bool IDElectron::ID(IDS idtyp)
 }
 
 URStreamer* IDElectron::streamer = 0;
+bool IDElectron::USEISO = true;
 

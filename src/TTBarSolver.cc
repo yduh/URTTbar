@@ -56,8 +56,8 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	uj2had_ = 0.05;
 	ublep_ = 0.05;
 	ullep_ = 0.01;
-	umetx_ = Sqrt(met->pxunc()*met->pxunc() + met->pxuncjet()*met->pxuncjet());
-	umety_ = Sqrt(met->pyunc()*met->pyunc() + met->pyuncjet()*met->pyuncjet());
+	umetx_ = 1.;//met->pxunctot(); 
+	umety_ = 1.;//met->pyunctot();
 	//umety_ = 0.05*met->Py();//Sqrt(met_->pyUnc());
 	//umetx_ = 25;//Sqrt(met_->pxUnc());
 	//umety_ = 25;//Sqrt(met_->pyUnc());

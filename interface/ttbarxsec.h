@@ -2,6 +2,7 @@
 #define TTBARAN_H
 #include <iostream>
 #include <list>
+#include <set>
 #include "AnalyzerBase.h"
 #include "URStreamer.h"
 #include "URDriver.h"
@@ -29,6 +30,7 @@ class ttbar : public AnalyzerBase
     friend class TTBarResponse;
 
 	private:
+		map<int, set<int> >  runinfo;
 		double selectionprob;
 		PDFuncertainty* pdfunc;
 		//Collections
@@ -170,10 +172,12 @@ class ttbar : public AnalyzerBase
 	public:
 
 		ttbar(const std::string output_filename);
+		~ttbar();
 
 		//This method is called once per job at the beginning of the analysis
 		//book here your histograms/tree and run every initialization needed
 		virtual void begin();
+		//virtual void end();
 		virtual void analyze();
 
 		void SelectGenParticles(URStreamer& event);

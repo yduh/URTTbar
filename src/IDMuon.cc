@@ -45,8 +45,8 @@ bool IDMuon::ID(IDS idtyp)
 		if(TMath::Abs(dB()) > 0.2) return(false);
 		if(TMath::Abs(dz()) > 0.5) return(false);
 		if(chi2()/ndof() > 10.) return(false);
-		if(idtyp == TIGHT_12Db && PFIsoDb()/Pt() > 0.12) return(false);
-		if(idtyp == TIGHT_12 && (trackiso())/Pt() > 0.05) return(false);
+		if(USEISO && idtyp == TIGHT_12Db && PFIsoDb()/Pt() > 0.12) return(false);
+		if(USEISO && idtyp == TIGHT_12 && (trackiso())/Pt() > 0.05) return(false);
 		//if(idtyp == TIGHT_12 && CorPFIsolation2015()/Pt() > 0.05) return(false);
 		return(true);
 	}
@@ -55,8 +55,8 @@ bool IDMuon::ID(IDS idtyp)
 		if(TMath::Abs(Eta()) > 2.4) return(false);
 		if(!isPF()) return(false);
 		if(!isGlobal() && !isTracker()) return(false);
-		if(idtyp == LOOSE_12Db && PFIsoDb()/Pt() > 0.2) return(false);
-		if(idtyp == LOOSE_12 && (trackiso())/Pt() > 0.1) return(false);
+		if(USEISO && idtyp == LOOSE_12Db && PFIsoDb()/Pt() > 0.2) return(false);
+		if(USEISO && idtyp == LOOSE_12 && (trackiso())/Pt() > 0.1) return(false);
 		//if(idtyp == LOOSE_12 && CorPFIsolation2015()/Pt() > 0.1) return(false);
 		return(true);
 	}
@@ -64,3 +64,4 @@ bool IDMuon::ID(IDS idtyp)
 }
 
 URStreamer* IDMuon::streamer = 0;
+bool IDMuon::USEISO = true;
