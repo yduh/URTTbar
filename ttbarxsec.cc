@@ -298,7 +298,7 @@ void ttbar::begin()
 	ttp_all.Init(this);
 
 	//string probfilename("Prob_parton.root");
-	string probfilename("Prob_parton_jeccen.root");
+	string probfilename("Prob_parton.root");
 	//string probfilename("Prob_parton_jecp2.root");
 	//string probfilename("Prob_parton_jecm2.root");
 	//string probfilename("Prob_parton_jeccenS5.root");
@@ -1291,7 +1291,7 @@ void ttbar::analyze()
 		}
 		else
 		{
-			if(event.run < 251244) {return;}
+			//if(event.run < 251244) {return;}
 			runinfo[event.run].insert(event.lumi);
 		}
 
