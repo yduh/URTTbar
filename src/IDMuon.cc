@@ -17,11 +17,15 @@ double IDMuon::CorPFIsolation2015()
 {
 	double eta = Abs(Eta());
 	double effarea = 0.;
-	if(eta < 0.8){ effarea = 0.0913;}
-	else if(eta < 1.3){ effarea = 0.0765;}
-	else if(eta < 2.0){ effarea = 0.0546;}
-	else if(eta < 2.2){ effarea = 0.0728;}
-	else if(eta < 2.5){ effarea = 0.1177;}
+	if(eta < 0.8){ effarea = 0.0986;}
+	else if(eta < 1.5){ effarea = 0.0765;}
+	else if(eta < 2.1){ effarea = 0.0537;}
+	else if(eta < 2.4){ effarea = 0.0812;}
+	//if(eta < 0.8){ effarea = 0.0913;}
+	//else if(eta < 1.3){ effarea = 0.0765;}
+	//else if(eta < 2.0){ effarea = 0.0546;}
+	//else if(eta < 2.2){ effarea = 0.0728;}
+	//else if(eta < 2.5){ effarea = 0.1177;}
 
 	if(streamer != 0)
 	{

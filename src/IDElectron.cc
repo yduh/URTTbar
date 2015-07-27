@@ -28,11 +28,15 @@ double IDElectron::CorPFIsolation2015() const
 {
 	double eta = Abs(TVector3(x(), y(), z()).Eta());
 	double effarea = 0.;
-	if(eta < 0.8){ effarea = 0.1013;}
-	else if(eta < 1.3){ effarea = 0.0988;}
-	else if(eta < 2.0){ effarea = 0.0572;}
-	else if(eta < 2.2){ effarea = 0.0842;}
-	else if(eta < 2.5){ effarea = 0.1530;}
+	if(eta < 0.8){ effarea = 0.1396;}
+	else if(eta < 1.479){ effarea = 0.1352;}
+	else if(eta < 2.1){ effarea = 0.0816;}
+	else if(eta < 2.5){ effarea = 0.2005;}
+	//if(eta < 0.8){ effarea = 0.1013;}
+	//else if(eta < 1.3){ effarea = 0.0988;}
+	//else if(eta < 2.0){ effarea = 0.0572;}
+	//else if(eta < 2.2){ effarea = 0.0842;}
+	//else if(eta < 2.5){ effarea = 0.1530;}
 
 	if(streamer != 0)
 	{
@@ -121,7 +125,7 @@ bool IDElectron::ID(IDS idtyp)
 		{
 			if(Abs(DEtaSCTrk()) > 0.008925){return(false);}
 			if(Abs(DPhiSCTrk()) > 0.035973){return(false);}
-			if(sigmaIEtaIEta() > 0.009996){return(false);}
+			if(full5x5_sigmaIEtaIEta() > 0.009996){return(false);}
 			if(hadronicOverEM() > 0.050537){return(false);}
 			if(Abs(dB()) > 0.012235){return(false);}
 			if(Abs(dz()) > 0.042020){return(false);}
@@ -136,7 +140,7 @@ bool IDElectron::ID(IDS idtyp)
 		{
 			if(Abs(DEtaSCTrk()) > 0.007429){return(false);}
 			if(Abs(DPhiSCTrk()) > 0.067879){return(false);}
-			if(sigmaIEtaIEta() > 0.030135){return(false);}
+			if(full5x5_sigmaIEtaIEta() > 0.030135){return(false);}
 			if(hadronicOverEM() > 0.086782){return(false);}
 			if(Abs(dB()) > 0.036719){return(false);}
 			if(Abs(dz()) > 0.138142){return(false);}

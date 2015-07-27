@@ -28,7 +28,7 @@ void TTBarPlots::Init(ttbar* analysis)
 	//double tbmin = -20.;
 	//double tbmax = 10.;
 	double tbmin = 0.;
-	double tbmax = 80.;
+	double tbmax = 150.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "n-jets", "Events");
 	plot1d.AddHist("ptaddjets", 200, 0, 400, "p_{T}(add. jets) [GeV]", "Events");

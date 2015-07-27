@@ -30,6 +30,7 @@ class ttbar : public AnalyzerBase
     friend class TTBarResponse;
 
 	private:
+		bool isMC = false;
 		map<int, set<int> >  runinfo;
 		double selectionprob;
 		PDFuncertainty* pdfunc;
@@ -112,6 +113,7 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_nsemi_right;
 
 		TTBarResponse response;
+		TTBarResponse responseall;
 
 		BtagEff btageff;
 
