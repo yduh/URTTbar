@@ -45,6 +45,8 @@ class ttbar : public AnalyzerBase
 		vector<GenObject*> gencls;
 		vector<GenObject*> gennls;
 		vector<GenObject*> genfincls;
+		GenObject* gent;
+		GenObject* gentbar;
 		GenObject* genb;
 		GenObject* genbbar;
 		GenObject* genbl;
@@ -147,9 +149,11 @@ class ttbar : public AnalyzerBase
 		double cpjetetamax;
 		double cplptmin;
 		double cpletamax;
+		double cpjetsep;
 		double csigmajet;
 		double csigmamet;
 		double ctopptweight;
+		double cttptweight;
 		int cfacscale;
 		int crenscale;
 		int crandomseed;
@@ -171,6 +175,8 @@ class ttbar : public AnalyzerBase
 		JetScale jetscale;
 
 		TH1D* puhist;
+		TH1D* musfhist;
+		TH1D* elsfhist;
 	public:
 
 		ttbar(const std::string output_filename);

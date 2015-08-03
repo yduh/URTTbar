@@ -44,7 +44,12 @@ void TTBarResponse::FillTruth(string name, double val, double weight)
 	int njet = Min(an_->genaddjets.size(), size_t(3));
 	stringstream hname;
 	hname << name << "_truth_" << njet;
-	plot1d[hname.str()]->Fill(val, weight);
+	TH1D* hist = plot1d[hname.str()];
+	double xmin = hist->GetXaxis()->GetXmin();
+	double xmax = hist->GetXaxis()->GetXmax();
+	if(val <= xmin) {val = xmin+0.00001;}
+	if(val >= xmax) {val = xmax-0.00001;}
+	hist->Fill(val, weight);
 	plot1d[name + "_truth"]->Fill(val, weight);
 }
 
@@ -53,7 +58,12 @@ void TTBarResponse::FillReco(string name, double val, double weight)
 	int njet = Min(an_->reducedjets.size() - 4, size_t(3));
 	stringstream hname;
 	hname << name << "_reco_" << njet;
-	plot1d[hname.str()]->Fill(val, weight);
+	TH1D* hist = plot1d[hname.str()];
+	double xmin = hist->GetXaxis()->GetXmin();
+	double xmax = hist->GetXaxis()->GetXmax();
+	if(val <= xmin) {val = xmin+0.00001;}
+	if(val >= xmax) {val = xmax-0.00001;}
+	hist->Fill(val, weight);
 	plot1d[name+"_reco"]->Fill(val, weight);
 }
 
@@ -62,6 +72,15 @@ void TTBarResponse::FillTruthReco(string name, double tval, double rval, double 
 	int njet = Min(an_->reducedjets.size() - 4, size_t(3));
 	stringstream hname;
 	hname << name << "_matrix_" << njet;
-	plot2d[hname.str()]->Fill(tval, rval, weight);
+	TH2D* hmatrix = plot2d[hname.str()];
+	double xmin = hmatrix->GetXaxis()->GetXmin();
+	double xmax = hmatrix->GetXaxis()->GetXmax();
+	if(tval <= xmin) {tval = xmin+0.00001;}
+	else if(tval >= xmax) {tval = xmax-0.00001;}
+	double ymin = hmatrix->GetYaxis()->GetXmin();
+	double ymax = hmatrix->GetYaxis()->GetXmax();
+	if(rval <= ymin) {rval = ymin+0.00001;}
+	else if(rval >= ymax) {rval = ymax-0.00001;}
+	hmatrix->Fill(tval, rval, weight);
 	plot2d[name+"_matrix"]->Fill(tval, rval, weight);
 }

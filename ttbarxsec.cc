@@ -66,9 +66,11 @@ ttbar::ttbar(const std::string output_filename):
 	cpjetetamax(2.4),//max |eta| for jets
 	cplptmin(30.), //min pT of lepton (el or mu)
 	cpletamax(2.1),//max |eta| of leptons (max allowed value is 2.4) 
+	cpjetsep(0.),
 	csigmajet(0.),
 	csigmamet(0.),
 	ctopptweight(0.),
+	cttptweight(0.),
 	crenscale(0),
 	cfacscale(0)
 {
@@ -97,10 +99,12 @@ ttbar::ttbar(const std::string output_filename):
 	cpjetetamax = CP.Get<double>("Pjetetamax");
 	cplptmin = CP.Get<double>("Plptmin"); 
 	cpletamax = CP.Get<double>("Pletamax");
+	cpjetsep = CP.Get<double>("Pjetsep");
 
 	csigmajet = CP.Get<double>("sigmajet");
 	csigmamet = CP.Get<double>("sigmamet");
 	ctopptweight = CP.Get<double>("topptweight");
+	cttptweight = CP.Get<double>("ttptweight");
 	if(output_filename.find("tt_PowhegP8") != string::npos)
 	{
 		cfacscale = CP.Get<int>("facscale");
@@ -148,15 +152,23 @@ ttbar::ttbar(const std::string output_filename):
 //	ttptbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 500.};
 //	metbins = {0., 20., 30., 40., 50., 60., 70., 90., 110., 140., 180., 250., 1000.};
 	
-	topptbins = {0.0, 65.0, 100.0, 135.0, 175.0, 240.0, 775.0};
+	//topptbins = {0.0, 65.0, 100.0, 135.0, 175.0, 240.0, 775.0};
+	//topybins = {0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.5};
+	//ttmbins = {280., 400.0, 450.0, 510.0, 580.0, 720.0, 2000.0};
+	//ttybins = {0.0, 0.2, 0.4, 0.6, 0.85, 1.25, 2.5};
+	//ttptbins = {0.0, 25.0, 40.0, 60.0, 85.0, 150.0, 500.0};
+	//metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
+	//jetbins = {-0.5, 0.5, 1.5, 2.5, 10.};
+	//nobins = {0., 13000.};
+
+	topptbins = {0.0, 65.0, 100.0, 135.0, 175.0, 240.0, 500.0};
 	topybins = {0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.5};
-	ttmbins = {280., 400.0, 450.0, 510.0, 580.0, 720.0, 2000.0};
+	ttmbins = {280., 400.0, 450.0, 510.0, 580.0, 720.0, 1400.0};
 	ttybins = {0.0, 0.2, 0.4, 0.6, 0.85, 1.25, 2.5};
 	ttptbins = {0.0, 25.0, 40.0, 60.0, 85.0, 150.0, 500.0};
 	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
 	jetbins = {-0.5, 0.5, 1.5, 2.5, 10.};
 	nobins = {0., 13000.};
-
 	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
 	vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118", "MMHT2014nlo68clas118"};
 	//vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118"};
@@ -340,6 +352,9 @@ void ttbar::begin()
 
 	TFile* f = TFile::Open("PUweight.root");
 	puhist = (TH1D*)f->Get("PUweight");
+	TFile* fl = TFile::Open("Lep_SF.root");
+	musfhist = (TH1D*)fl->Get("mu_scale");
+	elsfhist = (TH1D*)fl->Get("el_scale");
 
 }
 
@@ -471,10 +486,15 @@ void ttbar::SelectGenParticles(URStreamer& event)
 				if(gp->pdgId() == 6)
 				{
 					weight *= 1.+ctopptweight*(gp->Pt()-200.)/1000.;
+					topcounter++;
+					sgenparticles.push_back(*gp);
+					gent = &(sgenparticles.back());
 				}
-				if(Abs(gp->pdgId()) == 6)
+				else if(gp->pdgId() == -6)
 				{
 					topcounter++;
+					sgenparticles.push_back(*gp);
+					gentbar = &(sgenparticles.back());
 				}
 				else if(gp->pdgId() == 5 && gps[gp->momIdx()[0]].pdgId() != 24)
 				{
@@ -529,6 +549,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	SEMILEPACC = false;
 	if(topcounter == 2 && genb != 0 && genbbar != 0)
 	{
+		weight *= 1.+cttptweight*((*gent + *gentbar).Pt()-100.)/500.;
 		if(lepdecays == 2 && genwpartons.size() == 0)
 		{ 
 			FULLLEP = true; gen1d["TYP"]->Fill(0.5, weight);
@@ -645,7 +666,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		{
 			if(Min(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cpwjetptsoft && Max(genwpartons[0]->Pt(), genwpartons[1]->Pt()) > cpwjetpthard && Min(genb->Pt(), genbbar->Pt()) > cpbjetptsoft && Max(genb->Pt(), genbbar->Pt()) > cpbjetpthard)
 			{
-				if(genwpartons[0]->DeltaR(*genwpartons[1]) > 0.4 && genwpartons[0]->DeltaR(*genb) > 0.4 && genwpartons[0]->DeltaR(*genbbar) > 0.4 && genwpartons[1]->DeltaR(*genb) > 0.4 && genwpartons[1]->DeltaR(*genbbar) > 0.4 && genb->DeltaR(*genbbar) > 0.4)
+				if(genwpartons[0]->DeltaR(*genwpartons[1]) > cpjetsep && genwpartons[0]->DeltaR(*genb) > cpjetsep && genwpartons[0]->DeltaR(*genbbar) > cpjetsep && genwpartons[1]->DeltaR(*genb) > cpjetsep && genwpartons[1]->DeltaR(*genbbar) > cpjetsep && genb->DeltaR(*genbbar) > cpjetsep)
 				{
 					SEMILEPACC = true;
 				}
@@ -935,6 +956,10 @@ void ttbar::ttanalysis(URStreamer& event)
 			weight *= puhist->Interpolate(npu);
 		}
 		truth1d["npu"]->Fill(npu, weight);
+		
+		if(tightmuons.size() == 1){weight *= musfhist->Interpolate(Min(lep->Pt(), 95.));}
+		if(mediumelectrons.size() == 1){weight *= elsfhist->Interpolate(Min(lep->Pt(), 95.));}
+
 	}
 	reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
 
@@ -1127,6 +1152,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		responseall.FillReco("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
 		responseall.FillReco("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
 		responseall.FillReco("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
+		responseall.FillReco("njet", cleanedjets.size() - 4, weight);
 		responseall.FillTruthReco("thadpt", gentophad.Pt(), bestper.THad().Pt(), weight);
 		responseall.FillTruthReco("nobin", gentophad.Pt(), bestper.THad().Pt(), weight);
 		responseall.FillTruthReco("thady", Abs(gentophad.Rapidity()), Abs(bestper.THad().Rapidity()), weight);
@@ -1370,6 +1396,9 @@ void ttbar::analyze()
 				pdfunc->Fill1d("pdfunc_ttpt", (gentophad + gentoplep).Pt(), weight);
 				pdfunc->Fill1d("pdfunc_njet", genaddjets.size(), weight);
 			}
+//					  cout << event.filter().Flag_goodVertices() << " " <<  event.filter().Flag_CSCTightHaloFilter() << " " << event.filter().Flag_HBHENoiseFilter() << " " << event.filter().HBHEnew() << endl;
+					  //event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 &&
+
 			if(
 					(
 					 isMC && 
@@ -1381,8 +1410,10 @@ void ttbar::analyze()
 					(
 					 !isMC &&
 					 (
-					  event.trigger().HLT_IsoMu24_eta2p1() == 1
-					  || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
+					  event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 && event.filter().HBHEnew() == 1 &&
+					  (
+					   event.trigger().HLT_IsoMu24_eta2p1() == 1 || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
+					  )
 					 )
 					)
 			  )
