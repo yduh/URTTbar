@@ -151,6 +151,7 @@ class ttbar : public AnalyzerBase
 		double cpletamax;
 		double cpjetsep;
 		double csigmajet;
+		double cjetres;
 		double csigmamet;
 		double ctopptweight;
 		double cttptweight;

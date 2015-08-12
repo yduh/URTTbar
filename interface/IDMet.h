@@ -4,12 +4,12 @@
 #include "URStreamer.h"
 #include <TMath.h>
 
-class IDMet : public Met, public TLorentzVector
+class IDMet : public Metsnoh, public TLorentzVector
 {
 public:
 	IDMet() {}
-	IDMet(const Met met):
-		Met(met), TLorentzVector(met.px(), met.py(), 0., TMath::Sqrt(met.px()*met.px() + met.py()*met.py()))
+	IDMet(const Metsnoh met):
+		Metsnoh(met), TLorentzVector(met.px(), met.py(), 0., TMath::Sqrt(met.px()*met.px() + met.py()*met.py()))
 		{
 		}
 	double pxunctot() {return(TMath::Sqrt(pxunc()*pxunc() +pxuncjet()*pxuncjet()));}

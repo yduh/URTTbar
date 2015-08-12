@@ -68,6 +68,7 @@ ttbar::ttbar(const std::string output_filename):
 	cpletamax(2.1),//max |eta| of leptons (max allowed value is 2.4) 
 	cpjetsep(0.),
 	csigmajet(0.),
+	cjetres(0.),
 	csigmamet(0.),
 	ctopptweight(0.),
 	cttptweight(0.),
@@ -102,6 +103,7 @@ ttbar::ttbar(const std::string output_filename):
 	cpjetsep = CP.Get<double>("Pjetsep");
 
 	csigmajet = CP.Get<double>("sigmajet");
+	cjetres = CP.Get<double>("jetres");
 	csigmamet = CP.Get<double>("sigmamet");
 	ctopptweight = CP.Get<double>("topptweight");
 	cttptweight = CP.Get<double>("ttptweight");
@@ -167,7 +169,7 @@ ttbar::ttbar(const std::string output_filename):
 	ttybins = {0.0, 0.2, 0.4, 0.6, 0.85, 1.25, 2.5};
 	ttptbins = {0.0, 25.0, 40.0, 60.0, 85.0, 150.0, 500.0};
 	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
-	jetbins = {-0.5, 0.5, 1.5, 2.5, 10.};
+	jetbins = {-0.5, 0.5, 1.5, 2.5, 3.5};
 	nobins = {0., 13000.};
 	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
 	vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118", "MMHT2014nlo68clas118"};
@@ -247,6 +249,8 @@ void ttbar::begin()
 	truth1d.AddHist("TTRECO", 20, 0, 20, "ttreco", "Events");
 
 
+	response.AddMatrix("tpt", topptbins, topptbins, "p_{T}(t) [GeV]");
+	response.AddMatrix("ty", topybins, topybins, "|y(t)|");
 	response.AddMatrix("thadpt", topptbins, topptbins, "p_{T}(t_{h}) [GeV]");
 	response.AddMatrix("thady", topybins, topybins, "|y(t_{h})|");
 	response.AddMatrix("tleppt", topptbins, topptbins, "p_{T}(t_{l}) [GeV]");
@@ -257,6 +261,8 @@ void ttbar::begin()
 	response.AddMatrix("njet", jetbins, jetbins, "n-jets");
 	response.AddMatrix("nobin", nobins, nobins, "total");
 
+	responseall.AddMatrix("tpt", topptbins, topptbins, "p_{T}(t) [GeV]");
+	responseall.AddMatrix("ty", topybins, topybins, "|y(t)|");
 	responseall.AddMatrix("thadpt", topptbins, topptbins, "p_{T}(t_{h}) [GeV]");
 	responseall.AddMatrix("thady", topybins, topybins, "|y(t_{h})|");
 	responseall.AddMatrix("tleppt", topptbins, topptbins, "p_{T}(t_{l}) [GeV]");
@@ -267,9 +273,11 @@ void ttbar::begin()
 	responseall.AddMatrix("njet", jetbins, jetbins, "n-jets");
 	responseall.AddMatrix("nobin", nobins, nobins, "total");
 
+	pdfunc->Add1dHist("pdfunc_tpt", topptbins, "p_{T}(t) [GeV]", "Events");
+	pdfunc->Add1dHist("pdfunc_ty", topybins, "|y(t)|", "Events");
 	pdfunc->Add1dHist("pdfunc_thadpt", topptbins, "p_{T}(t_{h}) [GeV]", "Events");
-	pdfunc->Add1dHist("pdfunc_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_thady", topybins, "|y(t_{h})|", "Events");
+	pdfunc->Add1dHist("pdfunc_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_tlepy", topybins, "|y(t_{l})|", "Events");
 	pdfunc->Add1dHist("pdfunc_ttm", ttmbins, "M(t#bar{t}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_tty", ttybins, "|y(t#bar{t})|", "Events");
@@ -277,9 +285,11 @@ void ttbar::begin()
 	pdfunc->Add1dHist("pdfunc_njet", jetbins, "n-jets", "Events");
 	pdfunc->Add1dHist("pdfunc_nobin", nobins, "total", "Events");
 
+	pdfunc->Add1dHist("pdfunc_reco_tpt", topptbins, "p_{T}(t) [GeV]", "Events");
+	pdfunc->Add1dHist("pdfunc_reco_ty", topybins, "|y(t)|", "Events");
 	pdfunc->Add1dHist("pdfunc_reco_thadpt", topptbins, "p_{T}(t_{h}) [GeV]", "Events");
-	pdfunc->Add1dHist("pdfunc_reco_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_reco_thady", topybins, "|y(t_{h})|", "Events");
+	pdfunc->Add1dHist("pdfunc_reco_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_reco_tlepy", topybins, "|y(t_{l})|", "Events");
 	pdfunc->Add1dHist("pdfunc_reco_ttm", ttmbins, "M(t#bar{t}) [GeV]", "Events");
 	pdfunc->Add1dHist("pdfunc_reco_tty", ttybins, "|y(t#bar{t})|", "Events");
@@ -353,8 +363,8 @@ void ttbar::begin()
 	TFile* f = TFile::Open("PUweight.root");
 	puhist = (TH1D*)f->Get("PUweight");
 	TFile* fl = TFile::Open("Lep_SF.root");
-	musfhist = (TH1D*)fl->Get("mu_scale");
-	elsfhist = (TH1D*)fl->Get("el_scale");
+	musfhist = (TH1D*)fl->Get("Scale_MuTOT_Pt");
+	elsfhist = (TH1D*)fl->Get("Scale_ElTOT_Pt");
 
 }
 
@@ -801,6 +811,10 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		double sf = csigmajet;
 		if(sf < 0.){sf *= jetscaler.GetUncM(jet);}
 		if(sf > 0.){sf *= jetscaler.GetUncP(jet);}
+		if(cjetres > 0.)
+		{
+			sf = gRandom->Gaus(sf, cjetres);
+		}
 
 		sf += 1;
 		//double sf = 1. + sigma*0.177829 * Power(jet.Pt(), -0.58647);
@@ -814,7 +828,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		cleanedjets.push_back(&(sjets.back()));
 	}
 
-	const vector<Met>& mets = event.METs();
+	const vector<Metsnoh>& mets = event.METsNoHF();
 	if(mets.size() == 1)
 	{
 		met = mets[0];
@@ -950,15 +964,15 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(isMC)
 	{
 		double npu = event.vertexs().size();
-		truth1d["npuorig"]->Fill(npu, weight);
+		truth1d["npuorig"]->Fill(npu+0.5, weight);
 		if(npu > 0)
 		{
-			weight *= puhist->Interpolate(npu);
+			weight *= puhist->GetBinContent(npu+1);
 		}
-		truth1d["npu"]->Fill(npu, weight);
+		truth1d["npu"]->Fill(npu+0.5, weight);
 		
-		if(tightmuons.size() == 1){weight *= musfhist->Interpolate(Min(lep->Pt(), 95.));}
-		if(mediumelectrons.size() == 1){weight *= elsfhist->Interpolate(Min(lep->Pt(), 95.));}
+		if(tightmuons.size() == 1){weight *= musfhist->GetBinContent(musfhist->FindFixBin(Min(lep->Pt(), 95.)));}
+		if(mediumelectrons.size() == 1){weight *= elsfhist->GetBinContent(elsfhist->FindFixBin(Min(lep->Pt(), 95.)));}
 
 	}
 	reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
