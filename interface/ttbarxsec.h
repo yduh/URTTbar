@@ -158,6 +158,7 @@ class ttbar : public AnalyzerBase
 		int cfacscale;
 		int crenscale;
 		int crandomseed;
+		bool HERWIGPP;
 		//
 		double jetptmin;
 	

@@ -51,7 +51,7 @@ if jobid == 'JOB6':
 
 for sf in samplefiles:
 	if 'tt_' in sf:
-		filesperjob = 5
+		filesperjob = 4
 	infile = os.path.join(inputdir, sf)
 	jobpath = os.path.join(jobdir, sf.split('.txt')[0])
 	os.mkdir(jobpath)
