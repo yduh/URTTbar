@@ -75,6 +75,7 @@ ttbar::ttbar(const std::string output_filename):
 	cttptweight(0.),
 	crenscale(0),
 	cfacscale(0),
+	cbtagunc(0),
 	HERWIGPP(false)
 {
 	
@@ -114,6 +115,7 @@ ttbar::ttbar(const std::string output_filename):
 		cfacscale = CP.Get<int>("facscale");
 		crenscale = CP.Get<int>("renscale");
 	}
+	cbtagunc = CP.Get<int>("btagunc");
 
 	DATASIM = CP.Get<bool>("DATASIM");
 	double lumi = CP.Get<double>("lumi");
@@ -174,6 +176,8 @@ ttbar::ttbar(const std::string output_filename):
 	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
 	jetbins = {-0.5, 0.5, 1.5, 2.5, 3.5};
 	nobins = {0., 13000.};
+	
+	btagpt = {30., 50., 70., 100., 140., 200., 300., 670.};
 	//vector<string> testpdf = {"CT10", "CT10as", "NNPDF30_nnlo_as_0118"};
 	vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118", "MMHT2014nlo68clas118"};
 	//vector<string> testpdf = {"CT10nlo", "NNPDF30_nlo_as_0118"};
@@ -250,7 +254,11 @@ void ttbar::begin()
 	truth2d.AddHist("Murho_iso_3", 10, 0., 50., 100, 0., 150, "rho", "iso");
 	truth2d.AddHist("Murho_iso_4", 10, 0., 50., 100, 0., 150, "rho", "iso");
 	truth1d.AddHist("TTRECO", 20, 0, 20, "ttreco", "Events");
-
+	truth1d.AddHist("Eff_Bpassing", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Eff_Ball", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Eff_Lpassing", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Eff_Lall", btagpt, "p_{T} [GeV]", "Events");
+	
 
 	response.AddMatrix("tpt", topptbins, topptbins, "p_{T}(t) [GeV]");
 	response.AddMatrix("ty", topybins, topybins, "|y(t)|");
@@ -362,6 +370,7 @@ void ttbar::begin()
 		ttsolver.Init(probfilename, false, true, true);
 		//ttsolver.Init(probfilename, false, true);
 	}
+	btagweight.Init(this, probfilename);
 
 	TFile* f = TFile::Open("PUweight.root");
 	puhist = (TH1D*)f->Get("PUweight");
@@ -556,11 +565,12 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
 		{
 			//if(Abs(gp->pdgId()) == 5 && gp->status() <=70 && gp->status() > 21)
-			//if(Abs(gp->pdgId()) > 500 && Abs(gp->pdgId()) < 600)
-			//{
-			//	bpartons.push_back(*gp);
-			//		//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
-			//}
+			if(Abs(gp->pdgId()) > 500 && Abs(gp->pdgId()) < 600)
+			{
+				sgenparticles.push_back(*gp);
+				genbpartons.push_back(&(sgenparticles.back()));
+					//cout << gp-gps.begin() << " " << gp->pdgId() << " " << gp->status() << " " << (gp->momIdx().size() != 0 ? gps[gp->momIdx()[0]].pdgId():0) << endl;
+			}
 			//cout << gp-gps.begin() << " " << gp->status() << " " << gp->pdgId() << endl;
 
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
@@ -901,7 +911,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		cleanedjets.push_back(&(sjets.back()));
 	}
 
-	const vector<Metsnoh>& mets = event.METsNoHF();
+	const vector<Nohfmet>& mets = event.NoHFMETs();
 	if(mets.size() == 1)
 	{
 		met = mets[0];
@@ -943,6 +953,9 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		for(size_t j = 0 ; j < cleanedjets.size() ; ++j)
 		{
 			IDJet* jet = cleanedjets[j];
+
+
+			
 		//	double jetsep = 0;
 		//	for(size_t k = 0 ; k < cleanedjets.size() ; ++k)
 		//	{
@@ -1093,9 +1106,40 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 	double Mt_W = Sqrt(2.*met.Pt()*lep->Pt()-2.*(met.Px()*lep->Px() + met.Py()*lep->Py()));
 	reco1d["Mt_W"]->Fill(Mt_W, weight);
+	//calculating btag eff.
+	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
+	if(isMC)
+	{
+		for(size_t j = 0 ; j < reducedjets.size() ; ++j)
+		{
+			bool isbjet = false;
+			for(size_t b = 0 ; b < genbpartons.size() ; ++b)
+			{
+				if(reducedjets[j]->DeltaR(*genbpartons[b]) < 0.4)
+				{
+					isbjet = true;
+					if(reducedjets[j]->csvIncl() > B_MEDIUM)
+					{
+						truth1d["Eff_Bpassing"]->Fill(reducedjets[j]->Pt(), weight);
+					}
+					truth1d["Eff_Ball"]->Fill(reducedjets[j]->Pt(), weight);
+					break;
+				}
+			}
+			if(!isbjet)
+			{
+				if(reducedjets[j]->csvIncl() > B_MEDIUM)
+				{
+					truth1d["Eff_Lpassing"]->Fill(reducedjets[j]->Pt(), weight);
+				}
+				truth1d["Eff_Lall"]->Fill(reducedjets[j]->Pt(), weight);
+			}
+		}
+		double btw = btagweight.SF(reducedjets, cbtagunc);
+		//weight *= btw;
+	}
 
 	//check for b-jets
-	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
 	reco1d["btag_high"]->Fill(reducedjets[0]->csvIncl(), weight);
 	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
 	if((cnbtag == 1 && reducedjets[0]->csvIncl() < B_TIGHT) || (cnbtag == 2 && reducedjets[1]->csvIncl() < B_MEDIUM)){return;}
@@ -1403,6 +1447,7 @@ void ttbar::analyze()
 		gencls.clear();
 		genfincls.clear();
 		gennls.clear();
+		genbpartons.clear();
 		genb = 0;
 		genbbar = 0;
 		genbl = 0;

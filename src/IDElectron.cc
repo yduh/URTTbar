@@ -26,17 +26,18 @@ double IDElectron::CorPFIsolation2012(double eta) const
 
 double IDElectron::CorPFIsolation2015() const
 {
-	double eta = Abs(TVector3(x(), y(), z()).Eta());
+	//double eta = Abs(TVector3(x(), y(), z()).Eta());
+	double eta = Abs(Eta());
 	double effarea = 0.;
-	if(eta < 0.8){ effarea = 0.1396;}
-	else if(eta < 1.479){ effarea = 0.1352;}
-	else if(eta < 2.1){ effarea = 0.0816;}
-	else if(eta < 2.5){ effarea = 0.2005;}
-	//if(eta < 0.8){ effarea = 0.1013;}
-	//else if(eta < 1.3){ effarea = 0.0988;}
-	//else if(eta < 2.0){ effarea = 0.0572;}
-	//else if(eta < 2.2){ effarea = 0.0842;}
-	//else if(eta < 2.5){ effarea = 0.1530;}
+	//if(eta < 0.8){ effarea = 0.1396;}
+	//else if(eta < 1.479){ effarea = 0.1352;}
+	//else if(eta < 2.1){ effarea = 0.0816;}
+	//else if(eta < 2.5){ effarea = 0.2005;}
+	if(eta < 0.8){ effarea = 0.1013;}
+	else if(eta < 1.3){ effarea = 0.0988;}
+	else if(eta < 2.0){ effarea = 0.0572;}
+	else if(eta < 2.2){ effarea = 0.0842;}
+	else if(eta < 2.5){ effarea = 0.1530;}
 
 	if(streamer != 0)
 	{
@@ -121,6 +122,7 @@ bool IDElectron::ID(IDS idtyp)
 	}
 	else if(idtyp == MEDIUM_15)
 	{
+		//cout << dB() << " " << ipDXY() << endl;
 		if(isEB())
 		{
 			if(Abs(DEtaSCTrk()) > 0.008925){return(false);}

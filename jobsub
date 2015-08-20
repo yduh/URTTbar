@@ -45,7 +45,7 @@ transferfiles_config = ', '.join(transferfiles)
 
 if jobid == 'JOB5':
 	filesperjob = 3
-if jobid == 'JOB6':
+if jobid == 'JOB7':
 	filesperjob = 15
 
 

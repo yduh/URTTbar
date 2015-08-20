@@ -19,6 +19,7 @@
 #include "BtagEff.h"
 #include "JetScale.h"
 #include "JetScaler.h"
+#include "BTagWeight.h"
 
 using namespace std;
 class PDFuncertainty;
@@ -28,6 +29,7 @@ class ttbar : public AnalyzerBase
 	friend class TTBarGenPlots;
     friend class TTBarPlots;
     friend class TTBarResponse;
+    friend class BTagWeight;
 
 	private:
 		bool isMC = false;
@@ -45,6 +47,7 @@ class ttbar : public AnalyzerBase
 		vector<GenObject*> gencls;
 		vector<GenObject*> gennls;
 		vector<GenObject*> genfincls;
+		vector<GenObject*> genbpartons;
 		GenObject* gent;
 		GenObject* gentbar;
 		GenObject* genb;
@@ -118,6 +121,7 @@ class ttbar : public AnalyzerBase
 		TTBarResponse responseall;
 
 		BtagEff btageff;
+		BTagWeight btagweight;
 
 		//ttbar solver
 		TTBarSolver ttsolver;
@@ -157,6 +161,7 @@ class ttbar : public AnalyzerBase
 		double cttptweight;
 		int cfacscale;
 		int crenscale;
+		int cbtagunc;
 		int crandomseed;
 		bool HERWIGPP;
 		//
@@ -173,6 +178,7 @@ class ttbar : public AnalyzerBase
 		vector<double> metbins;
 		vector<double> jetbins;
 		vector<double> nobins;
+		vector<double> btagpt;
 
 		JetScale jetscale;
 
