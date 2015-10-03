@@ -162,6 +162,8 @@ class ttbar : public AnalyzerBase
 		int cfacscale;
 		int crenscale;
 		int cbtagunc;
+		int cltagunc;
+		int cpileup;
 		int crandomseed;
 		bool HERWIGPP;
 		//
