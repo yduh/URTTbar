@@ -1577,7 +1577,8 @@ void ttbar::analyze()
 					 (
 					  event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 && event.filter().HBHEnew() == 1 &&
 					  (
-					   event.trigger().HLT_IsoMu24_eta2p1() == 1 || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
+					   //event.trigger().HLT_IsoMu24_eta2p1() == 1 || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
+					   event.trigger().HLT_IsoMu20() == 1 || (event.trigger().HLT_IsoMu20() == -1 && event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1)
 					  )
 					 )
 					)
