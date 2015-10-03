@@ -76,6 +76,8 @@ ttbar::ttbar(const std::string output_filename):
 	crenscale(0),
 	cfacscale(0),
 	cbtagunc(0),
+	cltagunc(0),
+	cpileup(0),
 	HERWIGPP(false)
 {
 	
@@ -116,6 +118,8 @@ ttbar::ttbar(const std::string output_filename):
 		crenscale = CP.Get<int>("renscale");
 	}
 	cbtagunc = CP.Get<int>("btagunc");
+	cltagunc = CP.Get<int>("ltagunc");
+	cpileup = CP.Get<int>("pileupunc");
 
 	DATASIM = CP.Get<bool>("DATASIM");
 	double lumi = CP.Get<double>("lumi");
@@ -229,8 +233,8 @@ void ttbar::begin()
 	truth2d.AddHist("dPzNu_chi2_right", 200, -2., 2., 100, 0., 100, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
 	truth1d.AddHist("dRNuMet_right", 200, 0., 10., "#DeltaR(#nu_{gen}, #nu_{rec})", "Events");
 	truth1d.AddHist("dPtNuMet_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
-	truth2d.AddHist("Wmasshad_tmasshad_right", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
-	truth2d.AddHist("Wmasshad_tmasshad_wrong", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
+	truth2d.AddHist("Wmasshad_tmasshad_right", 500, 0., 500., 500, 0., 500, "M(t) [GeV]", "M(W) [GeV]");
+	truth2d.AddHist("Wmasshad_tmasshad_wrong", 500, 0., 500., 500, 0., 500, "M(t) [GeV]", "M(W) [GeV]");
 	truth2d.AddHist("Wmasslep_tmasslep_right", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
 	truth2d.AddHist("Wmasslep_tmasslep_wrong", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
 	truth2d.AddHist("Wmasshad_tmasshad_rightw", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
@@ -258,6 +262,8 @@ void ttbar::begin()
 	truth1d.AddHist("Eff_Ball", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Eff_Lpassing", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Eff_Lall", btagpt, "p_{T} [GeV]", "Events");
+	truth1d.AddHist("Mu", 200, 0, 200, "#mu", "Events");
+	truth1d.AddHist("MuWeighted", 200, 0, 200, "#mu", "Events");
 	
 
 	response.AddMatrix("tpt", topptbins, topptbins, "p_{T}(t) [GeV]");
@@ -340,6 +346,8 @@ void ttbar::begin()
 	reco2d.AddHist("Wmasshad_tmasshad", 500, 0., 500., 500, 0., 500, "M(W) [GeV]", "M(t) [GeV]");
 	reco1d.AddHist("btag_high", 100, 0., 1., "btag", "Events");
 	reco1d.AddHist("btag_low", 100, 0., 1., "btag", "Events");
+	reco1d.AddHist("bjetmulti", 10, 0., 10., "b-jets", "Events");
+	reco1d.AddHist("bjetmultiW", 10, 0., 10., "b-jets", "Events");
 	reco1d.AddHist("btagtest", 1000, -100, 100., "-Log(p) btag-test", "Events");
 	reco1d.AddHist("masstest", 1000, -100, 100., "-Log(p) mass-test", "Events");
 	reco1d.AddHist("nstest", 200, 0, 20., "neutrino-test", "Events");
@@ -371,8 +379,11 @@ void ttbar::begin()
 		//ttsolver.Init(probfilename, false, true);
 	}
 	btagweight.Init(this, probfilename);
+	string pufile("PUweight.root");
+	if(cpileup == -1) pufile = "PUweightm2.root";
+	if(cpileup == 1) pufile = "PUweightp2.root";
 
-	TFile* f = TFile::Open("PUweight.root");
+	TFile* f = TFile::Open(pufile.c_str());
 	puhist = (TH1D*)f->Get("PUweight");
 	TFile* fl = TFile::Open("Lep_SF.root");
 	musfhist = (TH1D*)fl->Get("Scale_MuTOT_Pt");
@@ -1078,7 +1089,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//jet number plots
 	if(SEMILEP)
 	{
-		if(lep != rightper.L()) {cout << "Wrong Lep" << endl;}
+		//if(lep != rightper.L()) {cout << "Wrong Lep" << endl;}
 		truth2d["Jetstt_JetsAll"]->Fill(rightper.NumTTBarJets()+0.5, cleanedjets.size()+0.5, weight);
 	}
 	//plot b-tag distribution
@@ -1108,36 +1119,14 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["Mt_W"]->Fill(Mt_W, weight);
 	//calculating btag eff.
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
+	int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [&](IDJet* A){return(A->csvIncl() > B_MEDIUM);});
+	reco1d["bjetmulti"]->Fill(nbjets, weight);
 	if(isMC)
 	{
-		for(size_t j = 0 ; j < reducedjets.size() ; ++j)
-		{
-			bool isbjet = false;
-			for(size_t b = 0 ; b < genbpartons.size() ; ++b)
-			{
-				if(reducedjets[j]->DeltaR(*genbpartons[b]) < 0.4)
-				{
-					isbjet = true;
-					if(reducedjets[j]->csvIncl() > B_MEDIUM)
-					{
-						truth1d["Eff_Bpassing"]->Fill(reducedjets[j]->Pt(), weight);
-					}
-					truth1d["Eff_Ball"]->Fill(reducedjets[j]->Pt(), weight);
-					break;
-				}
-			}
-			if(!isbjet)
-			{
-				if(reducedjets[j]->csvIncl() > B_MEDIUM)
-				{
-					truth1d["Eff_Lpassing"]->Fill(reducedjets[j]->Pt(), weight);
-				}
-				truth1d["Eff_Lall"]->Fill(reducedjets[j]->Pt(), weight);
-			}
-		}
-		double btw = btagweight.SF(reducedjets, cbtagunc);
-		//weight *= btw;
+		double btw = btagweight.SF(reducedjets, cbtagunc, cltagunc);
+		weight *= btw;
 	}
+	reco1d["bjetmultiW"]->Fill(nbjets, weight);
 
 	//check for b-jets
 	reco1d["btag_high"]->Fill(reducedjets[0]->csvIncl(), weight);
@@ -1164,7 +1153,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		rightper.Solve(ttsolver);
 		truth1d["nschi_right"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
-		truth2d["Wmasshad_tmasshad_right"]->Fill(rightper.WHad().M(), rightper.THad().M(), weight);
+		truth2d["Wmasshad_tmasshad_right"]->Fill(rightper.THad().M(), rightper.WHad().M(), weight);
 	}
 
 	int nbtaglocal = 2;
@@ -1228,7 +1217,7 @@ void ttbar::ttanalysis(URStreamer& event)
 							{
 								truth2d["Wmasshad_tmasshad_wrongw"]->Fill(whad.M(), thad.M(), weight);
 							}
-							truth2d["Wmasshad_tmasshad_wrong"]->Fill(whad.M(), thad.M(), weight);
+							truth2d["Wmasshad_tmasshad_wrong"]->Fill(thad.M(), whad.M(), weight);
 							truth2d["Wmasslep_tmasslep_wrong"]->Fill(wlepmiss.Mt(), tlepmiss.Mt(), weight);
 							truth1d["masstest_wrong"]->Fill(ttsolver.MassRes(), weight);
 							truth1d["comtest_wrong"]->Fill(ttsolver.Res(), weight);
@@ -1481,8 +1470,9 @@ void ttbar::analyze()
 			if(crenscale == -1) weight *= weight*ws[6].weights()/ws[0].weights();
 			else if(crenscale == 1) weight *= weight*ws[3].weights()/ws[0].weights();
 
-			//double npu = event.PUInfos()[0].nInteractions();
-			//truth1d["npuorig"]->Fill(npu, weight);
+			double npu = event.PUInfos()[0].nInteractions();
+			//cout << event.PUInfos()[0].nInteractions() << " " << event.PUInfos()[1].nInteractions() << endl;
+			truth1d["Mu"]->Fill(npu, weight);
 			//if(npu > 0)
 			//{
 			//	weight *= puhist->GetBinContent(puhist->FindFixBin(npu));

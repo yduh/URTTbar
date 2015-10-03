@@ -1,6 +1,8 @@
 #include "IDJet.h"
 #include "ttbarxsec.h"
 
+#include <algorithm>
+
 using namespace std;
 
 BTagWeight::BTagWeight()
@@ -21,46 +23,47 @@ void BTagWeight::Init(ttbar* an, string filename)
 	dir->cd();
 }
 
-double BTagWeight::SF(vector<IDJet*>& jets, int typ)
+double BTagWeight::SF(vector<IDJet*>& jets, int btyp, int ltyp)
 {
 	double PD=1.;
 	double PM=1.;
-	for(size_t j = 0 ; j < jets.size() ; ++j)
+	for(IDJet* jet : jets)
 	{
-		int bin = hbpass->FindFixBin(Min(jets[j]->Pt(), 650.));
-		bool isbjet = false;
-		for(size_t b = 0 ; b < AN->genbpartons.size() ; ++b)
+		double pt = jet->Pt();
+		int hbin = hbpass->FindFixBin(pt);
+		int bin = Min(Max(hbin, 1), hbpass->GetNbinsX()-1)-1;
+		//cout << pt << " " << hbin << " " << bin << " " << hbpass->GetBinContent(hbin) << " " << hlpass->GetBinContent(hbin) << endl;
+
+		if(find_if(AN->genbpartons.begin(), AN->genbpartons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.4;}) != AN->genbpartons.end())
 		{
-			if(jets[j]->DeltaR(*AN->genbpartons[b]) < 0.4)
+			AN->truth1d["Eff_Ball"]->Fill(pt, AN->weight);
+			double eff = hbpass->GetBinContent(hbin);
+			if(jet->csvIncl() > AN->B_MEDIUM)
 			{
-				isbjet = true;
-				double eff = hbpass->GetBinContent(bin);
-				if(jets[j]->csvIncl() > AN->B_MEDIUM)
-				{
-					PM *= eff;
-					PD *= eff * (scale + typ * uncb[bin-1]);
-				}
-				else
-				{
-					PM *= 1. - eff;
-					PD *= 1. - eff * (scale + typ * uncb[bin-1]);
-				}
-				break;
-			}
-		}
-		if(!isbjet)
-		{
-			double eff = hlpass->GetBinContent(bin);
-			if(jets[j]->csvIncl() > AN->B_MEDIUM)
-			{
+				AN->truth1d["Eff_Bpassing"]->Fill(pt, AN->weight);
 				PM *= eff;
-				PD *= eff * (scale + typ * uncl[bin-1]);
+				PD *= eff * (scale + btyp * uncb[bin]);
 			}
 			else
 			{
 				PM *= 1. - eff;
-				PD *= 1. - eff * (scale + typ * uncl[bin-1]);
+				PD *= 1. - eff * (scale + btyp * uncb[bin]);
 			}
+			break;
+		}
+
+		double eff = hlpass->GetBinContent(hbin);
+		AN->truth1d["Eff_Lall"]->Fill(pt, AN->weight);
+		if(jet->csvIncl() > AN->B_MEDIUM)
+		{
+			AN->truth1d["Eff_Lpassing"]->Fill(pt, AN->weight);
+			PM *= eff;
+			PD *= eff * (scale + ltyp * uncl[bin]);
+		}
+		else
+		{
+			PM *= 1. - eff;
+			PD *= 1. - eff * (scale + ltyp * uncl[bin]);
 		}
 	}
 	return(PD/PM);
