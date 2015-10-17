@@ -48,8 +48,7 @@ ttbar::ttbar(const std::string output_filename):
 	JETSCALEMODE(false), //set true for jet scale measurement
 	ELECTRONS(true),
 	MUONS(true),
-	B_TIGHT(0.89),
-	//B_TIGHT(0.97),
+	B_TIGHT(0.97),
 	B_MEDIUM(0.89),
 	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(100), //only nused jets, ordered by pT are used for the permutations
@@ -231,6 +230,10 @@ void ttbar::begin()
 	truth1d.AddHist("dPzNu_right", 200, -2., 2., "#Deltap_{z}/p_{z}", "Events");
 	truth2d.AddHist("dPzNu_dPhi_right", 200, -2., 2., 100, 0., 3.15, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
 	truth2d.AddHist("dPzNu_chi2_right", 200, -2., 2., 100, 0., 100, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
+	truth2d.AddHist("RES_Mtt_right", 200, -1., 1., 50, 300, 1300 , "#Delta M_{tt}/M_{tt}", "M_{tt} [GeV]");
+	truth2d.AddHist("RES_Mtt_all", 200, -1., 1., 50, 300, 1300 , "#Delta M_{tt}/M_{tt}", "M_{tt} [GeV]");
+	truth2d.AddHist("RES_dbeta_right", 200, -1., 1., 50, 0, 2 , "#Delta (#delta #beta)/#delta #beta", "#delta #beta");
+	truth2d.AddHist("RES_dbeta_all", 200, -1., 1., 50, 0, 2 , "#Delta (#delta #beta)/#delta #beta", "#delta #beta");
 	truth1d.AddHist("dRNuMet_right", 200, 0., 10., "#DeltaR(#nu_{gen}, #nu_{rec})", "Events");
 	truth1d.AddHist("dPtNuMet_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
 	truth2d.AddHist("Wmasshad_tmasshad_right", 500, 0., 500., 500, 0., 500, "M(t) [GeV]", "M(W) [GeV]");
@@ -262,7 +265,7 @@ void ttbar::begin()
 	truth1d.AddHist("Eff_Ball", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Eff_Lpassing", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Eff_Lall", btagpt, "p_{T} [GeV]", "Events");
-	truth1d.AddHist("Mu", 200, 0, 200, "#mu", "Events");
+	truth1d.AddHist("Mu", 200, 0, 100, "#mu", "Events");
 	truth1d.AddHist("MuWeighted", 200, 0, 200, "#mu", "Events");
 	
 
@@ -337,7 +340,7 @@ void ttbar::begin()
 	ttp_nn_right.Init(this);
 	ttp_nsemi_right.Init(this);
 
-	btageff.Init();
+	btageff.Init(B_TIGHT);
 	jetscale.Init("jetscale");
 
 	TDirectory* dir_reco = outFile_.mkdir("RECO");
@@ -384,7 +387,7 @@ void ttbar::begin()
 	if(cpileup == 1) pufile = "PUweightp2.root";
 
 	TFile* f = TFile::Open(pufile.c_str());
-	puhist = (TH1D*)f->Get("PUweight");
+	puhist = (TH1D*)f->Get("muweight");
 	TFile* fl = TFile::Open("Lep_SF.root");
 	musfhist = (TH1D*)fl->Get("Scale_MuTOT_Pt");
 	elsfhist = (TH1D*)fl->Get("Scale_ElTOT_Pt");
@@ -883,12 +886,11 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 			else if(eta < 2.1){truth2d["Elrho_iso_3"]->Fill(event.rho().value(), el.neutralIso() + el.photonIso(), weight);}
 			else if(eta < 2.5){truth2d["Elrho_iso_4"]->Fill(event.rho().value(), el.neutralIso() + el.photonIso(), weight);}
 		}
-		//if(el.ID(IDElectron::MEDIUM_15) && el.Pt() > 15.)
-		if(el.ID(IDElectron::LOOSE_15) && el.Pt() > 15.)
+		if(el.ID(IDElectron::LOOSE_15_25ns) && el.Pt() > 15.)
 		{
 			selectrons.push_back(el);
 			looseelectrons.push_back(&(selectrons.back()));
-			if(ELECTRONS && el.ID(IDElectron::MEDIUM_15) && el.Pt() > clptmin && Abs(el.Eta()) < cletamax)
+			if(ELECTRONS && el.ID(IDElectron::MEDIUM_15_25ns) && el.Pt() > clptmin && Abs(el.Eta()) < cletamax)
 			{
 				mediumelectrons.push_back(&(selectrons.back()));
 			}
@@ -922,7 +924,8 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		cleanedjets.push_back(&(sjets.back()));
 	}
 
-	const vector<Nohfmet>& mets = event.NoHFMETs();
+	//const vector<Nohfmet>& mets = event.NoHFMETs();
+	const vector<Met>& mets = event.METs();
 	if(mets.size() == 1)
 	{
 		met = mets[0];
@@ -1060,16 +1063,16 @@ void ttbar::ttanalysis(URStreamer& event)
 
 	if(isMC)
 	{
-		double npu = event.vertexs().size();
-		truth1d["npuorig"]->Fill(npu+0.5, weight);
-		if(npu > 0)
-		{
-			weight *= puhist->GetBinContent(npu+1);
-		}
-		truth1d["npu"]->Fill(npu+0.5, weight);
+		//double npu = event.vertexs().size();
+		//truth1d["npuorig"]->Fill(npu+0.5, weight);
+		//if(npu > 0)
+		//{
+		//	//weight *= puhist->GetBinContent(npu+1);
+		//}
+		//truth1d["npu"]->Fill(npu+0.5, weight);
 		
-		if(tightmuons.size() == 1){weight *= musfhist->GetBinContent(musfhist->FindFixBin(Min(lep->Pt(), 95.)));}
-		if(mediumelectrons.size() == 1){weight *= elsfhist->GetBinContent(elsfhist->FindFixBin(Min(lep->Pt(), 95.)));}
+		//if(tightmuons.size() == 1){weight *= musfhist->GetBinContent(musfhist->FindFixBin(Min(lep->Pt(), 95.)));}
+		//if(mediumelectrons.size() == 1){weight *= elsfhist->GetBinContent(elsfhist->FindFixBin(Min(lep->Pt(), 95.)));}
 
 	}
 	reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
@@ -1104,7 +1107,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
 	//cut on number of jets
 	if(cleanedjets.size() < 4){return;}
-	if(BTAGMODE && cleanedjets.size() > 5){return;}
+	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
 	if(tightmuons.size() == 1)
@@ -1123,8 +1126,8 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["bjetmulti"]->Fill(nbjets, weight);
 	if(isMC)
 	{
-		double btw = btagweight.SF(reducedjets, cbtagunc, cltagunc);
-		weight *= btw;
+		//double btw = btagweight.SF(reducedjets, cbtagunc, cltagunc);
+		//weight *= btw;
 	}
 	reco1d["bjetmultiW"]->Fill(nbjets, weight);
 
@@ -1157,6 +1160,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 
 	int nbtaglocal = 2;
+	if(BTAGMODE) nbtaglocal = 1;
 	for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
 	{
 		for(size_t j = nbtaglocal ; j < i ; ++j)
@@ -1167,6 +1171,7 @@ void ttbar::ttanalysis(URStreamer& event)
 				for(size_t l = 0 ; l < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++l)
 				{
 					if(i == l || j == l || k == l) continue;
+			//		if(nbtaglocal == 1 && k != 0 && l != 0) continue;
 					Permutation testper(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, &met);
 					if(testper.WJa()->Pt() < cwjetpthard && testper.WJb()->Pt() < cwjetpthard) continue;
 					if(testper.WJa()->Pt() < cwjetptsoft || testper.WJb()->Pt() < cwjetptsoft) continue;
@@ -1248,7 +1253,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		
 	}
 	if(bestper.Prob() > 1E9){return;}
-	if(bestper.MassDiscr() > 10){return;}
+	if(!BTAGMODE && bestper.MassDiscr() > 10){return;}
 	reco1d["counter"]->Fill(4.5, weight);
 	if(SEMILEPACC && rightper.IsComplete()) truth1d["counter"]->Fill(7.5, weight);
 	//Fill reconstructed hists
@@ -1295,6 +1300,8 @@ void ttbar::ttanalysis(URStreamer& event)
 		responseall.FillTruthReco("ttpt", (gentophad + gentoplep).Pt(), (bestper.THad() + bestper.TLep()).Pt(), weight);
 		responseall.FillTruthReco("tty", Abs((gentophad + gentoplep).Rapidity()), Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
 		responseall.FillTruthReco("njet", genaddjets.size(), cleanedjets.size() - 4, weight);
+		truth2d["RES_Mtt_all"]->Fill(((bestper.THad() + bestper.TLep()).M() - (gentophad + gentoplep).M())/(gentophad + gentoplep).M(), (gentophad + gentoplep).M(), weight);
+		truth2d["RES_dbeta_all"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (gentophad.BoostVector() - gentoplep.BoostVector()).Mag())/(gentophad.BoostVector() - gentoplep.BoostVector()).Mag(), (gentophad.BoostVector() - gentoplep.BoostVector()).Mag(), weight);
 	}
 
 
@@ -1356,6 +1363,8 @@ void ttbar::ttanalysis(URStreamer& event)
 			truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), weight);
 			truth2d["dPzNu_dPhi_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), Abs(bestper.Nu().DeltaPhi(met)), weight);
 			truth2d["dPzNu_chi2_right"]->Fill((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz(), Sqrt(bestper.NuChisq()), weight);
+			truth2d["RES_Mtt_right"]->Fill(((bestper.THad() + bestper.TLep()).M() - (gentophad + gentoplep).M())/(gentophad + gentoplep).M(), (gentophad + gentoplep).M(), weight);
+			truth2d["RES_dbeta_right"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (gentophad.BoostVector() - gentoplep.BoostVector()).Mag())/(gentophad.BoostVector() - gentoplep.BoostVector()).Mag(), (gentophad.BoostVector() - gentoplep.BoostVector()).Mag(), weight);
 			//if(Abs((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz()) < 0.2)
 			//{
 			//	cout << (bestper.Nu() + *(bestper.BLep()) + *(bestper.L())).M() << " " << bestper.Nu().Pz() << " " << gennls[0]->Pz() << " "  << bestper.Nu().Pt() << " " << met.Pt() << " " << met.DeltaPhi(bestper.Nu()) << " " << bestper.NuChisq() << endl;
@@ -1413,7 +1422,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		}
 	}
 
-	if(BTAGMODE){btageff.Fill(bestper, rightper.IsCorrect(bestper), weight);}
+	if(BTAGMODE){btageff.Fill(bestper, nvtx, rightper.IsCorrect(bestper), weight);}
 }
 
 //This method is called once every file, contains the event loop
@@ -1430,7 +1439,7 @@ void ttbar::analyze()
 	while(event.next())
 	{
 		nevent++;
-		if(nevent % 1000 == 0)cout << "Event:" << nevent << " " << event.run << endl;
+//		if(nevent % 1000 == 0)cout << "Event:" << nevent << " " << event.run << endl;
 		sgenparticles.clear();
 		genwpartons.clear();
 		gencls.clear();
@@ -1473,11 +1482,8 @@ void ttbar::analyze()
 			double npu = event.PUInfos()[0].nInteractions();
 			//cout << event.PUInfos()[0].nInteractions() << " " << event.PUInfos()[1].nInteractions() << endl;
 			truth1d["Mu"]->Fill(npu, weight);
-			//if(npu > 0)
-			//{
-			//	weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
-			//}
-			//truth1d["npu"]->Fill(npu, weight);
+			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
+			truth1d["MuWeighted"]->Fill(npu, weight);
 		}
 		else
 		{
@@ -1551,9 +1557,9 @@ void ttbar::analyze()
 				pdfunc->Fill1d("pdfunc_ttpt", (gentophad + gentoplep).Pt(), weight);
 				pdfunc->Fill1d("pdfunc_njet", genaddjets.size(), weight);
 			}
-//					  cout << event.filter().Flag_goodVertices() << " " <<  event.filter().Flag_CSCTightHaloFilter() << " " << event.filter().Flag_HBHENoiseFilter() << " " << event.filter().HBHEnew() << endl;
+		  //cout << event.filter().Flag_goodVertices() << " " <<  event.filter().Flag_CSCTightHaloFilter() << " " << event.filter().Flag_HBHENoiseFilter() << " " << event.filter().HBHEnew() << endl;
 					  //event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 &&
-
+if(!isMC && (Abs(event.trigger().HLT_IsoMu20()) != 1 || Abs(event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf()) != 1)) {cout << "TRIGGER UNDEFINED:" << event.trigger().HLT_IsoMu20() << " " << event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() << endl; }
 			if(
 					(
 					 isMC && 
