@@ -20,7 +20,7 @@ class BtagEff
 	public:
 		BtagEff();
 		void Init(double btagsel);
-		void Fill(Permutation& per, float thenvtx, int filltyp, double theweight);
+		void Fill(Permutation& per, float thenvtx, bool filltyp, double theweight);
 };
 
 #endif

@@ -48,7 +48,7 @@ ttbar::ttbar(const std::string output_filename):
 	JETSCALEMODE(false), //set true for jet scale measurement
 	ELECTRONS(true),
 	MUONS(true),
-	B_TIGHT(0.97),
+	B_TIGHT(0.89),
 	B_MEDIUM(0.89),
 	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(100), //only nused jets, ordered by pT are used for the permutations
@@ -1134,8 +1134,10 @@ void ttbar::ttanalysis(URStreamer& event)
 	//check for b-jets
 	reco1d["btag_high"]->Fill(reducedjets[0]->csvIncl(), weight);
 	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
-	if((cnbtag == 1 && reducedjets[0]->csvIncl() < B_TIGHT) || (cnbtag == 2 && reducedjets[1]->csvIncl() < B_MEDIUM)){return;}
-
+	if(!BTAGMODE)
+	{
+		if((cnbtag == 1 && reducedjets[0]->csvIncl() < B_TIGHT) || (cnbtag == 2 && reducedjets[1]->csvIncl() < B_MEDIUM)){return;}
+	}
 	reco1d["counter"]->Fill(3.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
@@ -1160,7 +1162,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 
 	int nbtaglocal = 2;
-	if(BTAGMODE) nbtaglocal = 1;
+	if(BTAGMODE) nbtaglocal = 0;
 	for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
 	{
 		for(size_t j = nbtaglocal ; j < i ; ++j)
@@ -1482,7 +1484,7 @@ void ttbar::analyze()
 			double npu = event.PUInfos()[0].nInteractions();
 			//cout << event.PUInfos()[0].nInteractions() << " " << event.PUInfos()[1].nInteractions() << endl;
 			truth1d["Mu"]->Fill(npu, weight);
-			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
+			//weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
 			truth1d["MuWeighted"]->Fill(npu, weight);
 		}
 		else
