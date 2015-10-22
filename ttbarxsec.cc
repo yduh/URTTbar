@@ -48,7 +48,7 @@ ttbar::ttbar(const std::string output_filename):
 	JETSCALEMODE(false), //set true for jet scale measurement
 	ELECTRONS(true),
 	MUONS(true),
-	B_TIGHT(0.89),
+	B_TIGHT(0.97),
 	B_MEDIUM(0.89),
 	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(100), //only nused jets, ordered by pT are used for the permutations
@@ -1162,7 +1162,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 
 	int nbtaglocal = 2;
-	if(BTAGMODE) nbtaglocal = 0;
+	if(BTAGMODE) nbtaglocal = 1;
 	for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
 	{
 		for(size_t j = nbtaglocal ; j < i ; ++j)
@@ -1256,10 +1256,15 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 	if(bestper.Prob() > 1E9){return;}
 	if(!BTAGMODE && bestper.MassDiscr() > 10){return;}
+
+	//if(!BTAGMODE || bestper.BHad()->csvIncl() > B_TIGHT || bestper.BLep()->csvIncl() > B_TIGHT)
+	if(!BTAGMODE || bestper.BLep()->csvIncl() > B_TIGHT)
+{
 	reco1d["counter"]->Fill(4.5, weight);
 	if(SEMILEPACC && rightper.IsComplete()) truth1d["counter"]->Fill(7.5, weight);
 	//Fill reconstructed hists
 	ttp_all.Fill(bestper, lepcharge, weight);
+
 
 	if(SEMILEP)
 	{
@@ -1409,7 +1414,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		ttp_nsemi_right.Fill(bestper, lepcharge, weight);
 	}
-
+}
 	if(JETSCALEMODE)
 	{
 		if(bestper.IsWHadCorrect(rightper))

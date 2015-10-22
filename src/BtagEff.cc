@@ -15,7 +15,7 @@ void BtagEff::Init(double btagsel)
 	btagtree->Branch("jwb", jwb, "jwb[5]/F");
 	btagtree->Branch("jb", jb, "jb[5]/F");
 	btagtree->Branch("prob", &prob, "prob/F");
-	//btagtree->Branch("prob2", &prob2, "prob2/F");
+	btagtree->Branch("prob2", &prob2, "prob2/F");
 	btagtree->Branch("weight", &weight, "weight/F");
 	btagtree->Branch("nvtx", &nvtx, "nvtx/F");
 	btagtree->Branch("typ", &typ, "typ/I");
@@ -37,7 +37,7 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool filltyp, double theweig
 		if(per.BHad()->csvIncl() > btagselection) bjet = per.BLep();
 	}
 
-	if(per.BHad()->csvIncl() < 0.5 && per.BLep()->csvIncl() < 0.5 && per.WJa()->csvIncl() < 0.5 && per.WJb()->csvIncl() < 0.5)
+	if(per.BHad()->csvIncl() < 0.6 && per.BLep()->csvIncl() < 0.6 && per.WJa()->csvIncl() < 0.6 && per.WJb()->csvIncl() < 0.6)
 	{
 		ft *= -1;
 		if(coin)
@@ -50,9 +50,9 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool filltyp, double theweig
 		}
 	}		
 	if(bjet == 0) return;
-	//TLorentzVector thad = per.THad();
+	TLorentzVector thad = per.THad();
 	//TLorentzVector tlep = per.TLep();
-	//if(thad.Pt() < 50. || tlep.Pt() < 50.) return;
+	if(thad.Pt() < 50.) return;
 	//if(whad.M() < 60. || whad.M() > 90.) return;
 	//if(thad.M() < 130. || thad.M() > 190.) return;
 
@@ -60,7 +60,7 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool filltyp, double theweig
 	jwb[0] = per.WJb()->Px(); jwb[1] = per.WJb()->Py(); jwb[2] = per.WJb()->Pz(); jwb[3] = per.WJb()->E(); jwb[4] = per.WJb()->csvIncl();
 	jb[0] = bjet->Px(); jb[1] = bjet->Py(); jb[2] = bjet->Pz(); jb[3] = bjet->E(); jb[4] = bjet->csvIncl();
 	prob = per.MassDiscr();
-	//prob = per.Prob();
+	prob2 = per.Prob();
 	typ = ft;
 	weight = theweight;
 	nvtx = thenvtx;

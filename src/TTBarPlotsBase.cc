@@ -65,7 +65,8 @@ void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVecto
 	tCMS.Boost(bv);
 
     plot2d["Whad_M_thad_M"]->Fill(whad.M(), thad.M(), weight);
-	plot2d["bjets_pt"]->Fill(Min(Hb->Pt(), Lb->Pt()), Max(Hb->Pt(), Lb->Pt()), weight);
+	//plot2d["bjets_pt"]->Fill(Min(Hb->Pt(), Lb->Pt()), Max(Hb->Pt(), Lb->Pt()), weight);
+	plot2d["bjets_pt"]->Fill(Hb->Pt(), Lb->Pt(), weight);
 	plot2d["wjets_pt"]->Fill(Min(Hwa->Pt(), Hwb->Pt()), Max(Hwa->Pt(), Hwb->Pt()), weight);
 	plot2d["Wlep_M_tlep_M"]->Fill(wlep.M(), tlep.M(), weight);
 	plot2d["thad_M_tlep_M"]->Fill(thad.M(), tlep.M(), weight);
