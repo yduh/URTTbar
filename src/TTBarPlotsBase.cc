@@ -18,10 +18,13 @@ void TTBarPlotsBase::Init(ttbar* analysis)
 {
 	an = analysis;
     plot2d.AddHist("bjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(b)_{min} [GeV]", "p_{T}(b)_{max} [GeV]");
+    plot2d.AddHist("bjets_pthad_ptlep", 500, 0., 500., 500, 0., 500., "p_{T}(b_{had}) [GeV]", "p_{T}(b_{lep}) [GeV]");
     plot2d.AddHist("wjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(j_{W})_{min} [GeV]", "p_{T}(j_{W})_{max} [GeV]");
     plot2d.AddHist("Whad_M_thad_M", 500, 0., 500., 500, 0., 500., "M(W_{h}) [GeV]", "M(t_{h}) [GeV]");
     plot2d.AddHist("Wlep_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(W_{l}) [GeV]", "M(t_{l}) [GeV]");
     plot2d.AddHist("thad_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(t_{h}) [GeV]", "M(t_{l}) [GeV]");
+    plot2d.AddHist("thad_pt_wjwj_dr", 100, 0., 2000., 100, 0., 5., "p_{T}(t_{h}) [GeV]", "#Delta R(j_{W}, j_{W})");
+    plot2d.AddHist("thad_pt_wjbj_dr", 100, 0., 2000., 100, 0., 5., "p_{T}(t_{h}) [GeV]", "#Delta R_{min}(j_{W}, b)");
     plot1d.AddHist("lep_pt", 500, 0., 500., "p_{T}(l) [GeV]", "Events");
     plot1d.AddHist("lep_eta", 420, -2.1, 2.1, "#eta(l)", "Events");
     plot1d.AddHist("nu_pt", 500, 0., 500., "p_{T}(#nu) [GeV]", "Events");
@@ -64,9 +67,11 @@ void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVecto
 	}
 	tCMS.Boost(bv);
 
+	plot2d["thad_pt_wjwj_dr"]->Fill(thad.Pt(), Hwa->DeltaR(*Hwb), weight);
+	plot2d["thad_pt_wjbj_dr"]->Fill(thad.Pt(), Min(Hb->DeltaR(*Hwa), Hb->DeltaR(*Hwb)), weight);
     plot2d["Whad_M_thad_M"]->Fill(whad.M(), thad.M(), weight);
-	//plot2d["bjets_pt"]->Fill(Min(Hb->Pt(), Lb->Pt()), Max(Hb->Pt(), Lb->Pt()), weight);
-	plot2d["bjets_pt"]->Fill(Hb->Pt(), Lb->Pt(), weight);
+	plot2d["bjets_pt"]->Fill(Min(Hb->Pt(), Lb->Pt()), Max(Hb->Pt(), Lb->Pt()), weight);
+	plot2d["bjets_pthad_ptlep"]->Fill(Hb->Pt(), Lb->Pt(), weight);
 	plot2d["wjets_pt"]->Fill(Min(Hwa->Pt(), Hwb->Pt()), Max(Hwa->Pt(), Hwb->Pt()), weight);
 	plot2d["Wlep_M_tlep_M"]->Fill(wlep.M(), tlep.M(), weight);
 	plot2d["thad_M_tlep_M"]->Fill(thad.M(), tlep.M(), weight);
