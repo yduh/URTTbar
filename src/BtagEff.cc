@@ -11,59 +11,57 @@ void BtagEff::Init(double btagsel)
 {
 	btagselection = btagsel;
 	btagtree = new TTree("btagtree", "btagtree", 1);
-	btagtree->Branch("jwa", jwa, "jwa[5]/F");
-	btagtree->Branch("jwb", jwb, "jwb[5]/F");
-	btagtree->Branch("jb", jb, "jb[5]/F");
+	//btagtree->Branch("jwa", jwa, "jwa[5]/F");
+	//btagtree->Branch("jwb", jwb, "jwb[5]/F");
+	btagtree->Branch("j", j, "j[5]/F");
 	btagtree->Branch("prob", &prob, "prob/F");
 	btagtree->Branch("prob2", &prob2, "prob2/F");
 	btagtree->Branch("weight", &weight, "weight/F");
 	btagtree->Branch("nvtx", &nvtx, "nvtx/F");
 	btagtree->Branch("typ", &typ, "typ/I");
+	btagtree->Branch("test", &test, "test/I");
 
 }
 
 void BtagEff::Fill(Permutation& per, float thenvtx, bool filltyp, double theweight)
 {
-	int ft = filltyp ? 1 : 2;
+	typ = filltyp ? 1 : 2;
+	weight = theweight;
+	nvtx = thenvtx;
+	prob = per.Prob();
+	prob2 = per.MassDiscr();
+	if(per.BLep()->csvIncl() > btagselection)
+	{
+		test = 1;
+		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = per.BHad()->csvIncl();
+		btagtree->Fill();
 
-	bool coin = (gRandom->Uniform() < 0.5);
-	Jet* bjet = 0;
-	if(coin)
-	{
-		if(per.BLep()->csvIncl() > btagselection) bjet = per.BHad();
 	}
-	else
+
+	if(per.BHad()->csvIncl() > btagselection)
 	{
-		if(per.BHad()->csvIncl() > btagselection) bjet = per.BLep();
+		test = 2;
+		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = per.BLep()->csvIncl();
+		btagtree->Fill();
+	}
+
+	if(per.BHad()->csvIncl() > btagselection || per.BLep()->csvIncl() > btagselection)
+	{
+		test = 3;
+		j[0] = per.WJa()->Px(); j[1] = per.WJa()->Py(); j[2] = per.WJa()->Pz(); j[3] = per.WJa()->E(); j[4] = per.WJa()->csvIncl();
+		btagtree->Fill();
+		j[0] = per.WJb()->Px(); j[1] = per.WJb()->Py(); j[2] = per.WJb()->Pz(); j[3] = per.WJb()->E(); j[4] = per.WJb()->csvIncl();
+		btagtree->Fill();
 	}
 
 	if(per.BHad()->csvIncl() < 0.6 && per.BLep()->csvIncl() < 0.6 && per.WJa()->csvIncl() < 0.6 && per.WJb()->csvIncl() < 0.6)
 	{
-		ft *= -1;
-		if(coin)
-		{
-			bjet = per.BHad();
-		}
-		else
-		{
-			bjet = per.BLep();
-		}
-	}		
-	if(bjet == 0) return;
-	TLorentzVector thad = per.THad();
-	//TLorentzVector tlep = per.TLep();
-	if(thad.Pt() < 50.) return;
-	//if(whad.M() < 60. || whad.M() > 90.) return;
-	//if(thad.M() < 130. || thad.M() > 190.) return;
+		test = 0;
+		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = per.BLep()->csvIncl();
+		btagtree->Fill();
+		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = per.BHad()->csvIncl();
+		btagtree->Fill();
+	}
 
-	jwa[0] = per.WJa()->Px(); jwa[1] = per.WJa()->Py(); jwa[2] = per.WJa()->Pz(); jwa[3] = per.WJa()->E(); jwa[4] = per.WJa()->csvIncl();
-	jwb[0] = per.WJb()->Px(); jwb[1] = per.WJb()->Py(); jwb[2] = per.WJb()->Pz(); jwb[3] = per.WJb()->E(); jwb[4] = per.WJb()->csvIncl();
-	jb[0] = bjet->Px(); jb[1] = bjet->Py(); jb[2] = bjet->Pz(); jb[3] = bjet->E(); jb[4] = bjet->csvIncl();
-	prob = per.MassDiscr();
-	prob2 = per.Prob();
-	typ = ft;
-	weight = theweight;
-	nvtx = thenvtx;
-	btagtree->Fill();
 }
 

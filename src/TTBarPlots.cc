@@ -31,9 +31,18 @@ void TTBarPlots::Init(ttbar* analysis)
 	double tbmax = 150.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "additional jets", "Events");
-	plot1d.AddHist("ptaddjets", 200, 0, 400, "p_{T}(add. jets) [GeV]", "Events");
-	plot1d.AddHist("DRminWjets", 200, 0, 10, "#DeltaR_{min W-jet}", "Events");
-	plot1d.AddHist("DRminbjets", 200, 0, 10, "#DeltaR_{min b-jet}", "Events");
+	plot1d.AddHist("btag_blep", 100, 0, 1, "CSVv2", "Events");
+	plot1d.AddHist("btag_bhad", 100, 0, 1, "CSVv2", "Events");
+	plot1d.AddHist("DRminW", 150, 0, 15, "#DeltaR_{min W-jet}", "Events");
+	plot1d.AddHist("DRminbl", 150, 0, 15, "#DeltaR_{min b-jet}", "Events");
+	plot1d.AddHist("DRminbh", 150, 0, 15, "#DeltaR_{min b-jet}", "Events");
+	plot1d.AddHist("DRminadd", 150, 0, 15, "#DeltaR_{min add-jet}", "Events");
+	plot1d.AddHist("addjets_pt", 200, 25, 425, "add. jets p_{T} [GeV]", "Events");
+	plot1d.AddHist("addjet1_pt", 200, 25, 425, "1. add. jet p_{T} [GeV]", "Events");
+	plot1d.AddHist("addjet2_pt", 200, 25, 425, "2. add. jet p_{T} [GeV]", "Events");
+	plot1d.AddHist("addjet3_pt", 200, 25, 425, "3. add. jet p_{T} [GeV]", "Events");
+	plot1d.AddHist("addjet4_pt", 200, 25, 425, "4. add. jet p_{T} [GeV]", "Events");
+	plot1d.AddHist("addjet5_pt", 200, 25, 425, "5. add. jet p_{T} [GeV]", "Events");
 	plot1d.AddHist("DPhiMET_Nu", 100, 0, 3, "#Delta#Phi(#nu, MET)", "Events");
 	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET [GeV]", "#Delta#Phi(#nu, MET)");
 	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET [GeV]", "#chi");
@@ -83,20 +92,50 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 	//double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
-	plot1d["njets"]->Fill(an->cleanedjets.size()-4, weight);
-	double drminw = 100.;
-	double drminb = 100.;
+
+	vector<IDJet*> addjets;
 	for(size_t j = 0 ; j < an->cleanedjets.size() ; ++j)
 	{
-		if(per.IsJetIn(an->cleanedjets[j])) continue;
-		if(drminw > per.WJa()->DeltaR(*an->cleanedjets[j])) {drminw = per.WJa()->DeltaR(*an->cleanedjets[j]);}
-		if(drminw > per.WJb()->DeltaR(*an->cleanedjets[j])) {drminw = per.WJb()->DeltaR(*an->cleanedjets[j]);}
-		if(drminb > per.BHad()->DeltaR(*an->cleanedjets[j])) {drminb = per.BHad()->DeltaR(*an->cleanedjets[j]);}
-		if(drminb > per.BLep()->DeltaR(*an->cleanedjets[j])) {drminb = per.BLep()->DeltaR(*an->cleanedjets[j]);}
-		plot1d["ptaddjets"]->Fill(an->cleanedjets[j]->Pt(), weight);
+		if(!per.IsJetIn(an->cleanedjets[j])){addjets.push_back(an->cleanedjets[j]);}
 	}
-	plot1d["DRminWjets"]->Fill(drminw, weight);
-	plot1d["DRminbjets"]->Fill(drminb, weight);
+	sort(addjets.begin(), addjets.end(), [](IDJet* A, IDJet* B){return A->Pt() > B->Pt();});
+	
+	plot1d["njets"]->Fill(addjets.size(), weight);
+	double drminwa = 100000.;
+	double drminwb = 100000.;
+	double drminbl = 100000.;
+	double drminbh = 100000.;
+	double drminadd = 100000.;
+	for(size_t j = 0 ; j < addjets.size() ; ++j)
+	{
+		double ktscale = Min(per.WJa()->Pt(), addjets[j]->Pt())*per.WJa()->DeltaR(*addjets[j])/per.WJa()->Pt();
+		if(drminwa > ktscale) {drminwa = ktscale;}
+		ktscale = Min(per.WJb()->Pt(), addjets[j]->Pt())*per.WJb()->DeltaR(*addjets[j])/per.WJb()->Pt();
+		if(drminwb > ktscale) {drminwb = ktscale;}
+		ktscale = Min(per.BHad()->Pt(), addjets[j]->Pt())*per.BHad()->DeltaR(*addjets[j])/per.BHad()->Pt();
+		if(drminbh > ktscale) {drminbh = ktscale;}
+		ktscale = Min(per.BLep()->Pt(), addjets[j]->Pt())*per.BLep()->DeltaR(*addjets[j])/per.BLep()->Pt();
+		if(drminbl > ktscale) {drminbl = ktscale;}
+		if(j != 0)
+		{
+
+			ktscale = addjets[j]->Pt()*addjets[0]->DeltaR(*addjets[j])/addjets[0]->Pt();
+			if(drminadd > ktscale) {drminadd = ktscale;}
+		}
+		plot1d["addjets_pt"]->Fill(addjets[j]->Pt(), weight);
+		if(j == 0){plot1d["addjet1_pt"]->Fill(addjets[j]->Pt(), weight);}
+		if(j == 1){plot1d["addjet2_pt"]->Fill(addjets[j]->Pt(), weight);}
+		if(j == 2){plot1d["addjet3_pt"]->Fill(addjets[j]->Pt(), weight);}
+		if(j == 3){plot1d["addjet4_pt"]->Fill(addjets[j]->Pt(), weight);}
+		if(j == 4){plot1d["addjet5_pt"]->Fill(addjets[j]->Pt(), weight);}
+	}
+	plot1d["btag_blep"]->Fill(per.BLep()->csvIncl(), weight);
+	plot1d["btag_bhad"]->Fill(per.BHad()->csvIncl(), weight);
+	plot1d["DRminW"]->Fill(drminwa, weight);
+	plot1d["DRminW"]->Fill(drminwb, weight);
+	plot1d["DRminbl"]->Fill(drminbl, weight);
+	plot1d["DRminbh"]->Fill(drminbh, weight);
+	plot1d["DRminadd"]->Fill(drminadd, weight);
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
 	plot1d["DPhiMET_Nu"]->Fill(Abs(nu.DeltaPhi(an->met)), weight);
 	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(nu.DeltaPhi(an->met)), weight);

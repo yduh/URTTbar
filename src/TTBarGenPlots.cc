@@ -29,6 +29,12 @@ void TTBarGenPlots::Init(ttbar* analysis)
 
 }
 
+void TTBarGenPlots::Fill(Permutation& per, int leppdgid, double weight)
+{
+	TLorentzVector nu(per.Nu());
+	TTBarGenPlots::Fill(per.BHad(), per.WJa(), per.WJb(), per.BLep(), per.L(), &nu, leppdgid, weight);
+}
+
 void TTBarGenPlots::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int leppdgid, double weight)
 {
     int lepcharge;

@@ -92,6 +92,7 @@ class ttbar : public AnalyzerBase
 
         TTBarGenPlots ttp_genall;
         TTBarGenPlots ttp_genacc;
+        TTBarGenPlots ttp_genjet;
 
 		TTBarPlots ttp_truth;
 		TTBarPlots ttp_right;
@@ -139,6 +140,7 @@ class ttbar : public AnalyzerBase
 		double B_MEDIUM;
 		int cnbtag;
 		size_t cnusedjets;
+		double clikelihoodcut;
 		double cwjetptsoft;
 		double cwjetpthard;
 		double cbjetptsoft;
@@ -170,6 +172,7 @@ class ttbar : public AnalyzerBase
 		double jetptmin;
 	
 		double weight;
+		double mcweight;
 
 		//binning vectors
 		vector<double> topptbins;
@@ -181,12 +184,15 @@ class ttbar : public AnalyzerBase
 		vector<double> jetbins;
 		vector<double> nobins;
 		vector<double> btagpt;
+		vector<double> runbins;
 
 		JetScale jetscale;
 
 		TH1D* puhist;
-		TH1D* musfhist;
-		TH1D* elsfhist;
+		TH2D* musfhist;
+		TH2D* elsfhist;
+		TH2D* mutrgsfhist;
+		TH2D* eltrgsfhist;
 	public:
 
 		ttbar(const std::string output_filename);

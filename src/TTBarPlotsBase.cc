@@ -20,6 +20,7 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot2d.AddHist("bjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(b)_{min} [GeV]", "p_{T}(b)_{max} [GeV]");
     plot2d.AddHist("bjets_pthad_ptlep", 500, 0., 500., 500, 0., 500., "p_{T}(b_{had}) [GeV]", "p_{T}(b_{lep}) [GeV]");
     plot2d.AddHist("wjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(j_{W})_{min} [GeV]", "p_{T}(j_{W})_{max} [GeV]");
+    plot2d.AddHist("wjets_bjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(j_{W})_{max} [GeV]", "p_{T}(b_{had}) [GeV]");
     plot2d.AddHist("Whad_M_thad_M", 500, 0., 500., 500, 0., 500., "M(W_{h}) [GeV]", "M(t_{h}) [GeV]");
     plot2d.AddHist("Wlep_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(W_{l}) [GeV]", "M(t_{l}) [GeV]");
     plot2d.AddHist("thad_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(t_{h}) [GeV]", "M(t_{l}) [GeV]");
@@ -73,6 +74,7 @@ void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVecto
 	plot2d["bjets_pt"]->Fill(Min(Hb->Pt(), Lb->Pt()), Max(Hb->Pt(), Lb->Pt()), weight);
 	plot2d["bjets_pthad_ptlep"]->Fill(Hb->Pt(), Lb->Pt(), weight);
 	plot2d["wjets_pt"]->Fill(Min(Hwa->Pt(), Hwb->Pt()), Max(Hwa->Pt(), Hwb->Pt()), weight);
+	plot2d["wjets_bjets_pt"]->Fill(Max(Hwa->Pt(), Hwb->Pt()), Hb->Pt(), weight);
 	plot2d["Wlep_M_tlep_M"]->Fill(wlep.M(), tlep.M(), weight);
 	plot2d["thad_M_tlep_M"]->Fill(thad.M(), tlep.M(), weight);
 	plot1d["lep_pt"]->Fill(Ll->Pt(), weight);

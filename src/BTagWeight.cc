@@ -2,6 +2,7 @@
 #include "ttbarxsec.h"
 
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -23,6 +24,22 @@ void BTagWeight::Init(ttbar* an, string filename)
 	dir->cd();
 }
 
+double BTagWeight::scaleb(IDJet* jet)
+{
+	double x = jet->Pt();
+	double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));
+	//double scale = 0.828 + 0.3244*Exp(-0.01059*x);
+	return(scale);
+}
+
+double BTagWeight::scalel(IDJet* jet)
+{
+	double x = jet->Pt();
+	double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));
+	//double scale = 0.828 + 0.3244*Exp(-0.01059*x);
+	return(scale);
+}
+
 double BTagWeight::SF(vector<IDJet*>& jets, int btyp, int ltyp)
 {
 	double PD=1.;
@@ -33,8 +50,8 @@ double BTagWeight::SF(vector<IDJet*>& jets, int btyp, int ltyp)
 		int hbin = hbpass->FindFixBin(pt);
 		int bin = Min(Max(hbin, 1), hbpass->GetNbinsX()-1)-1;
 		//cout << pt << " " << hbin << " " << bin << " " << hbpass->GetBinContent(hbin) << " " << hlpass->GetBinContent(hbin) << endl;
-
-		if(find_if(AN->genbpartons.begin(), AN->genbpartons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.4;}) != AN->genbpartons.end())
+		//cout << AN->genbpartons.size() << endl;
+		if(find_if(AN->genbpartons.begin(), AN->genbpartons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genbpartons.end())
 		{
 			AN->truth1d["Eff_Ball"]->Fill(pt, AN->weight);
 			double eff = hbpass->GetBinContent(hbin);
@@ -42,12 +59,12 @@ double BTagWeight::SF(vector<IDJet*>& jets, int btyp, int ltyp)
 			{
 				AN->truth1d["Eff_Bpassing"]->Fill(pt, AN->weight);
 				PM *= eff;
-				PD *= eff * (scale + btyp * uncb[bin]);
+				PD *= eff * (scaleb(jet) + btyp * uncb[bin]);
 			}
 			else
 			{
 				PM *= 1. - eff;
-				PD *= 1. - eff * (scale + btyp * uncb[bin]);
+				PD *= 1. - eff * (scaleb(jet) + btyp * uncb[bin]);
 			}
 			break;
 		}
@@ -58,13 +75,14 @@ double BTagWeight::SF(vector<IDJet*>& jets, int btyp, int ltyp)
 		{
 			AN->truth1d["Eff_Lpassing"]->Fill(pt, AN->weight);
 			PM *= eff;
-			PD *= eff * (scale + ltyp * uncl[bin]);
+			PD *= eff * (scalel(jet) + ltyp * uncl[bin]);
 		}
 		else
 		{
 			PM *= 1. - eff;
-			PD *= 1. - eff * (scale + ltyp * uncl[bin]);
+			PD *= 1. - eff * (scalel(jet) + ltyp * uncl[bin]);
 		}
 	}
+	if(PM <= 0. || PD <= 0.){cout << PM << " BTWERROR " << PD << endl; return(1.);}
 	return(PD/PM);
 }

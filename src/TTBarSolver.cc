@@ -141,9 +141,11 @@ double TTBarSolver::Test(double* par)
 
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
+	//cout << mwhad << " M " << mthad << endl; 
 	if(mthad < 500. && mwhad < 500.)
 	{
 		double massdisval = WTmass_right->Interpolate(mthad, mwhad);
+//		cout << massdisval << endl;
 		if(massdisval > 1.0E-10) {masstest = -1.*Log(massdisval);}
 		//masstest = -1.*Log(WTmass_right->Interpolate(mthad, mwhad)/Max(1., WTmass_wrong->Interpolate(mthad, mwhad)));
 	}

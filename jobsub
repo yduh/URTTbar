@@ -43,15 +43,11 @@ transferfiles.append(execonfig)
 
 transferfiles_config = ', '.join(transferfiles)
 
-if 'JOB8' in jobid:
-	filesperjob = 15
-
-
 for sf in samplefiles:
 	if 'tt_' in sf:
 		filesperjob = 2
 	else:
-		filesperjob = 20
+		filesperjob = 15
 	infile = os.path.join(inputdir, sf)
 	jobpath = os.path.join(jobdir, sf.split('.txt')[0])
 	os.mkdir(jobpath)
