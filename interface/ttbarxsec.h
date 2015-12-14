@@ -43,32 +43,24 @@ class ttbar : public AnalyzerBase
 		bool FULLLEP;
 		bool SEMILEPACC;
 		list<GenObject> sgenparticles;
-		vector<GenObject*> genwpartons;
-		vector<GenObject*> gencls;
-		vector<GenObject*> gennls;
 		vector<GenObject*> genfincls;
-		vector<GenObject*> genbpartons;
+	  	vector<GenObject*> genbpartons;
 		GenObject* gent;
 		GenObject* gentbar;
-		GenObject* genb;
-		GenObject* genbbar;
-		GenObject* genbl;
-		GenObject* genbh;
-		TLorentzVector gentoplep;
-		TLorentzVector gentophad;
+		//GenObject* genbl;
+		//GenObject* genbh;
+		//TLorentzVector gentoplep;
+		//TLorentzVector gentophad;
 
 		list<Genjet> sgenjets;
 		vector<Genjet*> genaddjets;
 
-		//matched
-		//vector<Jet*> recbjets;
-		//vector<Jet*> recwjets;
-		//Jet* recbjet;
-		//Jet* recbbarjet;
-		//Jet* recbhjet;
-		//Jet* recbljet;
-		//int nttjets;
+		Permutation genallper;
+		Permutation psper;
+		Permutation* genper;
 		Permutation rightper;
+		Permutation testper;
+		Permutation bestper;
 
 		//reco
 		list<IDJet> sjets;
@@ -131,6 +123,7 @@ class ttbar : public AnalyzerBase
 
 		//configuration
 		bool DATASIM;
+		bool PDFTEST;
 		bool PSEUDOTOP;
 		bool BTAGMODE;
 		bool JETSCALEMODE;
@@ -186,7 +179,7 @@ class ttbar : public AnalyzerBase
 		vector<double> btagpt;
 		vector<double> runbins;
 
-		JetScale jetscale;
+//		JetScale jetscale;
 
 		TH1D* puhist;
 		TH2D* musfhist;
@@ -205,6 +198,7 @@ class ttbar : public AnalyzerBase
 		virtual void analyze();
 
 		void SelectGenParticles(URStreamer& event);
+		void SelectPseudoTop(URStreamer& event);
 		void SelectRecoParticles(URStreamer& event);
 		void ttanalysis(URStreamer& event);
 

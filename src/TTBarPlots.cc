@@ -47,6 +47,12 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot2d.AddHist("METvsDPhiMET_Nu", 120, 0, 1200, 100, 0, 3, "MET [GeV]", "#Delta#Phi(#nu, MET)");
 	plot2d.AddHist("METvsChi", 120, 0, 1200, 25, 0., 100., "MET [GeV]", "#chi");
 	plot1d.AddHist("Mt_W", 500, 0, 500, "M_{t}(W) [GeV]", "Events");
+	plot1d.AddHist("Mt_t", 500, 0, 1000, "M_{t}(t_{l}) [GeV]", "Events");
+	plot1d.AddHist("mttest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("masstest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("nutest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("massmttest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("massnutest", 500, 0, 100, "mttest", "Events");
 	plot2d.AddHist("METunc", 100, 0, 0.5, 100, 0., .5, "#sigma(MET_{x})/MET_{x}", "#sigma(MET_{y})/MET_{y}");
 	for(int jn : jetbins)
 	{
@@ -82,16 +88,20 @@ void TTBarPlots::Init(ttbar* analysis)
 	}
 }
 
-void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
+void TTBarPlots::Fill(Permutation& per, double weight)
 {
-	TLorentzVector nu(per.Nu());
-	TTBarPlotsBase::Fill(per.BHad(), per.WJa(), per.WJb(), per.BLep(), per.L(), &nu, lepcharge, weight);
+	TTBarPlotsBase::Fill(per, weight);
 	double test = per.MassDiscr();
 	//double testb = per.BDiscr();
 	double testb = Sqrt(per.NuChisq());
 	//double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
+	plot1d["mttest"]->Fill(per.MTDiscr(), weight);
+	plot1d["masstest"]->Fill(test, weight);
+	plot1d["nutest"]->Fill(per.NuDiscr(), weight);
+	plot1d["massmttest"]->Fill(per.MTDiscr()+test, weight);
+	plot1d["massnutest"]->Fill(per.MassDiscr()+test+per.NuDiscr(), weight);
 
 	vector<IDJet*> addjets;
 	for(size_t j = 0 ; j < an->cleanedjets.size() ; ++j)
@@ -129,18 +139,18 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 		if(j == 3){plot1d["addjet4_pt"]->Fill(addjets[j]->Pt(), weight);}
 		if(j == 4){plot1d["addjet5_pt"]->Fill(addjets[j]->Pt(), weight);}
 	}
-	plot1d["btag_blep"]->Fill(per.BLep()->csvIncl(), weight);
-	plot1d["btag_bhad"]->Fill(per.BHad()->csvIncl(), weight);
+	plot1d["btag_blep"]->Fill(dynamic_cast<IDJet*>(per.BLep())->csvIncl(), weight);
+	plot1d["btag_bhad"]->Fill(dynamic_cast<IDJet*>(per.BHad())->csvIncl(), weight);
 	plot1d["DRminW"]->Fill(drminwa, weight);
 	plot1d["DRminW"]->Fill(drminwb, weight);
 	plot1d["DRminbl"]->Fill(drminbl, weight);
 	plot1d["DRminbh"]->Fill(drminbh, weight);
 	plot1d["DRminadd"]->Fill(drminadd, weight);
 	plot2d["METvsChi"]->Fill(an->met.Pt(), testb, weight);
-	plot1d["DPhiMET_Nu"]->Fill(Abs(nu.DeltaPhi(an->met)), weight);
-	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(nu.DeltaPhi(an->met)), weight);
-	double Mt_W = Sqrt(2.*an->met.Pt()*per.L()->Pt()-2.*(an->met.Px()*per.L()->Px() + an->met.Py()*per.L()->Py()));
-	plot1d["Mt_W"]->Fill(Mt_W, weight);
+	plot1d["DPhiMET_Nu"]->Fill(Abs(per.Nu().DeltaPhi(an->met)), weight);
+	plot2d["METvsDPhiMET_Nu"]->Fill(an->met.Pt(), Abs(per.Nu().DeltaPhi(an->met)), weight);
+	plot1d["Mt_W"]->Fill(per.MtWLep(), weight);
+	plot1d["Mt_t"]->Fill(per.MttLep(), weight);
 	plot2d["METunc"]->Fill(an->met.pxunctot()/an->met.Px(), an->met.pyunctot()/an->met.Py(), weight);
 	for(int jn : jetbins)
 	{
@@ -149,39 +159,39 @@ void TTBarPlots::Fill(Permutation& per, int lepcharge, double weight)
 		if((jn == -1) || (an->reducedjets.size() - 4 == size_t(jn)) || (jn == jetbins.back() && an->reducedjets.size() - 4 > size_t(jn)))
 		{
 			plot2d["test_"+jb.str()+"testb"]->Fill(test, testb, weight);
-			plot2d["test_"+jb.str()+"nobin"]->Fill(test, thad.Pt(), weight);
-			plot2d["testb_"+jb.str()+"nobin"]->Fill(testb, thad.Pt(), weight);
-			double thadpt = Min(thad.Pt(), plot2d["test_"+jb.str()+"thadpt"]->GetYaxis()->GetXmax()-.0001);
+			plot2d["test_"+jb.str()+"nobin"]->Fill(test, per.THad().Pt(), weight);
+			plot2d["testb_"+jb.str()+"nobin"]->Fill(testb, per.THad().Pt(), weight);
+			double thadpt = Min(per.THad().Pt(), plot2d["test_"+jb.str()+"thadpt"]->GetYaxis()->GetXmax()-.0001);
 			plot2d["test_"+jb.str()+"thadpt"]->Fill(test, thadpt, weight);
 			plot2d["testb_"+jb.str()+"thadpt"]->Fill(testb, thadpt, weight);
-			double tleppt = Min(tlep.Pt(), plot2d["test_"+jb.str()+"tleppt"]->GetYaxis()->GetXmax()-.0001);
+			double tleppt = Min(per.TLep().Pt(), plot2d["test_"+jb.str()+"tleppt"]->GetYaxis()->GetXmax()-.0001);
 			plot2d["test_"+jb.str()+"tleppt"]->Fill(test, tleppt, weight);
 			plot2d["testb_"+jb.str()+"tleppt"]->Fill(testb, tleppt, weight);
 			plot2d["test_"+jb.str()+"tpt"]->Fill(test, tleppt, weight);
 			plot2d["testb_"+jb.str()+"tpt"]->Fill(testb, tleppt, weight);
 			plot2d["test_"+jb.str()+"tpt"]->Fill(test, thadpt, weight);
 			plot2d["testb_"+jb.str()+"tpt"]->Fill(testb, thadpt, weight);
-			double thady = Min(Abs(thad.Rapidity()), plot2d["test_"+jb.str()+"thady"]->GetYaxis()->GetXmax()-.0001);
+			double thady = Min(Abs(per.THad().Rapidity()), plot2d["test_"+jb.str()+"thady"]->GetYaxis()->GetXmax()-.0001);
 			plot2d["test_"+jb.str()+"thady"]->Fill(test, thady, weight);
 			plot2d["testb_"+jb.str()+"thady"]->Fill(testb, thady, weight);
-			double tlepy = Min(Abs(tlep.Rapidity()), plot2d["test_"+jb.str()+"tlepy"]->GetYaxis()->GetXmax()-.0001);
+			double tlepy = Min(Abs(per.TLep().Rapidity()), plot2d["test_"+jb.str()+"tlepy"]->GetYaxis()->GetXmax()-.0001);
 			plot2d["test_"+jb.str()+"tlepy"]->Fill(test, tlepy, weight);
 			plot2d["testb_"+jb.str()+"tlepy"]->Fill(testb, tlepy, weight);
 			plot2d["test_"+jb.str()+"ty"]->Fill(test, tlepy, weight);
 			plot2d["testb_"+jb.str()+"ty"]->Fill(testb, tlepy, weight);
 			plot2d["test_"+jb.str()+"ty"]->Fill(test, thady, weight);
 			plot2d["testb_"+jb.str()+"ty"]->Fill(testb, thady, weight);
-			double ttm = Min(tt.M(), plot2d["test_"+jb.str()+"ttm"]->GetYaxis()->GetXmax()-.0001);
+			double ttm = Min(per.TT().M(), plot2d["test_"+jb.str()+"ttm"]->GetYaxis()->GetXmax()-.0001);
 			plot2d["test_"+jb.str()+"ttm"]->Fill(test, ttm, weight);
 			plot2d["testb_"+jb.str()+"ttm"]->Fill(testb, ttm, weight);
-			double tty = Min(Abs(tt.Rapidity()), plot2d["test_"+jb.str()+"tty"]->GetYaxis()->GetXmax()-.0001);
+			double tty = Min(Abs(per.TT().Rapidity()), plot2d["test_"+jb.str()+"tty"]->GetYaxis()->GetXmax()-.0001);
 			plot2d["test_"+jb.str()+"tty"]->Fill(test, tty, weight);
 			plot2d["testb_"+jb.str()+"tty"]->Fill(testb, tty, weight);
-			double ttpt = Min(tt.Pt(), plot2d["test_"+jb.str()+"ttpt"]->GetYaxis()->GetXmax()-.0001);
+			double ttpt = Min(per.TT().Pt(), plot2d["test_"+jb.str()+"ttpt"]->GetYaxis()->GetXmax()-.0001);
 			plot2d["test_"+jb.str()+"ttpt"]->Fill(test, ttpt, weight);
 			plot2d["testb_"+jb.str()+"ttpt"]->Fill(testb, ttpt, weight);
-			plot2d["test_"+jb.str()+"costhetastar"]->Fill(test, tCMS.CosTheta(), weight);
-			plot2d["testb_"+jb.str()+"costhetastar"]->Fill(testb, tCMS.CosTheta(), weight);
+			plot2d["test_"+jb.str()+"costhetastar"]->Fill(test, per.T_CMS().CosTheta(), weight);
+			plot2d["testb_"+jb.str()+"costhetastar"]->Fill(testb, per.T_CMS().CosTheta(), weight);
 			plot2d["test_"+jb.str()+"njet"]->Fill(test, an->cleanedjets.size()-4, weight);
 			plot2d["testb_"+jb.str()+"njet"]->Fill(testb, an->cleanedjets.size()-4, weight);
 			plot2d["test_"+jb.str()+"met"]->Fill(test, an->met.Pt(), weight);

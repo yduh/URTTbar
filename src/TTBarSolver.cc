@@ -1,6 +1,7 @@
 #include "TTBarSolver.h"
 #include "NeutrinoSolver.h"
 #include "IDMet.h"
+#include "IDJet.h"
 
 
 TTBarSolver* TTBarSolver::TTBS = 0; 
@@ -28,25 +29,27 @@ void TTBarSolver::Init(string filename, bool usebtag, bool usens, bool usemass)
 	probfile = new TFile(filename.c_str(), "READ");
 	WTmass_right = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_right"));
 	WTmass_right->Scale(1./WTmass_right->Integral("width"));
-	WTmass_wrong = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_wrong"));
-	WTmass_wrong->Scale(1./WTmass_wrong->Integral("width"));
+	WTmt_right = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmtlep_tmtlep_right"));
+	WTmt_right->Scale(1./WTmt_right->Integral("width"));
+	//WTmass_wrong = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_wrong"));
+	//WTmass_wrong->Scale(1./WTmass_wrong->Integral("width"));
 	BTag_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_true"));
 	BTag_right->Scale(1./BTag_right->Integral("width"));
 	BTag_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_btag_wrong"));
 	BTag_wrong->Scale(1./BTag_wrong->Integral("width"));
 	N_right = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_right"));
 	N_right->Scale(1./N_right->Integral("width"));
-	N_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_wrong"));
-	N_wrong->Scale(1./N_wrong->Integral("width"));
+	//N_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_wrong"));
+	//N_wrong->Scale(1./N_wrong->Integral("width"));
 	dir->cd();
 }
 
-void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVector* llep, IDMet* met)
+void TTBarSolver::Solve(TLorentzVector* bhad, TLorentzVector* j1had, TLorentzVector* j2had, TLorentzVector* blep, TLorentzVector* llep, IDMet* met)
 {
-	bhad_ = bhad;
-	j1had_ = j1had;
-	j2had_ = j2had;
-	blep_ = blep;
+	bhad_ = dynamic_cast<IDJet*>(bhad);
+	j1had_ = dynamic_cast<IDJet*>(j1had);
+	j2had_ = dynamic_cast<IDJet*>(j2had);
+	blep_ = dynamic_cast<IDJet*>(blep);
 	llep_ = llep;
 	met_ = met;
 	bool SMEAR = false;
@@ -68,10 +71,10 @@ void TTBarSolver::Solve(Jet* bhad, Jet* j1had, Jet* j2had, Jet* blep, TLorentzVe
 	nstest = 1.E10;
 	masstest = 1.E10;
 	//cout << bhad->csvIncl() << " " << blep->csvIncl() << " " << j1had->csvIncl() << " " << j2had->csvIncl() << endl;
-	btagtest = -1.*Log(BTag_right->Interpolate(bhad->csvIncl())/BTag_wrong->Interpolate(bhad->csvIncl()));
-	btagtest -= Log(BTag_right->Interpolate(blep->csvIncl())/BTag_wrong->Interpolate(blep->csvIncl()));
-	btagtest -= Log(BTag_wrong->Interpolate(j1had->csvIncl())/BTag_right->Interpolate(j1had->csvIncl()));
-	btagtest -= Log(BTag_wrong->Interpolate(j2had->csvIncl())/BTag_right->Interpolate(j2had->csvIncl()));
+	btagtest = -1.*Log(BTag_right->Interpolate(bhad_->csvIncl())/BTag_wrong->Interpolate(bhad_->csvIncl()));
+	btagtest -= Log(BTag_right->Interpolate(blep_->csvIncl())/BTag_wrong->Interpolate(blep_->csvIncl()));
+	btagtest -= Log(BTag_wrong->Interpolate(j1had_->csvIncl())/BTag_right->Interpolate(j1had_->csvIncl()));
+	btagtest -= Log(BTag_wrong->Interpolate(j2had_->csvIncl())/BTag_right->Interpolate(j2had_->csvIncl()));
 	
 	TTBS = this;
 	minuit.SetFCN(myfuncln);
@@ -150,6 +153,14 @@ double TTBarSolver::Test(double* par)
 		//masstest = -1.*Log(WTmass_right->Interpolate(mthad, mwhad)/Max(1., WTmass_wrong->Interpolate(mthad, mwhad)));
 	}
 
+	double mtwlep = Sqrt(Power(met_->Pt() + llep_->Pt(),2) - Power(met_->Px() + llep_->Px(),2) - Power(met_->Py() + llep_->Py(),2));
+	double mttlep = Sqrt(Power(met_->Pt() + llep_->Pt() + Sqrt(blep_->M()*blep_->M() + blep_->Pt()*blep_->Pt()),2) - Power(met_->Px() + llep_->Px() + blep_->Px(),2) - Power(met_->Py() + llep_->Py() + blep_->Py(),2));
+	if(mtwlep < 500. && mttlep < 500.)
+	{
+		double mtdisval = WTmt_right->Interpolate(mttlep, mtwlep);
+		if(mtdisval > 1.0E-10) {mttest = -1.*Log(mtdisval);}
+	}
+
 	res = 0.;
 	double sqrt2 = Sqrt(2);
 	res += Power((par[0]-173)/(20), 2);
@@ -163,6 +174,7 @@ double TTBarSolver::Test(double* par)
 	res += Power((par[8]-1.)/umety_/sqrt2 , 2);
 	if(USEMASS) {res += masstest;}
 	if(USENS) {res += nstest;}
+	//if(USENS) {res += mttest;}
 	if(USEBTAG) {res += btagtest;}
 
 	return(res);

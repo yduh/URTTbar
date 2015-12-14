@@ -17,16 +17,17 @@ jobargs = sys.argv[4:]
 if os.path.isdir(jobdir):
 	print jobdir, 'exists: EXIT'
 	sys.exit(-1)
+jobdir = os.path.join(os.getcwd(), jobdir)
 os.mkdir(jobdir)
 
 os.system('cp ' + execonfig + ' ' + jobdir)
-execonfig = os.path.join(os.getcwd()+'/'+ jobdir, os.path.basename(execonfig))
+execonfig = os.path.join(jobdir, os.path.basename(execonfig))
 
 p = subprocess.Popen(['which', exe], stdout=subprocess.PIPE)
 exe = p.stdout.read().split('\n')[0]
 cpcomm = 'cp ' + exe + ' ' + jobdir
 os.system(cpcomm)
-exe = os.path.join(os.getcwd()+'/'+ jobdir, os.path.basename(exe))
+exe = os.path.join(jobdir, os.path.basename(exe))
 print exe, execonfig
 
 files = os.listdir(inputdir)
@@ -45,12 +46,17 @@ transferfiles_config = ', '.join(transferfiles)
 
 for sf in samplefiles:
 	if 'tt_' in sf:
-		filesperjob = 2
+		filesperjob = 3
+	elif 'DATA_' in sf:
+		filesperjob = 8
 	else:
-		filesperjob = 15
-	infile = os.path.join(inputdir, sf)
+		filesperjob = 10
+	#infile = os.path.join(inputdir, sf)
 	jobpath = os.path.join(jobdir, sf.split('.txt')[0])
 	os.mkdir(jobpath)
+	infile = os.path.join(jobpath, sf)
+	print 'cp ' + os.path.join(inputdir, sf) + ' ' + infile
+	os.system('cp ' + os.path.join(inputdir, sf) + ' ' + infile)
 	infiledes = open(infile, 'r')
 	numrootfiles = infiledes.read().count('.root')
 	infiledes.close()

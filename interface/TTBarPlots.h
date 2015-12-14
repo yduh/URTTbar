@@ -21,7 +21,7 @@ class TTBarPlots : public TTBarPlotsBase
 		TTBarPlots(string prefix);
 		~TTBarPlots();
 		void Init(ttbar* analysis);
-		void Fill(Permutation& per, int lepcharge, double weight);
+		void Fill(Permutation& per, double weight);
 };
 
 #endif

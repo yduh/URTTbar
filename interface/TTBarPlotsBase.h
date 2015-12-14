@@ -8,6 +8,7 @@
 using namespace std;
 
 class ttbar;
+class Permutation;
 
 class TTBarPlotsBase
 {
@@ -17,17 +18,12 @@ class TTBarPlotsBase
 		TH2DCollection plot2d;	
 		ttbar* an;
 
-		TLorentzVector whad;
-		TLorentzVector thad;
-		TLorentzVector wlep;
-		TLorentzVector tlep;
-		TLorentzVector tt;
-		TLorentzVector tCMS;	
 	public:
 		TTBarPlotsBase(string prefix);
 		~TTBarPlotsBase();
 		void Init(ttbar* analysis);
-		void Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double weight);
+		//void Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double weight);
+		void Fill(Permutation& per, double weight);
 };
 
 #endif

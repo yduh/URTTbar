@@ -22,8 +22,8 @@ class TTBarGenPlots : public TTBarPlotsBase
 		~TTBarGenPlots();
 		void Init(ttbar* analysis);
 		//void Fill(TLorentzVector* Hb, TLorentzVector* Ln, int lepcharge, double weight);
-		void Fill(Permutation& per, int leppdgid, double weight);
-		void Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int leppdgid, double weight);
+		void Fill(Permutation& per, double weight);
+		//void Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int leppdgid, double weight);
 };
 
 #endif

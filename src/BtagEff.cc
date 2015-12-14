@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Permutation.h"
+#include "IDJet.h"
 
 BtagEff::BtagEff(){}
 
@@ -15,7 +16,9 @@ void BtagEff::Init(double btagsel)
 	//btagtree->Branch("jwb", jwb, "jwb[5]/F");
 	btagtree->Branch("j", j, "j[5]/F");
 	btagtree->Branch("prob", &prob, "prob/F");
-	btagtree->Branch("prob2", &prob2, "prob2/F");
+	btagtree->Branch("problep", &problep, "problep/F");
+	btagtree->Branch("probhad", &probhad, "probhad/F");
+	btagtree->Branch("probnu", &probnu, "probnu/F");
 	btagtree->Branch("weight", &weight, "weight/F");
 	btagtree->Branch("nvtx", &nvtx, "nvtx/F");
 	btagtree->Branch("typ", &typ, "typ/I");
@@ -23,43 +26,56 @@ void BtagEff::Init(double btagsel)
 
 }
 
-void BtagEff::Fill(Permutation& per, float thenvtx, bool filltyp, double theweight)
+void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepcorrect, double theweight)
 {
-	typ = filltyp ? 1 : 2;
+
+	if(per.THad().Pt() < 80. || per.TLep().Pt() < 80.) {return;}
+
+	typ = 0;
+	if(thadcorrect) typ = 1;
+	if(tlepcorrect) typ = 2;
+	if(tlepcorrect && thadcorrect) typ = 3;
 	weight = theweight;
 	nvtx = thenvtx;
 	prob = per.Prob();
-	prob2 = per.MassDiscr();
-	if(per.BLep()->csvIncl() > btagselection)
+	probhad = per.MassDiscr();
+	problep = per.MTDiscr();
+	probnu = per.NuDiscr();
+	IDJet* blep = dynamic_cast<IDJet*>(per.BLep());
+	IDJet* bhad = dynamic_cast<IDJet*>(per.BHad());
+	IDJet* wja = dynamic_cast<IDJet*>(per.WJa());
+	IDJet* wjb = dynamic_cast<IDJet*>(per.WJb());
+
+	if(blep->csvIncl() > btagselection)
 	{
 		test = 1;
-		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = per.BHad()->csvIncl();
+		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = bhad->csvIncl();
 		btagtree->Fill();
 
 	}
 
-	if(per.BHad()->csvIncl() > btagselection)
+	if(bhad->csvIncl() > btagselection)
 	{
 		test = 2;
-		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = per.BLep()->csvIncl();
+		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = blep->csvIncl();
 		btagtree->Fill();
 	}
 
-	if(per.BHad()->csvIncl() > btagselection || per.BLep()->csvIncl() > btagselection)
+	if(bhad->csvIncl() > btagselection || blep->csvIncl() > btagselection)
 	{
 		test = 3;
-		j[0] = per.WJa()->Px(); j[1] = per.WJa()->Py(); j[2] = per.WJa()->Pz(); j[3] = per.WJa()->E(); j[4] = per.WJa()->csvIncl();
+		j[0] = per.WJa()->Px(); j[1] = per.WJa()->Py(); j[2] = per.WJa()->Pz(); j[3] = per.WJa()->E(); j[4] = wja->csvIncl();
 		btagtree->Fill();
-		j[0] = per.WJb()->Px(); j[1] = per.WJb()->Py(); j[2] = per.WJb()->Pz(); j[3] = per.WJb()->E(); j[4] = per.WJb()->csvIncl();
+		j[0] = per.WJb()->Px(); j[1] = per.WJb()->Py(); j[2] = per.WJb()->Pz(); j[3] = per.WJb()->E(); j[4] = wjb->csvIncl();
 		btagtree->Fill();
 	}
 
-	if(per.BHad()->csvIncl() < 0.6 && per.BLep()->csvIncl() < 0.6 && per.WJa()->csvIncl() < 0.6 && per.WJb()->csvIncl() < 0.6)
+	if(bhad->csvIncl() < 0.6 && blep->csvIncl() < 0.6 && wja->csvIncl() < 0.6 && wjb->csvIncl() < 0.6)
 	{
 		test = 0;
-		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = per.BLep()->csvIncl();
+		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = blep->csvIncl();
 		btagtree->Fill();
-		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = per.BHad()->csvIncl();
+		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = bhad->csvIncl();
 		btagtree->Fill();
 	}
 

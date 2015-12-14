@@ -10,7 +10,9 @@ class BtagEff
 		TTree* btagtree;
 		Float_t j[5];
 		Float_t prob;
-		Float_t prob2;
+		Float_t problep;
+		Float_t probhad;
+		Float_t probnu;
 		Float_t weight;
 		Float_t nvtx;
 		Int_t typ;
@@ -19,7 +21,8 @@ class BtagEff
 	public:
 		BtagEff();
 		void Init(double btagsel);
-		void Fill(Permutation& per, float thenvtx, bool filltyp, double theweight);
+		//void Fill(Permutation& per, float thenvtx, bool filltyp, double theweight);
+		void Fill(Permutation& per, float thenvtx, bool bhadcorrect, bool blepcorrect, double theweight);
 };
 
 #endif
