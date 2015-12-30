@@ -18,9 +18,11 @@ void BTagWeight::Init(ttbar* an, string filename)
 	hbpass = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Bpassing"));
 	hball = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Ball"));
 	hbpass->Divide(hball);
+	hbpass->Print("all");
 	hlpass = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Lpassing"));
 	hlall = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Lall"));
 	hlpass->Divide(hlall);
+	hlpass->Print("all");
 	dir->cd();
 }
 
@@ -28,9 +30,10 @@ double BTagWeight::scaleb(IDJet* jet)
 {
 	double x = jet->Pt();
 	//double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));
-	double scale = 0.918;
+	//double scale = 0.918;
 	//double scale = Max(0.8, 1.118 - 0.00163*x);
 	//double scale = 0.828 + 0.3244*Exp(-0.01059*x);
+	double scale = 0.93269 -0.56068*Exp(-0.047654*x);
 	//double scale = Max(0.75, 0.9884-Exp((x-305.2)*0.01563));
 	return(scale);
 }
@@ -39,9 +42,9 @@ double BTagWeight::scalel(IDJet* jet)
 {
 	double x = jet->Pt();
 	//double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));
-	double scale = 0.918;
+	//double scale = 0.918;
 	//double scale = Max(0.8, 1.118 - 0.00163*x);
-	//double scale = 0.828 + 0.3244*Exp(-0.01059*x);
+	double scale = 0.93269 -0.56068*Exp(-0.047654*x);
 	//double scale = Max(0.75, 0.9884-Exp((x-305.2)*0.01563));
 	return(scale);
 }

@@ -482,10 +482,15 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	vector<GenObject*> gennls;
 	GenObject* genb = 0;
 	GenObject* genbbar = 0;
-	if(HERWIGPP)
+	const vector<Genparticle>& gps = event.genParticles();
+	for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
 	{
-		const vector<Genparticle>& gps = event.genParticles();
-		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
+		if(int(Abs(gp->pdgId()) % 10000) / 1000 == 5 || int(Abs(gp->pdgId()) % 1000) / 100 == 5)
+		{
+			sgenparticles.push_back(*gp);
+			genbpartons.push_back(&(sgenparticles.back()));
+		}
+		if(HERWIGPP)
 		{
 			if(gp->status() == 11)
 			{
@@ -548,19 +553,9 @@ void ttbar::SelectGenParticles(URStreamer& event)
 			//	}
 			//}
 		}
-	}
-	else
-	{
-		const vector<Genparticle>& gps = event.genParticles();
-		for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
+		else
 		{
-			//if(Abs(gp->pdgId()) == 5 && gp->status() <=70 && gp->status() > 21)
-			if(Abs(gp->pdgId()) > 500 && Abs(gp->pdgId()) < 600)
-			{
-				sgenparticles.push_back(*gp);
-				genbpartons.push_back(&(sgenparticles.back()));
-			}
-			
+
 			if(gp->status() > 21 && gp->status() < 30 && gp->momIdx().size() != 0)
 			{
 				if(gp->pdgId() == 6)
@@ -655,6 +650,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		SEMILEP = true;
 		if(gencls[0]->pdgId() > 0){genallper.Init(genwpartons[0], genwpartons[1], genb, genbbar, gencls[0], gencls[0]->pdgId(), gennls[0]);}
 		else{genallper.Init(genwpartons[0], genwpartons[1], genbbar, genb, gencls[0], gencls[0]->pdgId(), gennls[0]);}
+		//if(genallper.TT().M() > 747.5 && genallper.TT().M() < 752.5) {weight *= 2;}
 
 		if(Abs(genallper.L()->Eta()) < cpletamax && genallper.L()->Pt() > cplptmin && Abs(genallper.WJa()->Eta()) < cpjetetamax && Abs(genallper.WJb()->Eta()) < cpjetetamax && Abs(genallper.BHad()->Eta()) < cpjetetamax && Abs(genallper.BLep()->Eta()) < cpjetetamax)
 		{
@@ -1425,81 +1421,103 @@ void ttbar::ttanalysis(URStreamer& event)
 //			}
 //		}
 
-	int nbtaglocal = 2;
-	if(BTAGMODE) nbtaglocal = 1;
-	bestper.Reset();
-int percount = 0;
-	for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
+	if(PSEUDOTOP)
 	{
-		for(size_t j = nbtaglocal ; j < i ; ++j)
+		TLorentzVector* bl = reducedjets[0];
+		TLorentzVector* bh = reducedjets[1];
+
+		if(lep->DeltaR(*reducedjets[1]) < lep->DeltaR(*reducedjets[0]))
 		{
-			for(size_t k = 0 ; k < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++k)
+			bl = reducedjets[1];
+			bh = reducedjets[0];
+		}
+
+		vector<TLorentzVector*> wvec(2, 0);
+
+		partial_sort_copy(reducedjets.begin()+2, reducedjets.end(), wvec.begin(), wvec.end(), [](TLorentzVector* A, TLorentzVector* B){return(A->Pt() > B->Pt());});
+		//cout << wvec[0]->Pt() << " " << wvec[1]->Pt() << endl;
+		bestper.Init(wvec[0], wvec[1], bh, bl, lep, leppdgid, &met);
+		bestper.Solve(ttsolver);
+
+	}
+	else
+	{
+		int nbtaglocal = 2;
+		if(BTAGMODE) nbtaglocal = 1;
+		bestper.Reset();
+		int percount = 0;
+		for(size_t i = nbtaglocal ; i < reducedjets.size() ; ++i)
+		{
+			for(size_t j = nbtaglocal ; j < i ; ++j)
 			{
-				if(i == k || j == k) continue;
-				for(size_t l = 0 ; l < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++l)
+				for(size_t k = 0 ; k < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++k)
 				{
-				if(l == i || l == j || l == k) continue;
-				if(nbtaglocal == 1 && k != 0 && l != 0) continue;
-				testper.Init(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, leppdgid, &met);
-				if(testper.WJa()->Pt() < cwjetpthard && testper.WJb()->Pt() < cwjetpthard) continue;
-				if(testper.WJa()->Pt() < cwjetptsoft || testper.WJb()->Pt() < cwjetptsoft) continue;
-				if(testper.BHad()->Pt() < cbjetpthard && testper.BLep()->Pt() < cbjetpthard) continue;
-				if(testper.BHad()->Pt() < cbjetptsoft || testper.BLep()->Pt() < cbjetptsoft) continue;
-				testper.Solve(ttsolver);
-
-				//if(rightper.IsComplete()) cout << (percount++) << " " << rightper.IsCorrect(testper) << " "  << testper.WHad().M() << " " << testper.THad().M() << " " <<  testper.Prob() << " " << testper.MassDiscr() << " " << testper.NuChisq() << endl;
-
-				reco2d["Wmasshad_tmasshad"]->Fill(testper.WHad().M(), testper.THad().M());
-				if(rightper.IsComplete())
-				{
-					if(rightper.IsBLepCorrect(testper))
+					if(i == k || j == k) continue;
+					for(size_t l = 0 ; l < (nbtaglocal == 2 ? 2 : reducedjets.size()) ; ++l)
 					{
-						truth1d["nstest_right"]->Fill(ttsolver.NSRes(), weight);
-					}
-					else
-					{
-						truth1d["nstest_wrong"]->Fill(ttsolver.NSRes(), weight);
-							truth1d["nschi_wrong"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
-							truth2d["Wmtlep_tmtlep_wrong"]->Fill(testper.MttLep(), testper.MtWLep(), weight);
-						}
+						if(l == i || l == j || l == k) continue;
+						if(nbtaglocal == 1 && k != 0 && l != 0) continue;
+						testper.Init(reducedjets[i], reducedjets[j], reducedjets[k], reducedjets[l], lep, leppdgid, &met);
+						if(testper.WJa()->Pt() < cwjetpthard && testper.WJb()->Pt() < cwjetpthard) continue;
+						if(testper.WJa()->Pt() < cwjetptsoft || testper.WJb()->Pt() < cwjetptsoft) continue;
+						if(testper.BHad()->Pt() < cbjetpthard && testper.BLep()->Pt() < cbjetpthard) continue;
+						if(testper.BHad()->Pt() < cbjetptsoft || testper.BLep()->Pt() < cbjetptsoft) continue;
+						testper.Solve(ttsolver);
 
-						if(rightper.AreBsCorrect(testper))
-						{
-							truth1d["btagtest_right"]->Fill(ttsolver.BTagRes(), weight);
-						}
-						else
-						{
-							truth1d["btagtest_wrong"]->Fill(ttsolver.BTagRes(), weight);
-						}
+						//if(rightper.IsComplete()) cout << (percount++) << " " << rightper.IsCorrect(testper) << " "  << testper.WHad().M() << " " << testper.THad().M() << " " <<  testper.Prob() << " " << testper.MassDiscr() << " " << testper.NuChisq() << endl;
 
-						if(rightper.IsCorrect(testper))
+						reco2d["Wmasshad_tmasshad"]->Fill(testper.WHad().M(), testper.THad().M());
+						if(rightper.IsComplete())
 						{
-							truth1d["masstest_right"]->Fill(ttsolver.MassRes(), weight);
-							truth1d["comtest_right"]->Fill(ttsolver.Res(), weight);
-						}
-						else
-						{
-							if(rightper.IsWHadCorrect(testper))
+							if(rightper.IsBLepCorrect(testper))
 							{
-								truth2d["Wmasshad_tmasshad_rightw"]->Fill(testper.WHad().M(), testper.THad().M(), weight);
+								truth1d["nstest_right"]->Fill(ttsolver.NSRes(), weight);
 							}
 							else
 							{
-								truth2d["Wmasshad_tmasshad_wrongw"]->Fill(testper.WHad().M(), testper.THad().M(), weight);
+								truth1d["nstest_wrong"]->Fill(ttsolver.NSRes(), weight);
+								truth1d["nschi_wrong"]->Fill(ttsolver.NSChi2()/Sqrt(Abs(ttsolver.NSChi2())), weight);
+								truth2d["Wmtlep_tmtlep_wrong"]->Fill(testper.MttLep(), testper.MtWLep(), weight);
 							}
-							truth2d["Wmasshad_tmasshad_wrong"]->Fill(testper.THad().M(), testper.WHad().M(), weight);
-							truth1d["masstest_wrong"]->Fill(ttsolver.MassRes(), weight);
-							truth1d["comtest_wrong"]->Fill(ttsolver.Res(), weight);
+
+							if(rightper.AreBsCorrect(testper))
+							{
+								truth1d["btagtest_right"]->Fill(ttsolver.BTagRes(), weight);
+							}
+							else
+							{
+								truth1d["btagtest_wrong"]->Fill(ttsolver.BTagRes(), weight);
+							}
+
+							if(rightper.IsCorrect(testper))
+							{
+								truth1d["masstest_right"]->Fill(ttsolver.MassRes(), weight);
+								truth1d["comtest_right"]->Fill(ttsolver.Res(), weight);
+							}
+							else
+							{
+								if(rightper.IsWHadCorrect(testper))
+								{
+									truth2d["Wmasshad_tmasshad_rightw"]->Fill(testper.WHad().M(), testper.THad().M(), weight);
+								}
+								else
+								{
+									truth2d["Wmasshad_tmasshad_wrongw"]->Fill(testper.WHad().M(), testper.THad().M(), weight);
+								}
+								truth2d["Wmasshad_tmasshad_wrong"]->Fill(testper.THad().M(), testper.WHad().M(), weight);
+								truth1d["masstest_wrong"]->Fill(ttsolver.MassRes(), weight);
+								truth1d["comtest_wrong"]->Fill(ttsolver.Res(), weight);
+							}
+
 						}
+						reco1d["btagtest"]->Fill(ttsolver.BTagRes(), weight);
+						reco1d["masstest"]->Fill(ttsolver.MassRes(), weight);
+						reco1d["nstest"]->Fill(ttsolver.NSRes(), weight);
 
-					}
-					reco1d["btagtest"]->Fill(ttsolver.BTagRes(), weight);
-					reco1d["masstest"]->Fill(ttsolver.MassRes(), weight);
-					reco1d["nstest"]->Fill(ttsolver.NSRes(), weight);
-
-					if(testper < bestper)
-					{
-						bestper = testper;
+						if(testper < bestper)
+						{
+							bestper = testper;
+						}
 					}
 				}
 			}

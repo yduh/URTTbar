@@ -13,6 +13,7 @@ class BtagEff
 		Float_t problep;
 		Float_t probhad;
 		Float_t probnu;
+		Float_t met;
 		Float_t weight;
 		Float_t nvtx;
 		Int_t typ;
