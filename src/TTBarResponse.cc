@@ -29,20 +29,21 @@ void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const ve
 	maxteps = maxt + (*(++Mbins.rbegin()) - *Mbins.rbegin())*-0.5;
 
 	plot1d.AddHist(name + "_truth", Tbins, label, "Events");
-	plot1d.AddHist(name + "_reco", Mbins, label, "Events");
+	plot1d.AddHist(name + "_all", Mbins, label, "Events");
+	plot1d.AddHist(name + "_bkg", Mbins, label, "Events");
 	plot2d.AddHist(name + "_matrix", Tbins, Mbins, "gen " + label, "reco " + label);
-	for(int njet = 0 ; njet < 4 ; ++njet)
-	{
-		stringstream hname;
-		hname << name << "_truth_" << njet;
-		plot1d.AddHist(hname.str(), Tbins, label, "Events");
-		hname.str("");
-		hname << name << "_reco_" << njet;
-		plot1d.AddHist(hname.str(), Mbins, label, "Events");
-		hname.str("");
-		hname << name << "_matrix_" << njet;
-		plot2d.AddHist(hname.str(), Tbins, Mbins, "gen " + label, "reco " + label);
-	}
+	//for(int njet = 0 ; njet < 4 ; ++njet)
+	//{
+	//	stringstream hname;
+	//	hname << name << "_truth_" << njet;
+	//	plot1d.AddHist(hname.str(), Tbins, label, "Events");
+	//	hname.str("");
+	//	hname << name << "_reco_" << njet;
+	//	plot1d.AddHist(hname.str(), Mbins, label, "Events");
+	//	hname.str("");
+	//	hname << name << "_matrix_" << njet;
+	//	plot2d.AddHist(hname.str(), Tbins, Mbins, "gen " + label, "reco " + label);
+	//}
 
 	olddir->cd();
 }

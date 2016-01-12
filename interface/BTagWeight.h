@@ -16,12 +16,12 @@ class BTagWeight
 		double btyp, ltyp;
 		ttbar* AN;
 		TFile* probfile;
-		TH1D* hbpass;
-		TH1D* hball;
-		TH1D* hlpass;
-		TH1D* hlall;
-		TH1D* hcpass;
-		TH1D* hcall;
+		TH1D* hbeff;
+		TH1D* hborig;
+		TH1D* hceff;
+		TH1D* hcorig;
+		TH1D* hleff;
+		TH1D* hlorig;
 
 		double scaleb(IDJet* jet);
 		double scalec(IDJet* jet);

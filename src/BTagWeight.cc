@@ -17,18 +17,15 @@ void BTagWeight::Init(ttbar* an, string filename, double bunc, double lunc)
 	AN = an;
 	TDirectory* dir = gDirectory;
 	probfile = new TFile(filename.c_str(), "READ");
-	hbpass = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Bpassing"));
-	hball = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Ball"));
-	hbpass->Divide(hball);
-	hbpass->Print("all");
-	hcpass = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Cpassing"));
-	hcall = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Call"));
-	hcpass->Divide(hcall);
-	hcpass->Print("all");
-	hlpass = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Lpassing"));
-	hlall = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_Eff_Lall"));
-	hlpass->Divide(hlall);
-	hlpass->Print("all");
+	string mcname("P8");
+	hborig = dynamic_cast<TH1D*>(probfile->Get((mcname + "_B").c_str()));
+	hcorig = dynamic_cast<TH1D*>(probfile->Get((mcname + "_C").c_str()));
+	hlorig = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L").c_str()));
+	if(an->HERWIGPP){mcname = "Hpp";}
+	if(an->PYTHIA6){mcname = "P6";}
+	hbeff = dynamic_cast<TH1D*>(probfile->Get((mcname + "_B").c_str()));
+	hceff = dynamic_cast<TH1D*>(probfile->Get((mcname + "_C").c_str()));
+	hleff = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L").c_str()));
 	dir->cd();
 }
 
@@ -66,56 +63,57 @@ double BTagWeight::SF(vector<IDJet*>& jets)
 	{
 		//if(jet == bhad || jet == blep) {continue;}
 		double pt = jet->Pt();
-		int hbin = hbpass->FindFixBin(pt);
-		int bin = Min(Max(hbin, 1), hbpass->GetNbinsX()-1)-1;
-		//cout << pt << " " << hbin << " " << bin << " " << hbpass->GetBinContent(hbin) << " " << hlpass->GetBinContent(hbin) << endl;
-		//cout << AN->genbpartons.size() << endl;
+		int hbin = hbeff->FindFixBin(pt);
+		int bin = Min(Max(hbin, 1), hbeff->GetNbinsX()-1)-1;
 		if(find_if(AN->genbpartons.begin(), AN->genbpartons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genbpartons.end())
 		{
 			AN->truth1d["Eff_Ball"]->Fill(pt, AN->weight);
-			double eff = hbpass->GetBinContent(hbin);
+			double eff = hbeff->GetBinContent(hbin);
+			double efforig = hborig->GetBinContent(hbin);
 			if(jet->csvIncl() > AN->B_MEDIUM)
 			{
 				AN->truth1d["Eff_Bpassing"]->Fill(pt, AN->weight);
 				PM *= eff;
-				PD *= eff * (scaleb(jet) + btyp * uncb[bin]);
+				PD *= efforig * (scaleb(jet) + btyp * uncb[bin]);
 			}
 			else
 			{
 				PM *= 1. - eff;
-				PD *= 1. - eff * (scaleb(jet) + btyp * uncb[bin]);
+				PD *= 1. - efforig * (scaleb(jet) + btyp * uncb[bin]);
 			}
 		}
 		else if(find_if(AN->gencpartons.begin(), AN->gencpartons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->gencpartons.end())
 		{
 			AN->truth1d["Eff_Call"]->Fill(pt, AN->weight);
-			double eff = hcpass->GetBinContent(hbin);
+			double eff = hceff->GetBinContent(hbin);
+			double efforig = hcorig->GetBinContent(hbin);
 			if(jet->csvIncl() > AN->B_MEDIUM)
 			{
 				AN->truth1d["Eff_Cpassing"]->Fill(pt, AN->weight);
 				PM *= eff;
-				PD *= eff * (scalec(jet) + btyp * uncc[bin]);
+				PD *= efforig * (scalec(jet) + btyp * uncc[bin]);
 			}
 			else
 			{
 				PM *= 1. - eff;
-				PD *= 1. - eff * (scalec(jet) + btyp * uncc[bin]);
+				PD *= 1. - efforig * (scalec(jet) + btyp * uncc[bin]);
 			}
 		}
 		else
 		{
-			double eff = hlpass->GetBinContent(hbin);
 			AN->truth1d["Eff_Lall"]->Fill(pt, AN->weight);
+			double eff = hleff->GetBinContent(hbin);
+			double efforig = hlorig->GetBinContent(hbin);
 			if(jet->csvIncl() > AN->B_MEDIUM)
 			{
 				AN->truth1d["Eff_Lpassing"]->Fill(pt, AN->weight);
 				PM *= eff;
-				PD *= eff * (scalel(jet) + ltyp * uncl[bin]);
+				PD *= efforig * (scalel(jet) + ltyp * uncl[bin]);
 			}
 			else
 			{
 				PM *= 1. - eff;
-				PD *= 1. - eff * (scalel(jet) + ltyp * uncl[bin]);
+				PD *= 1. - efforig * (scalel(jet) + ltyp * uncl[bin]);
 			}
 		}
 	}

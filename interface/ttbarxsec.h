@@ -163,6 +163,7 @@ class ttbar : public AnalyzerBase
 		int cpileup;
 		int crandomseed;
 		bool HERWIGPP;
+		bool PYTHIA6;
 		//
 		double jetptmin;
 	

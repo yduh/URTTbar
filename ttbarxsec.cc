@@ -79,7 +79,8 @@ ttbar::ttbar(const std::string output_filename):
 	cbtagunc(0),
 	cltagunc(0),
 	cpileup(0),
-	HERWIGPP(false)
+	HERWIGPP(false),
+	PYTHIA6(false)
 {
 	ConfigParser CP("ttbarxsec.cfg");
 	PSEUDOTOP = CP.Get<bool>("PSEUDOTOP");
@@ -155,7 +156,8 @@ ttbar::ttbar(const std::string output_filename):
 	{
 		selectionprob = lumi*806./1656654.;
 	}
-	if(output_filename.find("tt_PowhegHpp") != string::npos){HERWIGPP = true;}
+	if(output_filename.find("Hpp") != string::npos){HERWIGPP = true;}
+	if(output_filename.find("P6") != string::npos){PYTHIA6 = true;}
 
 	jetptmin = min(cwjetptsoft, cbjetptsoft);
 //	topptbins = {0., 40., 55., 65., 75., 85., 95., 105., 115., 125., 135., 145., 155., 170., 185., 200., 220., 240., 265., 300., 350., 400., 800.};
@@ -400,7 +402,7 @@ void ttbar::begin()
 		ttsolver.Init(probfilename, false, true, true);
 		//ttsolver.Init(probfilename, false, true);
 	}
-	btagweight.Init(this, probfilename, cbtagunc, cltagunc);
+	btagweight.Init(this, "btaggingeff.root", cbtagunc, cltagunc);
 	string pufile("PUweight.root");
 	if(cpileup == -1) pufile = "PUweightm2.root";
 	if(cpileup == 1) pufile = "PUweightp2.root";
