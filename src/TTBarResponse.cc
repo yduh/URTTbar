@@ -50,38 +50,30 @@ void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const ve
 
 void TTBarResponse::FillTruth(string name, double val, double weight)
 {
-	int njet = Min(an_->genaddjets.size(), size_t(3));
-	stringstream hname;
-	hname << name << "_truth_" << njet;
-	TH1D* hist = plot1d[hname.str()];
 	if(val <= mint) {val = minteps;}
 	else if(val >= maxt) {val = maxteps;}
-	hist->Fill(val, weight);
 	plot1d[name + "_truth"]->Fill(val, weight);
 }
 
-void TTBarResponse::FillReco(string name, double val, double weight)
+void TTBarResponse::FillAll(string name, double val, double weight)
 {
-	int njet = Min(an_->reducedjets.size() - 4, size_t(3));
-	stringstream hname;
-	hname << name << "_reco_" << njet;
-	TH1D* hist = plot1d[hname.str()];
 	if(val <= minm) {val = minmeps;}
 	else if(val >= maxm) {val = maxmeps;}
-	hist->Fill(val, weight);
-	plot1d[name+"_reco"]->Fill(val, weight);
+	plot1d[name+"_all"]->Fill(val, weight);
+}
+
+void TTBarResponse::FillBKG(string name, double val, double weight)
+{
+	if(val <= minm) {val = minmeps;}
+	else if(val >= maxm) {val = maxmeps;}
+	plot1d[name+"_bkg"]->Fill(val, weight);
 }
 
 void TTBarResponse::FillTruthReco(string name, double tval, double rval, double weight)
 {
-	int njet = Min(an_->reducedjets.size() - 4, size_t(3));
-	stringstream hname;
-	hname << name << "_matrix_" << njet;
-	TH2D* hmatrix = plot2d[hname.str()];
 	if(tval <= mint) {tval = minteps;}
 	else if(tval >= maxt) {tval = maxteps;}
 	if(rval <= minm) {rval = minmeps;}
 	else if(rval >= maxm) {rval = maxmeps;}
-	hmatrix->Fill(tval, rval, weight);
 	plot2d[name+"_matrix"]->Fill(tval, rval, weight);
 }

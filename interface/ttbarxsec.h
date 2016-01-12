@@ -95,8 +95,8 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_other;
 		TTBarPlots ttp_all;
 
-		TTBarPlots ttp_jetspos_right;
-		TTBarPlots ttp_jetspos_wrong;
+	//	TTBarPlots ttp_jetspos_right;
+	//	TTBarPlots ttp_jetspos_wrong;
 	//	TTBarPlots ttp_hadjets_right;
 	//	TTBarPlots ttp_hadjets_wrong;
 	//	TTBarPlots ttp_jets_right;

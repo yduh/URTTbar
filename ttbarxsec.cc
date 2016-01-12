@@ -25,8 +25,8 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_semi("semi"),
 	ttp_other("other"),
 	ttp_all("all"),
-	ttp_jetspos_right("jetspos_right"),
-	ttp_jetspos_wrong("jetspos_wrong"),
+	//ttp_jetspos_right("jetspos_right"),
+	//ttp_jetspos_wrong("jetspos_wrong"),
 	//	ttp_hadjets_right("hadjets_right"),
 	//	ttp_hadjets_wrong("hadjets_wrong"),
 	//	ttp_jets_right("jets_right"),
@@ -346,8 +346,8 @@ void ttbar::begin()
 //	ttp_blep_wrong.Init(this);
 	ttp_whad_right.Init(this);
 	ttp_whad_wrong.Init(this);
-	ttp_jetspos_right.Init(this);
-	ttp_jetspos_wrong.Init(this);
+//	ttp_jetspos_right.Init(this);
+//	ttp_jetspos_wrong.Init(this);
 
 	ttp_tlepthad_right.Init(this);
 	ttp_tlep_right.Init(this);
@@ -1457,6 +1457,19 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC && rightper.IsComplete()) truth1d["counter"]->Fill(7.5, weight);
 	//Fill reconstructed hists
 	ttp_all.Fill(bestper, weight);
+	response.FillAll("tpt", bestper.THad().Pt(), weight);
+	response.FillAll("ty", Abs(bestper.THad().Rapidity()), weight);
+	response.FillAll("tpt", bestper.TLep().Pt(), weight);
+	response.FillAll("ty", Abs(bestper.TLep().Rapidity()), weight);
+	response.FillAll("nobin", bestper.THad().Pt(), weight);
+	response.FillAll("thadpt", bestper.THad().Pt(), weight);
+	response.FillAll("thady", Abs(bestper.THad().Rapidity()), weight);
+	response.FillAll("tleppt", bestper.TLep().Pt(), weight);
+	response.FillAll("tlepy", Abs(bestper.TLep().Rapidity()), weight);
+	response.FillAll("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
+	response.FillAll("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
+	response.FillAll("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
+	response.FillAll("njet", cleanedjets.size() - 4, weight);
 	response2d.FillAll("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt(), weight);
 
 
@@ -1492,39 +1505,46 @@ void ttbar::ttanalysis(URStreamer& event)
 		response.FillTruthReco("tty", Abs(genper->TT().Rapidity()), Abs(bestper.TT().Rapidity()), weight);
 		response.FillTruthReco("njet", genaddjets.size(), cleanedjets.size() - 4, weight);
 		response2d.FillTruthReco("njets_thadpt", genaddjets.size(), genper->THad().Pt(), cleanedjets.size() - 4, bestper.THad().Pt(), weight);
-		truth2d["RES_Mtt_all"]->Fill((bestper.TT().M() - genper->TT().M())/genper->TT().M(), genper->TT().M(), weight);
-		truth2d["RES_dbeta_all"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag())/(genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), weight);
 	}
 	else
 	{
-		response.FillReco("tpt", bestper.THad().Pt(), weight);
-		response.FillReco("ty", Abs(bestper.THad().Rapidity()), weight);
-		response.FillReco("tpt", bestper.TLep().Pt(), weight);
-		response.FillReco("ty", Abs(bestper.TLep().Rapidity()), weight);
-		response.FillReco("nobin", bestper.THad().Pt(), weight);
-		response.FillReco("thadpt", bestper.THad().Pt(), weight);
-		response.FillReco("thady", Abs(bestper.THad().Rapidity()), weight);
-		response.FillReco("tleppt", bestper.TLep().Pt(), weight);
-		response.FillReco("tlepy", Abs(bestper.TLep().Rapidity()), weight);
-		response.FillReco("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
-		response.FillReco("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
-		response.FillReco("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
-		response.FillReco("njet", cleanedjets.size() - 4, weight);
+		response.FillBKG("tpt", bestper.THad().Pt(), weight);
+		response.FillBKG("ty", Abs(bestper.THad().Rapidity()), weight);
+		response.FillBKG("tpt", bestper.TLep().Pt(), weight);
+		response.FillBKG("ty", Abs(bestper.TLep().Rapidity()), weight);
+		response.FillBKG("nobin", bestper.THad().Pt(), weight);
+		response.FillBKG("thadpt", bestper.THad().Pt(), weight);
+		response.FillBKG("thady", Abs(bestper.THad().Rapidity()), weight);
+		response.FillBKG("tleppt", bestper.TLep().Pt(), weight);
+		response.FillBKG("tlepy", Abs(bestper.TLep().Rapidity()), weight);
+		response.FillBKG("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
+		response.FillBKG("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
+		response.FillBKG("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
+		response.FillBKG("njet", cleanedjets.size() - 4, weight);
 		response2d.FillBKG("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt(), weight);
 	}
-
-
 
 	//Fill reconstructed hists with matching information
 	if(rightper.IsCorrect(bestper))
 	{
 		ttp_right.Fill(bestper, weight);
-		if(SEMILEPACC) truth1d["counter"]->Fill(8.5, weight);
+		truth1d["counter"]->Fill(8.5, weight);
+		truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(genper->Nu()), weight);
+		truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
+		truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), weight);
+		truth2d["dPzNu_dPhi_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Abs(bestper.Nu().DeltaPhi(met)), weight);
+		truth2d["dPzNu_chi2_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Sqrt(bestper.NuChisq()), weight);
+		truth2d["RES_Mtt_right"]->Fill(((bestper.THad() + bestper.TLep()).M() - (genper->THad() + genper->TLep()).M())/(genper->THad() + genper->TLep()).M(), (genper->THad() + genper->TLep()).M(), weight);
+		truth2d["RES_dbeta_right"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag())/(genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), weight);
+		truth1d["dRNuMet_right"]->Fill(met.DeltaR(genper->Nu()), weight);
+		truth1d["dPtNuMet_right"]->Fill((met.Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
+		truth2d["RES_Mtt_all"]->Fill((bestper.TT().M() - genper->TT().M())/genper->TT().M(), genper->TT().M(), weight);
+		truth2d["RES_dbeta_all"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag())/(genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), weight);
 	}
 	else if(rightper.IsComplete())
 	{
 		ttp_wrong.Fill(bestper, weight);
-		if(SEMILEPACC) truth1d["counter"]->Fill(9.5, weight);
+		truth1d["counter"]->Fill(9.5, weight);
 	}
 	else if(SEMILEP)
 	{
@@ -1533,41 +1553,6 @@ void ttbar::ttanalysis(URStreamer& event)
 	else
 	{
 		ttp_other.Fill(bestper, weight);
-	}
-
-	if(bestper.IsCorrect(rightper))
-	{
-		ttp_jetspos_right.Fill(bestper, weight);
-		if(SEMILEPACC)
-		{
-			truth1d["counter"]->Fill(10.5, weight);
-			truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(genper->Nu()), weight);
-			truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
-			truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), weight);
-			truth2d["dPzNu_dPhi_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Abs(bestper.Nu().DeltaPhi(met)), weight);
-			truth2d["dPzNu_chi2_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Sqrt(bestper.NuChisq()), weight);
-			truth2d["RES_Mtt_right"]->Fill(((bestper.THad() + bestper.TLep()).M() - (genper->THad() + genper->TLep()).M())/(genper->THad() + genper->TLep()).M(), (genper->THad() + genper->TLep()).M(), weight);
-			truth2d["RES_dbeta_right"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag())/(genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), weight);
-			//if(Abs((bestper.Nu().Pz() - gennls[0]->Pz())/gennls[0]->Pz()) < 0.2)
-			//{
-			//	cout << (bestper.Nu() + *(bestper.BLep()) + *(bestper.L())).M() << " " << bestper.Nu().Pz() << " " << gennls[0]->Pz() << " "  << bestper.Nu().Pt() << " " << met.Pt() << " " << met.DeltaPhi(bestper.Nu()) << " " << bestper.NuChisq() << endl;
-			//	cout << met.Px() << " " << met.Py() << endl;
-			//	cout << gennls[0]->Px() << " " << gennls[0]->Py() << " " <<gennls[0]->Pz() << endl;
-			//	cout << bestper.Nu().Px() << " " << bestper.Nu().Py() << " " <<bestper.Nu().Pz() << endl;
-			//	NeutrinoSolver NS(bestper.L(), bestper.BLep(), 80, 173);
-			//	cout << bestper.Nu().Px() << " " << bestper.Nu().Py() << " " <<bestper.Nu().Pz() << endl;
-			//	NeutrinoSolver NS(bestper.L(), bestper.BLep(), 80, 173);
-			//	double tchi;
-			//	TLorentzVector tv(NS.GetBest(met.Px(), met.Py(), Sqrt(met.pxunc()*met.pxunc() + met.pxuncjet()*met.pxuncjet()), Sqrt(met.pyunc()*met.pyunc() + met.pyuncjet()*met.pyuncjet()), 0., tchi, true));
-			//	cout << tchi << " " << tv.Pz() << " " << tv.Pt() << endl;
-			//}
-			truth1d["dRNuMet_right"]->Fill(met.DeltaR(genper->Nu()), weight);
-			truth1d["dPtNuMet_right"]->Fill((met.Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
-		}
-	}
-	else
-	{
-		ttp_jetspos_wrong.Fill(bestper, weight);
 	}
 
 	if(bestper.IsCorrect(rightper))
