@@ -73,8 +73,8 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepc
 		btagtree->Fill();
 	}
 
-	double bmax = max({bhad->csvIncl(), blep->csvIncl()});
-	if(bmax > 0.0 && bmax < 0.4)
+	double bmax = max({bhad->csvIncl(), blep->csvIncl(), wja->csvIncl(), wjb->csvIncl()});
+	if(bmax > 0.0 && bmax < 0.6)
 	{
 		test = -1;
 		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = -1.;

@@ -5,7 +5,7 @@
 #include <TDirectory.h>
 
 
-TTBarResponse::TTBarResponse(string prefix, ttbar* an) : prefix_(prefix), an_(an), dir(0), plot1d(""), plot2d("")
+TTBarResponse::TTBarResponse(string prefix, ttbar* an) : prefix_(prefix), an_(an), dir(nullptr), plot1d(""), plot2d("")
 {
 }
 
@@ -14,11 +14,19 @@ TTBarResponse::~TTBarResponse() {}
 void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const vector<double>& Tbins, string label)
 {
 	TDirectory* olddir = gDirectory;
-	if(dir == 0)
+	if(dir == nullptr)
 	{
 		dir = olddir->mkdir(prefix_.c_str());
 	}
 	dir->cd();
+	minm = Mbins.front();
+	minmeps = minm + (*(++Mbins.begin()) - *Mbins.begin())*0.5;
+	maxm = Mbins.back();
+	maxmeps = maxm + (*(++Mbins.rbegin()) - *Mbins.rbegin())*0.5;
+	mint = Mbins.front();
+	minteps = mint + (*(++Mbins.begin()) - *Mbins.begin())*0.5;
+	maxt = Mbins.back();
+	maxteps = maxt + (*(++Mbins.rbegin()) - *Mbins.rbegin())*-0.5;
 
 	plot1d.AddHist(name + "_truth", Tbins, label, "Events");
 	plot1d.AddHist(name + "_reco", Mbins, label, "Events");
@@ -45,10 +53,8 @@ void TTBarResponse::FillTruth(string name, double val, double weight)
 	stringstream hname;
 	hname << name << "_truth_" << njet;
 	TH1D* hist = plot1d[hname.str()];
-	double xmin = hist->GetXaxis()->GetXmin();
-	double xmax = hist->GetXaxis()->GetXmax();
-	if(val <= xmin) {val = xmin+0.00001;}
-	if(val >= xmax) {val = xmax-0.00001;}
+	if(val <= mint) {val = minteps;}
+	else if(val >= maxt) {val = maxteps;}
 	hist->Fill(val, weight);
 	plot1d[name + "_truth"]->Fill(val, weight);
 }
@@ -59,10 +65,8 @@ void TTBarResponse::FillReco(string name, double val, double weight)
 	stringstream hname;
 	hname << name << "_reco_" << njet;
 	TH1D* hist = plot1d[hname.str()];
-	double xmin = hist->GetXaxis()->GetXmin();
-	double xmax = hist->GetXaxis()->GetXmax();
-	if(val <= xmin) {val = xmin+0.00001;}
-	if(val >= xmax) {val = xmax-0.00001;}
+	if(val <= minm) {val = minmeps;}
+	else if(val >= maxm) {val = maxmeps;}
 	hist->Fill(val, weight);
 	plot1d[name+"_reco"]->Fill(val, weight);
 }
@@ -73,14 +77,10 @@ void TTBarResponse::FillTruthReco(string name, double tval, double rval, double 
 	stringstream hname;
 	hname << name << "_matrix_" << njet;
 	TH2D* hmatrix = plot2d[hname.str()];
-	double xmin = hmatrix->GetXaxis()->GetXmin();
-	double xmax = hmatrix->GetXaxis()->GetXmax();
-	if(tval <= xmin) {tval = xmin+0.00001;}
-	else if(tval >= xmax) {tval = xmax-0.00001;}
-	double ymin = hmatrix->GetYaxis()->GetXmin();
-	double ymax = hmatrix->GetYaxis()->GetXmax();
-	if(rval <= ymin) {rval = ymin+0.00001;}
-	else if(rval >= ymax) {rval = ymax-0.00001;}
+	if(tval <= mint) {tval = minteps;}
+	else if(tval >= maxt) {tval = maxteps;}
+	if(rval <= minm) {rval = minmeps;}
+	else if(rval >= maxm) {rval = maxmeps;}
 	hmatrix->Fill(tval, rval, weight);
 	plot2d[name+"_matrix"]->Fill(tval, rval, weight);
 }

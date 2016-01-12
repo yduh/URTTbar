@@ -15,6 +15,7 @@
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
 #include "TTBarResponse.h"
+#include "TTBarResponse2D.h"
 #include "Permutation.h"
 #include "BtagEff.h"
 #include "JetScale.h"
@@ -45,6 +46,7 @@ class ttbar : public AnalyzerBase
 		list<GenObject> sgenparticles;
 		vector<GenObject*> genfincls;
 	  	vector<GenObject*> genbpartons;
+	  	vector<GenObject*> gencpartons;
 		GenObject* gent;
 		GenObject* gentbar;
 		//GenObject* genbl;
@@ -111,6 +113,7 @@ class ttbar : public AnalyzerBase
 		TTBarPlots ttp_nsemi_right;
 
 		TTBarResponse response;
+		TTBarResponse2D response2d;
 		TTBarResponse responseall;
 
 		BtagEff btageff;
