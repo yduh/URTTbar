@@ -114,7 +114,6 @@ class ttbar : public AnalyzerBase
 
 		TTBarResponse response;
 		TTBarResponse2D response2d;
-		TTBarResponse responseall;
 
 		BtagEff btageff;
 		BTagWeight btagweight;
@@ -203,6 +202,7 @@ class ttbar : public AnalyzerBase
 		void SelectGenParticles(URStreamer& event);
 		void SelectPseudoTop(URStreamer& event);
 		void SelectRecoParticles(URStreamer& event);
+		void AddGenJetSelection(URStreamer& event);
 		void ttanalysis(URStreamer& event);
 
 		static void setOptions() {}

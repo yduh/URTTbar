@@ -42,7 +42,6 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_nsemi_right("ttp_nsemi_right"),
 	response("response", this),
 	response2d("response2d"),
-	responseall("responseall", this),
 	jetscaler("jetuncertainty.root"),
 	DATASIM(false),
 	PDFTEST(false),
@@ -287,7 +286,6 @@ void ttbar::begin()
 	truth1d.AddHist("Eff_Lall", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Mu", 100, 0, 100, "#mu", "Events");
 	truth1d.AddHist("MuWeighted", 100, 0, 100, "#mu", "Events");
-	
 
 	response.AddMatrix("tpt", topptbins, topptbins, "p_{T}(t) [GeV]");
 	response.AddMatrix("ty", topybins, topybins, "|y(t)|");
@@ -301,17 +299,9 @@ void ttbar::begin()
 	response.AddMatrix("njet", jetbins, jetbins, "n-jets");
 	response.AddMatrix("nobin", nobins, nobins, "total");
 
-	responseall.AddMatrix("tpt", topptbins, topptbins, "p_{T}(t) [GeV]");
-	responseall.AddMatrix("ty", topybins, topybins, "|y(t)|");
-	responseall.AddMatrix("thadpt", topptbins, topptbins, "p_{T}(t_{h}) [GeV]");
-	responseall.AddMatrix("thady", topybins, topybins, "|y(t_{h})|");
-	responseall.AddMatrix("tleppt", topptbins, topptbins, "p_{T}(t_{l}) [GeV]");
-	responseall.AddMatrix("tlepy", topybins, topybins, "|y(t_{l})|");
-	responseall.AddMatrix("ttm", ttmbins, ttmbins, "m(t#bar{t}) [GeV]");
-	responseall.AddMatrix("ttpt", ttptbins, ttptbins, "p_{T}(t#bar{t}) [GeV]");
-	responseall.AddMatrix("tty", ttybins, ttybins, "|y(t#bar{t})|");
-	responseall.AddMatrix("njet", jetbins, jetbins, "n-jets");
-	responseall.AddMatrix("nobin", nobins, nobins, "total");
+	vector<double> jetbins_large = {-0.5, 0.5, 1.5, 2.5, 3.5};
+	vector<double> topptbins_large = {0.0, 60.0, 100.0, 140.0, 180.0, 250.0, 500.0};
+	response2d.AddMatrix("njets_thadpt", jetbins_large, topptbins_large, jetbins_large, topptbins_large);
 
 	if(PDFTEST)
 	{
@@ -684,46 +674,6 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		}
 	}
 
-	if(SEMILEP)
-	{
-		const vector<Genjet>& genjets = event.genjets();
-		bool wa = false;
-		bool wb = false;
-		bool ba = false;
-		bool bb = false;
-		for(vector<Genjet>::const_iterator gj = genjets.begin(); gj != genjets.end(); ++gj)
-		{
-			if(gj->Pt() < jetptmin || Abs(gj->Eta()) > cjetetamax) {continue;}
-			if(gj->DeltaR(*gencls[0]) < 0.4)
-			{
-				continue;
-			}
-			if(gj->DeltaR(*genallper.WJa()) < 0.4)
-			{
-				if(SEMILEPACC && !wa){wa = true; truth1d["foundgen"]->Fill(0.5, weight);}
-				continue;
-			}
-			if(gj->DeltaR(*genallper.WJb()) < 0.4)
-			{
-				if(SEMILEPACC && !wb){wb = true; truth1d["foundgen"]->Fill(1.5, weight);}
-				continue;
-			}
-			if(gj->DeltaR(*genallper.BLep()) < 0.4)
-			{
-				if(SEMILEPACC && !ba){ba = true; truth1d["foundgen"]->Fill(2.5, weight);}
-				continue;
-			}
-			if(gj->DeltaR(*genallper.BHad()) < 0.4)
-			{
-				if(SEMILEPACC && !bb){bb = true; truth1d["foundgen"]->Fill(3.5, weight);}
-				continue;
-			}
-
-			sgenjets.push_back(Genjet(*gj));
-			genaddjets.push_back(&(sgenjets.back()));
-		}
-		if(wa && wb && ba && bb){truth1d["foundgen"]->Fill(4.5, weight);}
-	}
 //Jet studies
 	if(SEMILEP)
 	{
@@ -919,151 +869,47 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 //cout << psper.WHad().M() << " " << psper.THad().M() << " " << psper.WLep().M() << " " << psper.TLep().M() << endl;
 }
 
-//void ttbar::SelectPseudoTop(URStreamer& event)
-//{
-//	const vector<Pstlepton>& psls = event.PSTleptons();
-//	if(psls.size() != 1){return;}
-//	GenObject* lepton = 0;
-//	int lc = 0;
-//	for(const Pstlepton& pl : psls)
-//	{
-//		if(pl.Pt() > 15. && Abs(pl.Eta()) < 2.4){lc++;}
-//		if(lc == 2) {return;}
-//		if(Abs(pl.Eta()) < cpletamax && pl.Pt() > cplptmin){
-//			sgenparticles.push_back(pl);
-//			lepton = &(sgenparticles.back());
-//		}
-//	}
-//	if(lepton == 0) {return;}
-//
-//	const vector<Pstneutrino>& psns = event.PSTneutrinos();
-//	if(psns.size() != 1){return;}
-//	TLorentzVector nu;
-//	for(const Pstneutrino& pl : psns)
-//	{
-//		nu += pl;
-//	}
-//
-//	const vector<Pstjet>& psjs = event.PSTjets();
-//	vector<TLorentzVector*> pstbjets;
-//	vector<TLorentzVector*> pstljets;
-//	for(const Pstjet& pj : psjs)
-//	{
-//		if(Abs(pj.pdgId()) == 5)
-//		{
-//			if(pj.Pt() > cpbjetptsoft && Abs(pj.Eta()) < cpjetetamax)
-//			{
-//				sgenparticles.push_back(pj);
-//				pstbjets.push_back(&(sgenparticles.back()));	
-//			}
-//		}	
-//		else
-//		{
-//			if(pj.Pt() > cpwjetptsoft && Abs(pj.Eta()) < cpjetetamax)
-//			{
-//				sgenparticles.push_back(pj);
-//				pstljets.push_back(&(sgenparticles.back()));	
-//			}
-//		}
-//	}
-//
-//	//cout << pstbjets.size() << " NJ " << pstljets.size() << endl;
-//	if(pstbjets.size() +  pstljets.size() < 4){return;}
-//	sort(pstbjets.begin(), pstbjets.end(), [](TLorentzVector* A, TLorentzVector* B){return(A->Pt() > B->Pt());});
-//	sort(pstljets.begin(), pstljets.end(), [](TLorentzVector* A, TLorentzVector* B){return(A->Pt() > B->Pt());});
-//
-//	TLorentzVector wl(*lepton + nu);
-//	double chi2min = 1.E100;
-//	double MW = 80.;
-//	double Mt = 172.5;
-//	if(pstbjets.size() >= 2)
-//	{
-//		for(int wa = 0 ; wa < pstljets.size() ; wa++)
-//		{
-//			for(int wb = 0 ; wb < wa ; wb++)
-//			{
-//				TLorentzVector wh(*pstljets[wa] + *pstljets[wb]);
-//				for(int bl = 0 ; bl < pstbjets.size() ; bl++)
-//				{
-//					for(int bh = 0 ; bh < pstbjets.size() ; bh++)
-//					{
-//						if(bl == bh){continue;}
-//						TLorentzVector th(wh + *pstbjets[bh]);
-//						TLorentzVector tl(wl + *pstbjets[bl]);
-//						double chi2 = Power(th.M() - Mt, 2) + Power(tl.M() - Mt, 2) + Power(wh.M() - MW, 2);
-//						if(chi2 < chi2min)
-//						{
-//							chi2min = chi2;
-//							psper.Init(pstljets[wa], pstljets[wb], pstbjets[bh], pstbjets[bl], lepton, lepton->pdgId(), &nu);
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//	else if(pstbjets.size() == 1)
-//	{
-//		for(int wa = 0 ; wa < pstljets.size() ; wa++)
-//		{
-//			for(int wb = 0 ; wb < wa ; wb++)
-//			{
-//				TLorentzVector wh(*pstljets[wa] + *pstljets[wb]);
-//				for(int bl = 0 ; bl < pstljets.size() ; bl++)
-//				{
-//					if(bl == wa || bl == wb) continue;
-//					{
-//						TLorentzVector th(wh + *pstbjets[0]);
-//						TLorentzVector tl(wl + *pstljets[bl]);
-//						double chi2 = Power(th.M() - Mt, 2) + Power(tl.M() - Mt, 2) + Power(wh.M() - MW, 2);
-//						if(chi2 < chi2min)
-//						{
-//							chi2min = chi2;
-//							psper.Init(pstljets[wa], pstljets[wb], pstbjets[0], pstljets[bl], lepton, lepton->pdgId(), &nu);
-//						}
-//					}
-//					{
-//						TLorentzVector tl(wh + *pstbjets[0]);
-//						TLorentzVector th(wl + *pstljets[bl]);
-//						double chi2 = Power(th.M() - Mt, 2) + Power(tl.M() - Mt, 2) + Power(wh.M() - MW, 2);
-//						if(chi2 < chi2min)
-//						{
-//							chi2min = chi2;
-//							psper.Init(pstljets[wa], pstljets[wb], pstljets[bl], pstbjets[0], lepton, lepton->pdgId(), &nu);
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//	}
-//	else
-//	{
-//		for(int wa = 0 ; wa < pstljets.size() ; wa++)
-//		{
-//			for(int wb = 0 ; wb < wa ; wb++)
-//			{
-//				TLorentzVector wh(*pstljets[wa] + *pstljets[wb]);
-//				for(int bl = 0 ; bl < pstljets.size() ; bl++)
-//				{
-//					if(bl == wa || bl == wb) continue; 
-//					for(int bh = 0 ; bh < pstljets.size() ; bh++)
-//					{
-//						if(bh == wa || bh == wb || bh == bl) continue; 
-//						TLorentzVector th(wh + *pstljets[bh]);
-//						TLorentzVector tl(wl + *pstljets[bl]);
-//						double chi2 = Power(th.M() - Mt, 2) + Power(tl.M() - Mt, 2) + Power(wh.M() - MW, 2);
-//						if(chi2 < chi2min)
-//						{
-//							chi2min = chi2;
-//							psper.Init(pstljets[wa], pstljets[wb], pstljets[bh], pstljets[bl], lepton, lepton->pdgId(), &nu);
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//	//cout << psper.WHad().M() << " " << psper.THad().M() << " " << psper.WLep().M() << " " << psper.TLep().M() << endl;
-//}
+void ttbar::AddGenJetSelection(URStreamer& event)
+{
+	if(!SEMILEP) return;
+	const vector<Genjet>& genjets = event.genjets();
+	bool wa = false;
+	bool wb = false;
+	bool ba = false;
+	bool bb = false;
+	for(vector<Genjet>::const_iterator gj = genjets.begin(); gj != genjets.end(); ++gj)
+	{
+		if(gj->Pt() < cpwjetptsoft || Abs(gj->Eta()) > cpjetetamax) {continue;}
+		if(gj->DeltaR(*genper->L()) < 0.4)
+		{
+			continue;
+		}
+		if(gj->DeltaR(*genper->WJa()) < 0.4)
+		{
+			if(SEMILEPACC && !wa){wa = true; truth1d["foundgen"]->Fill(0.5, weight);}
+			continue;
+		}
+		if(gj->DeltaR(*genper->WJb()) < 0.4)
+		{
+			if(SEMILEPACC && !wb){wb = true; truth1d["foundgen"]->Fill(1.5, weight);}
+			continue;
+		}
+		if(gj->DeltaR(*genper->BLep()) < 0.4)
+		{
+			if(SEMILEPACC && !ba){ba = true; truth1d["foundgen"]->Fill(2.5, weight);}
+			continue;
+		}
+		if(gj->DeltaR(*genper->BHad()) < 0.4)
+		{
+			if(SEMILEPACC && !bb){bb = true; truth1d["foundgen"]->Fill(3.5, weight);}
+			continue;
+		}
+
+		sgenjets.push_back(Genjet(*gj));
+		genaddjets.push_back(&(sgenjets.back()));
+	}
+	if(wa && wb && ba && bb){truth1d["foundgen"]->Fill(4.5, weight);}
+}
 
 void ttbar::SelectRecoParticles(URStreamer& event)
 {
@@ -1609,6 +1455,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC && rightper.IsComplete()) truth1d["counter"]->Fill(7.5, weight);
 	//Fill reconstructed hists
 	ttp_all.Fill(bestper, weight);
+	response2d.FillAll("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt(), weight);
 
 
 	if(SEMILEP)
@@ -1629,34 +1476,39 @@ void ttbar::ttanalysis(URStreamer& event)
 			pdfunc->Fill1d("pdfunc_reco_ttpt", genper->TT().Pt(), weight);
 			pdfunc->Fill1d("pdfunc_reco_njet", genaddjets.size(), weight);
 		}
-		responseall.FillReco("tpt", bestper.THad().Pt(), weight);
-		responseall.FillReco("ty", Abs(bestper.THad().Rapidity()), weight);
-		responseall.FillReco("tpt", bestper.TLep().Pt(), weight);
-		responseall.FillReco("ty", Abs(bestper.TLep().Rapidity()), weight);
-		responseall.FillReco("nobin", bestper.THad().Pt(), weight);
-		responseall.FillReco("thadpt", bestper.THad().Pt(), weight);
-		responseall.FillReco("thady", Abs(bestper.THad().Rapidity()), weight);
-		responseall.FillReco("tleppt", bestper.TLep().Pt(), weight);
-		responseall.FillReco("tlepy", Abs(bestper.TLep().Rapidity()), weight);
-		responseall.FillReco("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
-		responseall.FillReco("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
-		responseall.FillReco("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
-		responseall.FillReco("njet", cleanedjets.size() - 4, weight);
-		responseall.FillTruthReco("tpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
-		responseall.FillTruthReco("ty", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
-		responseall.FillTruthReco("tpt", genper->TLep().Pt(), bestper.TLep().Pt(), weight);
-		responseall.FillTruthReco("ty", Abs(genper->TLep().Rapidity()), Abs(bestper.TLep().Rapidity()), weight);
-		responseall.FillTruthReco("nobin", genper->THad().Pt(), bestper.THad().Pt(), weight);
-		responseall.FillTruthReco("thadpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
-		responseall.FillTruthReco("thady", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
-		responseall.FillTruthReco("tleppt", genper->TLep().Pt(), bestper.TLep().Pt(), weight);
-		responseall.FillTruthReco("tlepy", Abs(genper->TLep().Rapidity()), Abs(bestper.TLep().Rapidity()), weight);
-		responseall.FillTruthReco("ttm", genper->TT().M(), bestper.TT().M(), weight);
-		responseall.FillTruthReco("ttpt", genper->TT().Pt(), bestper.TT().Pt(), weight);
-		responseall.FillTruthReco("tty", Abs(genper->TT().Rapidity()), Abs(bestper.TT().Rapidity()), weight);
-		responseall.FillTruthReco("njet", genaddjets.size(), cleanedjets.size() - 4, weight);
+		response.FillTruthReco("tpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
+		response.FillTruthReco("ty", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
+		response.FillTruthReco("tpt", genper->TLep().Pt(), bestper.TLep().Pt(), weight);
+		response.FillTruthReco("ty", Abs(genper->TLep().Rapidity()), Abs(bestper.TLep().Rapidity()), weight);
+		response.FillTruthReco("nobin", genper->THad().Pt(), bestper.THad().Pt(), weight);
+		response.FillTruthReco("thadpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
+		response.FillTruthReco("thady", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
+		response.FillTruthReco("tleppt", genper->TLep().Pt(), bestper.TLep().Pt(), weight);
+		response.FillTruthReco("tlepy", Abs(genper->TLep().Rapidity()), Abs(bestper.TLep().Rapidity()), weight);
+		response.FillTruthReco("ttm", genper->TT().M(), bestper.TT().M(), weight);
+		response.FillTruthReco("ttpt", genper->TT().Pt(), bestper.TT().Pt(), weight);
+		response.FillTruthReco("tty", Abs(genper->TT().Rapidity()), Abs(bestper.TT().Rapidity()), weight);
+		response.FillTruthReco("njet", genaddjets.size(), cleanedjets.size() - 4, weight);
+		response2d.FillTruthReco("njets_thadpt", genaddjets.size(), genper->THad().Pt(), cleanedjets.size() - 4, bestper.THad().Pt(), weight);
 		truth2d["RES_Mtt_all"]->Fill((bestper.TT().M() - genper->TT().M())/genper->TT().M(), genper->TT().M(), weight);
 		truth2d["RES_dbeta_all"]->Fill(((bestper.THad().BoostVector() - bestper.TLep().BoostVector()).Mag() - (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag())/(genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), (genper->THad().BoostVector() - genper->TLep().BoostVector()).Mag(), weight);
+	}
+	else
+	{
+		response.FillReco("tpt", bestper.THad().Pt(), weight);
+		response.FillReco("ty", Abs(bestper.THad().Rapidity()), weight);
+		response.FillReco("tpt", bestper.TLep().Pt(), weight);
+		response.FillReco("ty", Abs(bestper.TLep().Rapidity()), weight);
+		response.FillReco("nobin", bestper.THad().Pt(), weight);
+		response.FillReco("thadpt", bestper.THad().Pt(), weight);
+		response.FillReco("thady", Abs(bestper.THad().Rapidity()), weight);
+		response.FillReco("tleppt", bestper.TLep().Pt(), weight);
+		response.FillReco("tlepy", Abs(bestper.TLep().Rapidity()), weight);
+		response.FillReco("ttm", (bestper.THad() + bestper.TLep()).M(), weight);
+		response.FillReco("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
+		response.FillReco("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
+		response.FillReco("njet", cleanedjets.size() - 4, weight);
+		response2d.FillBKG("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt(), weight);
 	}
 
 
@@ -1684,35 +1536,9 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(bestper.IsCorrect(rightper))
 	{
 		ttp_jetspos_right.Fill(bestper, weight);
-		response.FillReco("tpt", bestper.THad().Pt(), weight);
-		response.FillReco("ty", Abs(bestper.THad().Rapidity()), weight);
-		response.FillReco("tpt", bestper.TLep().Pt(), weight);
-		response.FillReco("ty", Abs(bestper.TLep().Rapidity()), weight);
-		response.FillReco("nobin", bestper.THad().Pt(), weight);
-		response.FillReco("thadpt", bestper.THad().Pt(), weight);
-		response.FillReco("thady", Abs(bestper.THad().Rapidity()), weight);
-		response.FillReco("tleppt", bestper.TLep().Pt(), weight);
-		response.FillReco("tlepy", Abs(bestper.TLep().Rapidity()), weight);
-		response.FillReco("ttm", bestper.TT().M(), weight);
-		response.FillReco("ttpt", bestper.TT().Pt(), weight);
-		response.FillReco("tty", Abs(bestper.TT().Rapidity()), weight);
-		response.FillReco("njet", cleanedjets.size() - 4, weight);
 		if(SEMILEPACC)
 		{
 			truth1d["counter"]->Fill(10.5, weight);
-			response.FillTruthReco("tpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
-			response.FillTruthReco("ty", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
-			response.FillTruthReco("tpt", genper->TLep().Pt(), bestper.TLep().Pt(), weight);
-			response.FillTruthReco("ty", Abs(genper->TLep().Rapidity()), Abs(bestper.TLep().Rapidity()), weight);
-			response.FillTruthReco("nobin", genper->THad().Pt(), bestper.THad().Pt(), weight);
-			response.FillTruthReco("thadpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
-			response.FillTruthReco("thady", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
-			response.FillTruthReco("tleppt", genper->TLep().Pt(), bestper.TLep().Pt(), weight);
-			response.FillTruthReco("tlepy", Abs(genper->TLep().Rapidity()), Abs(bestper.TLep().Rapidity()), weight);
-			response.FillTruthReco("ttm", genper->TT().M(), bestper.TT().M(), weight);
-			response.FillTruthReco("ttpt", genper->TT().Pt(), bestper.TT().Pt(), weight);
-			response.FillTruthReco("tty", Abs(genper->TT().Rapidity()), Abs(bestper.TT().Rapidity()), weight);
-			response.FillTruthReco("njet", genaddjets.size(), cleanedjets.size() - 4, weight);
 			truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(genper->Nu()), weight);
 			truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
 			truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), weight);
@@ -1851,30 +1677,12 @@ void ttbar::analyze()
 		{
 			genper = &genallper;
 		}
+		AddGenJetSelection(event);
 
 		if(SEMILEP) 
 		{
 			truth1d["counter"]->Fill(1.5, weight);
 			ttp_genall.Fill(*genper, weight);
-
-			responseall.FillTruth("tpt", genper->THad().Pt(), weight);
-			responseall.FillTruth("ty", Abs(genper->THad().Rapidity()), weight);
-			responseall.FillTruth("tpt", genper->TLep().Pt(), weight);
-			responseall.FillTruth("ty", Abs(genper->TLep().Rapidity()), weight);
-			responseall.FillTruth("nobin", genper->THad().Pt(), weight);
-			responseall.FillTruth("thadpt", genper->THad().Pt(), weight);
-			responseall.FillTruth("thady", Abs(genper->THad().Rapidity()), weight);
-			responseall.FillTruth("tleppt", genper->TLep().Pt(), weight);
-			responseall.FillTruth("tlepy", Abs(genper->TLep().Rapidity()), weight);
-			responseall.FillTruth("ttm", genper->TT().M(), weight);
-			responseall.FillTruth("ttpt", genper->TT().Pt(), weight);
-			responseall.FillTruth("tty", Abs(genper->TT().Rapidity()), weight);
-			responseall.FillTruth("njet", genaddjets.size(), weight);
-		}
-		if(SEMILEPACC)
-		{
-			ttp_genacc.Fill(*genper, weight);
-			truth1d["counter"]->Fill(2.5, weight);
 
 			response.FillTruth("tpt", genper->THad().Pt(), weight);
 			response.FillTruth("ty", Abs(genper->THad().Rapidity()), weight);
@@ -1889,6 +1697,12 @@ void ttbar::analyze()
 			response.FillTruth("ttpt", genper->TT().Pt(), weight);
 			response.FillTruth("tty", Abs(genper->TT().Rapidity()), weight);
 			response.FillTruth("njet", genaddjets.size(), weight);
+			response2d.FillTruth("njets_thadpt", genaddjets.size(), genper->THad().Pt(), weight);
+		}
+		if(SEMILEPACC)
+		{
+			ttp_genacc.Fill(*genper, weight);
+			truth1d["counter"]->Fill(2.5, weight);
 			if(PDFTEST)
 			{
 				pdfunc->Fill1d("pdfunc_tpt", genper->THad().Pt(), weight);
