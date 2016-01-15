@@ -35,7 +35,6 @@ class ttbar : public AnalyzerBase
 	private:
 		bool isMC = false;
 		map<int, set<int> >  runinfo;
-		double selectionprob;
 		PDFuncertainty* pdfunc;
 		//Collections
 		//Gen:
@@ -103,8 +102,8 @@ class ttbar : public AnalyzerBase
 	//	TTBarPlots ttp_jets_wrong;
 	//	TTBarPlots ttp_blep_right;
 	//	TTBarPlots ttp_blep_wrong;
-		TTBarPlots ttp_whad_right;
-		TTBarPlots ttp_whad_wrong;
+		//TTBarPlots ttp_whad_right;
+		//TTBarPlots ttp_whad_wrong;
 
 		TTBarPlots ttp_tlepthad_right;
 		TTBarPlots ttp_tlep_right;
@@ -114,6 +113,7 @@ class ttbar : public AnalyzerBase
 
 		TTBarResponse response;
 		TTBarResponse2D response2d;
+		TTBarResponse response_ps;
 
 		BtagEff btageff;
 		BTagWeight btagweight;
@@ -124,7 +124,6 @@ class ttbar : public AnalyzerBase
 		JetScaler jetscaler;
 
 		//configuration
-		bool DATASIM;
 		bool PDFTEST;
 		bool PSEUDOTOP;
 		bool BTAGMODE;
@@ -133,6 +132,7 @@ class ttbar : public AnalyzerBase
 		bool ELECTRONS;
 		double B_TIGHT;
 		double B_MEDIUM;
+		double B_LOOSE;
 		int cnbtag;
 		size_t cnusedjets;
 		double clikelihoodcut;
@@ -161,7 +161,6 @@ class ttbar : public AnalyzerBase
 		int cbtagunc;
 		int cltagunc;
 		int cpileup;
-		int crandomseed;
 		bool HERWIGPP;
 		bool PYTHIA6;
 		//

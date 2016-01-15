@@ -27,8 +27,8 @@ void TTBarPlots::Init(ttbar* analysis)
 	int tb = 40.;
 	//double tbmin = -20.;
 	//double tbmax = 10.;
-	double tbmin = 0.;
-	double tbmax = 150.;
+	double tbmin = 10.;
+	double tbmax = 30.;
 	plot1d.AddHist("MET", 500, 0, 2000, "MET", "Events");
 	plot1d.AddHist("njets", 15, 0, 15, "additional jets", "Events");
 	plot1d.AddHist("btag_blep", 100, 0, 1, "CSVv2", "Events");
@@ -93,7 +93,7 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	TTBarPlotsBase::Fill(per, weight);
 	double test = per.MassDiscr();
 	//double testb = per.BDiscr();
-	double testb = Sqrt(per.NuChisq());
+	double testb = per.Prob();
 	//double testb = (*per.BLep() + *per.L()).Mt(); 
 	if(test == numeric_limits<double>::max()) {test = 0; testb = 0;}
 	plot1d["MET"]->Fill(an->met.Pt(), weight);
@@ -101,7 +101,7 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	plot1d["masstest"]->Fill(test, weight);
 	plot1d["nutest"]->Fill(per.NuDiscr(), weight);
 	plot1d["massmttest"]->Fill(per.MTDiscr()+test, weight);
-	plot1d["massnutest"]->Fill(per.MassDiscr()+test+per.NuDiscr(), weight);
+	plot1d["massnutest"]->Fill(per.Prob(), weight);
 
 	vector<IDJet*> addjets;
 	for(size_t j = 0 ; j < an->cleanedjets.size() ; ++j)

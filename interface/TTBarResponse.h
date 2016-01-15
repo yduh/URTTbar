@@ -17,14 +17,6 @@ class TTBarResponse
 		TDirectory* dir;
 		TH1DCollection plot1d;	
 		TH2DCollection plot2d;	
-		double minm;
-		double minmeps;
-		double maxm;
-		double maxmeps;
-		double mint;
-		double minteps;
-		double maxt;
-		double maxteps;
 
 	public:
 		TTBarResponse(string prefix, ttbar* an);

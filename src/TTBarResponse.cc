@@ -14,19 +14,16 @@ TTBarResponse::~TTBarResponse() {}
 void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const vector<double>& Tbins, string label)
 {
 	TDirectory* olddir = gDirectory;
-	if(dir == nullptr)
+	bool indir = olddir->cd(prefix_.c_str());
+	if(!indir)
 	{
 		dir = olddir->mkdir(prefix_.c_str());
+		dir->cd();
 	}
-	dir->cd();
-	minm = Mbins.front();
-	minmeps = minm + (*(++Mbins.begin()) - *Mbins.begin())*0.5;
-	maxm = Mbins.back();
-	maxmeps = maxm + (*(++Mbins.rbegin()) - *Mbins.rbegin())*0.5;
-	mint = Mbins.front();
-	minteps = mint + (*(++Mbins.begin()) - *Mbins.begin())*0.5;
-	maxt = Mbins.back();
-	maxteps = maxt + (*(++Mbins.rbegin()) - *Mbins.rbegin())*-0.5;
+	else
+	{
+		dir = gDirectory;
+	}
 
 	plot1d.AddHist(name + "_truth", Tbins, label, "Events");
 	plot1d.AddHist(name + "_all", Mbins, label, "Events");
@@ -50,30 +47,34 @@ void TTBarResponse::AddMatrix(string name, const vector<double>& Mbins, const ve
 
 void TTBarResponse::FillTruth(string name, double val, double weight)
 {
-	if(val <= mint) {val = minteps;}
-	else if(val >= maxt) {val = maxteps;}
-	plot1d[name + "_truth"]->Fill(val, weight);
+	TH1D* hist = plot1d[name + "_truth"];
+	if(val <= hist->GetXaxis()->GetXmin()) val = hist->GetXaxis()->GetBinCenter(1);
+	else if(val >= hist->GetXaxis()->GetXmax()) val = hist->GetXaxis()->GetBinCenter(hist->GetNbinsX());
+	hist->Fill(val, weight);
 }
 
 void TTBarResponse::FillAll(string name, double val, double weight)
 {
-	if(val <= minm) {val = minmeps;}
-	else if(val >= maxm) {val = maxmeps;}
-	plot1d[name+"_all"]->Fill(val, weight);
+	TH1D* hist = plot1d[name + "_all"];
+	if(val <= hist->GetXaxis()->GetXmin()) val = hist->GetXaxis()->GetBinCenter(1);
+	else if(val >= hist->GetXaxis()->GetXmax()) val = hist->GetXaxis()->GetBinCenter(hist->GetNbinsX());
+	hist->Fill(val, weight);
 }
 
 void TTBarResponse::FillBKG(string name, double val, double weight)
 {
-	if(val <= minm) {val = minmeps;}
-	else if(val >= maxm) {val = maxmeps;}
-	plot1d[name+"_bkg"]->Fill(val, weight);
+	TH1D* hist = plot1d[name + "_bkg"];
+	if(val <= hist->GetXaxis()->GetXmin()) val = hist->GetXaxis()->GetBinCenter(1);
+	else if(val >= hist->GetXaxis()->GetXmax()) val = hist->GetXaxis()->GetBinCenter(hist->GetNbinsX());
+	hist->Fill(val, weight);
 }
 
 void TTBarResponse::FillTruthReco(string name, double tval, double rval, double weight)
 {
-	if(tval <= mint) {tval = minteps;}
-	else if(tval >= maxt) {tval = maxteps;}
-	if(rval <= minm) {rval = minmeps;}
-	else if(rval >= maxm) {rval = maxmeps;}
-	plot2d[name+"_matrix"]->Fill(tval, rval, weight);
+	TH2D* hist = plot2d[name + "_matrix"];
+	if(tval <= hist->GetXaxis()->GetXmin()) tval = hist->GetXaxis()->GetBinCenter(1);
+	else if(tval >= hist->GetXaxis()->GetXmax()) tval = hist->GetXaxis()->GetBinCenter(hist->GetNbinsX());
+	if(rval <= hist->GetYaxis()->GetXmin()) rval = hist->GetYaxis()->GetBinCenter(1);
+	else if(rval >= hist->GetYaxis()->GetXmax()) rval = hist->GetYaxis()->GetBinCenter(hist->GetNbinsY());
+	hist->Fill(tval, rval, weight);
 }
