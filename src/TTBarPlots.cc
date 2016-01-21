@@ -49,10 +49,11 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot1d.AddHist("Mt_W", 500, 0, 500, "M_{t}(W) [GeV]", "Events");
 	plot1d.AddHist("Mt_t", 500, 0, 1000, "M_{t}(t_{l}) [GeV]", "Events");
 	plot1d.AddHist("mttest", 500, 0, 100, "mttest", "Events");
-	plot1d.AddHist("masstest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("masstest", 500, 0, 100, "-log(#lambda_{m})", "Events");
 	plot1d.AddHist("nutest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("chiqtest", 500, 0, 100, "D_{#nu,min}", "Events");
 	plot1d.AddHist("massmttest", 500, 0, 100, "mttest", "Events");
-	plot1d.AddHist("massnutest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("massnutest", 500, 0, 100, "-log(#lambda)", "Events");
 	plot2d.AddHist("METunc", 100, 0, 0.5, 100, 0., .5, "#sigma(MET_{x})/MET_{x}", "#sigma(MET_{y})/MET_{y}");
 	for(int jn : jetbins)
 	{
@@ -100,6 +101,7 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	plot1d["mttest"]->Fill(per.MTDiscr(), weight);
 	plot1d["masstest"]->Fill(test, weight);
 	plot1d["nutest"]->Fill(per.NuDiscr(), weight);
+	plot1d["chiqtest"]->Fill(Sqrt(per.NuChisq()), weight);
 	plot1d["massmttest"]->Fill(per.MTDiscr()+test, weight);
 	plot1d["massnutest"]->Fill(per.Prob(), weight);
 

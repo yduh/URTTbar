@@ -52,6 +52,7 @@ class Permutation
 			bjl_ = bjl;
 			lep_ = lep;
 			nu_ = *nu;
+			lpdgid_ = leppdgid;
 		}
 		//Permutation(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, IDMet* met);
 		void Init(TLorentzVector* wja, TLorentzVector* wjb, TLorentzVector* bjh, TLorentzVector* bjl, TLorentzVector* lep, int leppdgid, IDMet* met)
@@ -63,6 +64,7 @@ class Permutation
 			bjl_ = bjl;
 			lep_ = lep;
 			met_ = met;
+			lpdgid_ = leppdgid;
 		}
 		void Reset();
 		bool IsComplete() const {return(wja_ != 0 && wjb_ != 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5)&& wja_ != wjb_ && wja_ != bjh_ && wja_ != bjl_ && wjb_ != bjl_ && wjb_ != bjh_ && bjl_ != bjh_);}

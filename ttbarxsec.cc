@@ -164,6 +164,7 @@ ttbar::ttbar(const std::string output_filename):
 	ttptbins = {0.0, 15.0, 25.0, 35.0, 45.0, 55., 70.0, 90.0, 110.0, 150.0, 350.0, 500.0};
 	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
 	jetbins = {-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5};
+	dybins = {-2.0, -1.5, -1., -0.5, 0., 0.5, 1.0, 1.5, 2.0};
 	nobins = {0., 13000.};
 
 	btagpt = {30., 50., 70., 100., 140., 200., 300., 670.};
@@ -262,8 +263,8 @@ void ttbar::begin()
 	truth1d.AddHist("Mu", 100, 0, 100, "#mu", "Events");
 	truth1d.AddHist("MuWeighted", 100, 0, 100, "#mu", "Events");
 
-	response.AddMatrix("tpt", topptbins, topptbins, "p_{T}(t) [GeV]");
-	response.AddMatrix("ty", topybins, topybins, "|y(t)|");
+	response.AddMatrix("thardpt", topptbins, topptbins, "high p_{T}(t) [GeV]");
+	response.AddMatrix("tsoftpt", topptbins, topptbins, "soft p_{T}(t) [GeV]");
 	response.AddMatrix("thadpt", topptbins, topptbins, "p_{T}(t_{h}) [GeV]");
 	response.AddMatrix("thady", topybins, topybins, "|y(t_{h})|");
 	response.AddMatrix("tleppt", topptbins, topptbins, "p_{T}(t_{l}) [GeV]");
@@ -273,11 +274,16 @@ void ttbar::begin()
 	response.AddMatrix("tty", ttybins, ttybins, "|y(t#bar{t})|");
 	response.AddMatrix("njet", jetbins, jetbins, "n-jets");
 	response.AddMatrix("nobin", nobins, nobins, "total");
+	response.AddMatrix("dymp", dybins, dybins, "|y(t)|-|y(#bar{t})|");
 
 	vector<double> jetbins_large = {-0.5, 0.5, 1.5, 2.5, 3.5};
 	vector<double> topptbins_large = {0.0, 60.0, 100.0, 140.0, 180.0, 250.0, 500.0};
 	response2d.AddMatrix("njets_thadpt", jetbins_large, topptbins_large, jetbins_large, topptbins_large);
+	vector<double> ttptbins_large = {0.0, 25.0, 45.0, 70.0, 110.0, 200., 500.0};
+	response2d.AddMatrix("njets_ttpt", jetbins_large, ttptbins_large, jetbins_large, ttptbins_large);
 
+	response_ps.AddMatrix("thardpt", topptbins, topptbins, "hard p_{T}(t_{h}) [GeV]");
+	response_ps.AddMatrix("tsoftpt", topptbins, topptbins, "soft p_{T}(t_{h}) [GeV]");
 	response_ps.AddMatrix("thadpt", topptbins, topptbins, "p_{T}(t_{h}) [GeV]");
 	response_ps.AddMatrix("thady", topybins, topybins, "|y(t_{h})|");
 	response_ps.AddMatrix("tleppt", topptbins, topptbins, "p_{T}(t_{l}) [GeV]");
@@ -288,8 +294,8 @@ void ttbar::begin()
 
 	if(PDFTEST)
 	{
-		pdfunc->Add1dHist("pdfunc_tpt", topptbins, "p_{T}(t) [GeV]", "Events");
-		pdfunc->Add1dHist("pdfunc_ty", topybins, "|y(t)|", "Events");
+		pdfunc->Add1dHist("pdfunc_thardpt", topptbins, "hard p_{T}(t) [GeV]", "Events");
+		pdfunc->Add1dHist("pdfunc_tsoftpt", topptbins, "soft p_{T}(t) [GeV]", "Events");
 		pdfunc->Add1dHist("pdfunc_thadpt", topptbins, "p_{T}(t_{h}) [GeV]", "Events");
 		pdfunc->Add1dHist("pdfunc_thady", topybins, "|y(t_{h})|", "Events");
 		pdfunc->Add1dHist("pdfunc_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
@@ -299,10 +305,12 @@ void ttbar::begin()
 		pdfunc->Add1dHist("pdfunc_ttpt", ttptbins, "p_{T}(t#bar{t}) [GeV]", "Events");
 		pdfunc->Add1dHist("pdfunc_njet", jetbins, "n-jets", "Events");
 		pdfunc->Add1dHist("pdfunc_nobin", nobins, "total", "Events");
+		pdfunc->Add1dHist("pdfunc_dymp", dybins, "|y(t)|-|y(#bar{t})|", "Events");
 		pdfunc->Add1dHist("pdfunc_njets_thadpt", response2d.GetNBins("njets_thadpt"), 0., response2d.GetNBins("njets_thadpt") , "bin", "Events");
+		pdfunc->Add1dHist("pdfunc_njets_ttpt", response2d.GetNBins("njets_ttpt"), 0., response2d.GetNBins("njets_ttpt") , "bin", "Events");
 
-		pdfunc->Add1dHist("pdfunc_reco_tpt", topptbins, "p_{T}(t) [GeV]", "Events");
-		pdfunc->Add1dHist("pdfunc_reco_ty", topybins, "|y(t)|", "Events");
+		pdfunc->Add1dHist("pdfunc_reco_thardpt", topptbins, "hard p_{T}(t) [GeV]", "Events");
+		pdfunc->Add1dHist("pdfunc_reco_tsoftpt", topptbins, "soft p_{T}(t) [GeV]", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_thadpt", topptbins, "p_{T}(t_{h}) [GeV]", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_thady", topybins, "|y(t_{h})|", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_tleppt", topptbins, "p_{T}(t_{l}) [GeV]", "Events");
@@ -312,7 +320,9 @@ void ttbar::begin()
 		pdfunc->Add1dHist("pdfunc_reco_ttpt", ttptbins, "p_{T}(t#bar{t}) [GeV]", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_njet", jetbins, "n-jets", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_nobin", nobins, "total", "Events");
+		pdfunc->Add1dHist("pdfunc_reco_dymp", dybins, "|y(t)|-|y(#bar{t})|", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_njets_thadpt", response2d.GetNBins("njets_thadpt"), 0., response2d.GetNBins("njets_thadpt") , "bin", "Events");
+		pdfunc->Add1dHist("pdfunc_reco_njets_ttpt", response2d.GetNBins("njets_ttpt"), 0., response2d.GetNBins("njets_ttpt") , "bin", "Events");
 	}
 
 	ttp_truth.Init(this);
@@ -889,37 +899,37 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		IDJet jet(*jetit);
 		//double sf = gRandom->Gaus(1., 0.05);
 		double jetcorr = 1.;
-		if(!isMC)
-		{
-			if(Abs(jet.Eta()) < 1.5)
-			{
-				//jetcorr = 1.055 - 0.0006637*jet.Pt();
-				//if(jet.Pt() > 100.) {jetcorr = 1.04;}
-				//jetcorr = 1.027;
-				//jetcorr = 1.013;
-				jetcorr = 0.01551*Exp(-0.02492*jet.Pt()) + 1.01124;
-			}
-			else
-			{
-				//jetcorr = 0.9765;
-				//jetcorr = 1.0095;
-				jetcorr = 0.05939*Exp(-0.02042*jet.Pt()) + 1.000533;
-			}
-		}
-		if(isMC)
-		{
-			if(Abs(jet.Eta()) < 1.5)
-			{
-				//jetcorr = gRandom->Gaus(jetcorr, 0.088);
-				jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
-			}
-			else
-			{
-				//jetcorr = gRandom->Gaus(jetcorr, 0.12);
-				//jetcorr = gRandom->Gaus(jetcorr, 0.096);
-				jetcorr = gRandom->Gaus(jetcorr, 0.3683*Exp(-0.04285*jet.Pt()) + 0.03816);
-			}
-		}
+//		if(!isMC)
+//		{
+//			if(Abs(jet.Eta()) < 1.5)
+//			{
+//				//jetcorr = 1.055 - 0.0006637*jet.Pt();
+//				//if(jet.Pt() > 100.) {jetcorr = 1.04;}
+//				//jetcorr = 1.027;
+//				//jetcorr = 1.013;
+//				jetcorr = 0.01551*Exp(-0.02492*jet.Pt()) + 1.01124;
+//			}
+//			else
+//			{
+//				//jetcorr = 0.9765;
+//				//jetcorr = 1.0095;
+//				jetcorr = 0.05939*Exp(-0.02042*jet.Pt()) + 1.000533;
+//			}
+//		}
+//		if(isMC)
+//		{
+//			if(Abs(jet.Eta()) < 1.5)
+//			{
+//				//jetcorr = gRandom->Gaus(jetcorr, 0.088);
+//				jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
+//			}
+//			else
+//			{
+//				//jetcorr = gRandom->Gaus(jetcorr, 0.12);
+//				//jetcorr = gRandom->Gaus(jetcorr, 0.096);
+//				jetcorr = gRandom->Gaus(jetcorr, 0.3683*Exp(-0.04285*jet.Pt()) + 0.03816);
+//			}
+//		}
 		double sf = csigmajet;
 		if(sf < 0.){sf *= jetscaler.GetUncM(jet);}
 		if(sf > 0.){sf *= jetscaler.GetUncP(jet);}
@@ -1375,10 +1385,8 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC && rightper.IsComplete()) truth1d["counter"]->Fill(7.5, weight);
 	//Fill reconstructed hists
 	ttp_all.Fill(bestper, weight);
-	response.FillAll("tpt", bestper.THad().Pt(), weight);
-	response.FillAll("ty", Abs(bestper.THad().Rapidity()), weight);
-	response.FillAll("tpt", bestper.TLep().Pt(), weight);
-	response.FillAll("ty", Abs(bestper.TLep().Rapidity()), weight);
+	response.FillAll("thardpt", bestper.THard().Pt(), weight);
+	response.FillAll("tsoftpt", bestper.TSoft().Pt(), weight);
 	response.FillAll("nobin", bestper.THad().Pt(), weight);
 	response.FillAll("thadpt", bestper.THad().Pt(), weight);
 	response.FillAll("thady", Abs(bestper.THad().Rapidity()), weight);
@@ -1388,17 +1396,17 @@ void ttbar::ttanalysis(URStreamer& event)
 	response.FillAll("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
 	response.FillAll("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
 	response.FillAll("njet", cleanedjets.size() - 4, weight);
+	response.FillAll("dymp", Abs(bestper.T().Rapidity()) - Abs(bestper.Tb().Rapidity()), weight);
 	response2d.FillAll("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt(), weight);
+	response2d.FillAll("njets_ttpt", cleanedjets.size() - 4, bestper.TT().Pt(), weight);
 
 
 	if(SEMILEP)
 	{
 		if(PDFTEST)
 		{
-			pdfunc->Fill1d("pdfunc_reco_tpt", genper->THad().Pt(), weight);
-			pdfunc->Fill1d("pdfunc_reco_tpt", genper->TLep().Pt(), weight);
-			pdfunc->Fill1d("pdfunc_reco_ty", Abs(genper->THad().Rapidity()), weight);
-			pdfunc->Fill1d("pdfunc_reco_ty", Abs(genper->TLep().Rapidity()), weight);
+			pdfunc->Fill1d("pdfunc_reco_thardpt", genper->THard().Pt(), weight);
+			pdfunc->Fill1d("pdfunc_reco_tsoftpt", genper->TSoft().Pt() , weight);
 			pdfunc->Fill1d("pdfunc_reco_nobin", genper->THad().Pt(), weight);
 			pdfunc->Fill1d("pdfunc_reco_thadpt", genper->THad().Pt(), weight);
 			pdfunc->Fill1d("pdfunc_reco_tleppt", genper->TLep().Pt(), weight);
@@ -1408,12 +1416,12 @@ void ttbar::ttanalysis(URStreamer& event)
 			pdfunc->Fill1d("pdfunc_reco_tty", Abs(genper->TT().Rapidity()), weight);
 			pdfunc->Fill1d("pdfunc_reco_ttpt", genper->TT().Pt(), weight);
 			pdfunc->Fill1d("pdfunc_reco_njet", genaddjets.size(), weight);
+			pdfunc->Fill1d("pdfunc_reco_dymp", Abs(genper->T().Rapidity()) - Abs(genper->Tb().Rapidity()), weight);
 			pdfunc->Fill1d("pdfunc_reco_njets_thadpt", response2d.GetBin("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt())-0.5, weight);
+			pdfunc->Fill1d("pdfunc_reco_njets_ttpt", response2d.GetBin("njets_ttpt", cleanedjets.size() - 4, bestper.TT().Pt())-0.5, weight);
 		}
-		response.FillTruthReco("tpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
-		response.FillTruthReco("ty", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
-		response.FillTruthReco("tpt", genper->TLep().Pt(), bestper.TLep().Pt(), weight);
-		response.FillTruthReco("ty", Abs(genper->TLep().Rapidity()), Abs(bestper.TLep().Rapidity()), weight);
+		response.FillTruthReco("thardpt", genper->THard().Pt(), bestper.THard().Pt(), weight);
+		response.FillTruthReco("tsoftpt", genper->TSoft().Pt(), bestper.TSoft().Pt(), weight);
 		response.FillTruthReco("nobin", genper->THad().Pt(), bestper.THad().Pt(), weight);
 		response.FillTruthReco("thadpt", genper->THad().Pt(), bestper.THad().Pt(), weight);
 		response.FillTruthReco("thady", Abs(genper->THad().Rapidity()), Abs(bestper.THad().Rapidity()), weight);
@@ -1423,14 +1431,14 @@ void ttbar::ttanalysis(URStreamer& event)
 		response.FillTruthReco("ttpt", genper->TT().Pt(), bestper.TT().Pt(), weight);
 		response.FillTruthReco("tty", Abs(genper->TT().Rapidity()), Abs(bestper.TT().Rapidity()), weight);
 		response.FillTruthReco("njet", genaddjets.size(), cleanedjets.size() - 4, weight);
+		response.FillTruthReco("dymp", Abs(genper->T().Rapidity()) - Abs(genper->Tb().Rapidity()), Abs(bestper.T().Rapidity()) - Abs(bestper.Tb().Rapidity()) , weight);
 		response2d.FillTruthReco("njets_thadpt", genaddjets.size(), genper->THad().Pt(), cleanedjets.size() - 4, bestper.THad().Pt(), weight);
+		response2d.FillTruthReco("njets_ttpt", genaddjets.size(), genper->TT().Pt(), cleanedjets.size() - 4, bestper.TT().Pt(), weight);
 	}
 	else
 	{
-		response.FillBKG("tpt", bestper.THad().Pt(), weight);
-		response.FillBKG("ty", Abs(bestper.THad().Rapidity()), weight);
-		response.FillBKG("tpt", bestper.TLep().Pt(), weight);
-		response.FillBKG("ty", Abs(bestper.TLep().Rapidity()), weight);
+		response.FillBKG("thardpt", bestper.THard().Pt(), weight);
+		response.FillBKG("tsoftpt", bestper.TSoft().Pt(), weight);
 		response.FillBKG("nobin", bestper.THad().Pt(), weight);
 		response.FillBKG("thadpt", bestper.THad().Pt(), weight);
 		response.FillBKG("thady", Abs(bestper.THad().Rapidity()), weight);
@@ -1440,7 +1448,9 @@ void ttbar::ttanalysis(URStreamer& event)
 		response.FillBKG("ttpt", (bestper.THad() + bestper.TLep()).Pt(), weight);
 		response.FillBKG("tty", Abs((bestper.THad() + bestper.TLep()).Rapidity()), weight);
 		response.FillBKG("njet", cleanedjets.size() - 4, weight);
+		response.FillBKG("dymp", Abs(bestper.T().Rapidity()) - Abs(bestper.Tb().Rapidity()), weight);
 		response2d.FillBKG("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt(), weight);
+		response2d.FillBKG("njets_ttpt", cleanedjets.size() - 4, bestper.TT().Pt(), weight);
 	}
 
 	//Fill reconstructed hists with matching information
@@ -1474,11 +1484,11 @@ void ttbar::ttanalysis(URStreamer& event)
 		ttp_other.Fill(bestper, weight);
 	}
 
-	if(bestper.IsCorrect(rightper))
+	if(bestper.AreHadJetsCorrect(rightper) && bestper.IsBLepCorrect(rightper))
 	{
 		ttp_tlepthad_right.Fill(bestper, weight);
 	}
-	else if(bestper.IsTHadCorrect(rightper))
+	else if(bestper.AreHadJetsCorrect(rightper))
 	{
 		ttp_thad_right.Fill(bestper, weight);
 	}
@@ -1576,6 +1586,8 @@ void ttbar::analyze()
 		{
 			if(genallper.IsComplete())
 			{
+				response_ps.FillTruth("thardpt", genallper.THard().Pt(), weight);
+				response_ps.FillTruth("tsoftpt", genallper.TSoft().Pt(), weight);
 				response_ps.FillTruth("thadpt", genallper.THad().Pt(), weight);
 				response_ps.FillTruth("thady", Abs(genallper.THad().Rapidity()), weight);
 				response_ps.FillTruth("tleppt", genallper.TLep().Pt(), weight);
@@ -1586,6 +1598,8 @@ void ttbar::analyze()
 			}
 			if(psper.IsComplete())
 			{
+				response_ps.FillAll("thardpt", psper.THard().Pt(), weight);
+				response_ps.FillAll("tsoftpt", psper.TSoft().Pt(), weight);
 				response_ps.FillAll("thadpt", psper.THad().Pt(), weight);
 				response_ps.FillAll("thady", Abs(psper.THad().Rapidity()), weight);
 				response_ps.FillAll("tleppt", psper.TLep().Pt(), weight);
@@ -1596,6 +1610,8 @@ void ttbar::analyze()
 			}
 			if(genallper.IsComplete() && psper.IsComplete())
 			{
+				response_ps.FillTruthReco("thardpt", genallper.THard().Pt(), psper.THard().Pt(), weight);
+				response_ps.FillTruthReco("tsoftpt", genallper.TSoft().Pt(), psper.TSoft().Pt(), weight);
 				response_ps.FillTruthReco("thadpt", genallper.THad().Pt(), psper.THad().Pt(), weight);
 				response_ps.FillTruthReco("thady", Abs(genallper.THad().Rapidity()), Abs(psper.THad().Rapidity()), weight);
 				response_ps.FillTruthReco("tleppt", genallper.TLep().Pt(), psper.TLep().Pt(), weight);
@@ -1619,10 +1635,8 @@ void ttbar::analyze()
 			truth1d["counter"]->Fill(1.5, weight);
 			ttp_genall.Fill(*genper, weight);
 
-			response.FillTruth("tpt", genper->THad().Pt(), weight);
-			response.FillTruth("ty", Abs(genper->THad().Rapidity()), weight);
-			response.FillTruth("tpt", genper->TLep().Pt(), weight);
-			response.FillTruth("ty", Abs(genper->TLep().Rapidity()), weight);
+			response.FillTruth("thardpt", genper->THard().Pt(), weight);
+			response.FillTruth("tsoftpt", genper->TSoft().Pt(), weight);
 			response.FillTruth("nobin", genper->THad().Pt(), weight);
 			response.FillTruth("thadpt", genper->THad().Pt(), weight);
 			response.FillTruth("thady", Abs(genper->THad().Rapidity()), weight);
@@ -1632,13 +1646,13 @@ void ttbar::analyze()
 			response.FillTruth("ttpt", genper->TT().Pt(), weight);
 			response.FillTruth("tty", Abs(genper->TT().Rapidity()), weight);
 			response.FillTruth("njet", genaddjets.size(), weight);
+			response.FillTruth("dymp", Abs(genper->T().Rapidity()) - Abs(genper->Tb().Rapidity()), weight);
 			response2d.FillTruth("njets_thadpt", genaddjets.size(), genper->THad().Pt(), weight);
+			response2d.FillTruth("njets_ttpt", genaddjets.size(), genper->TT().Pt(), weight);
 			if(PDFTEST)
 			{
-				pdfunc->Fill1d("pdfunc_tpt", genper->THad().Pt(), weight);
-				pdfunc->Fill1d("pdfunc_tpt", genper->TLep().Pt(), weight);
-				pdfunc->Fill1d("pdfunc_ty", Abs(genper->THad().Rapidity()), weight);
-				pdfunc->Fill1d("pdfunc_ty", Abs(genper->TLep().Rapidity()), weight);
+				pdfunc->Fill1d("pdfunc_thardpt", genper->THard().Pt(), weight);
+				pdfunc->Fill1d("pdfunc_tsoftpt", genper->TSoft().Pt(), weight);
 				pdfunc->Fill1d("pdfunc_nobin", genper->THad().Pt(), weight);
 				pdfunc->Fill1d("pdfunc_thadpt", genper->THad().Pt(), weight);
 				pdfunc->Fill1d("pdfunc_tleppt", genper->TLep().Pt(), weight);
@@ -1648,7 +1662,9 @@ void ttbar::analyze()
 				pdfunc->Fill1d("pdfunc_tty", Abs(genper->TT().Rapidity()), weight);
 				pdfunc->Fill1d("pdfunc_ttpt", genper->TT().Pt(), weight);
 				pdfunc->Fill1d("pdfunc_njet", genaddjets.size(), weight);
+				pdfunc->Fill1d("pdfunc_dymp", Abs(genper->T().Rapidity()) - Abs(genper->Tb().Rapidity()), weight);
 				pdfunc->Fill1d("pdfunc_njets_thadpt", response2d.GetBin("njets_thadpt", genaddjets.size(), genper->THad().Pt())-0.5, weight);
+				pdfunc->Fill1d("pdfunc_njets_ttpt", response2d.GetBin("njets_ttpt", genaddjets.size(), genper->TT().Pt())-0.5, weight);
 			}
 		}
 		if(SEMILEPACC)

@@ -178,6 +178,7 @@ class ttbar : public AnalyzerBase
 		vector<double> metbins;
 		vector<double> jetbins;
 		vector<double> nobins;
+		vector<double> dybins;
 		vector<double> btagpt;
 		vector<double> runbins;
 

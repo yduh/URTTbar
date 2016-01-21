@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=JOBS9_parton
-VER=V94
+VER=V98
 COMMAND2="../addjobs.py"
 COMMAND="../resubmit.py R"
 #COMMAND="../resubmitallmissing.py"

@@ -55,6 +55,7 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot1d.AddHist("wjet_eta", 100, -2.5, 2.5, "#eta(wj)", "Events");
 	plot1d.AddHist("costhetastar", 20, -1., 1., "cos(#theta*)", "Events");
 	plot1d.AddHist("dbeta", 200, 0, 2., "#Delta#beta", "Events");
+	plot1d.AddHist("dymp", 200, -2., 2., "|y(t)|-|y(#bar{t})|", "Events");
 }
 
 //void TTBarPlotsBase::Fill(TLorentzVector* Hb, TLorentzVector* Hwa, TLorentzVector* Hwb, TLorentzVector* Lb, TLorentzVector* Ll, TLorentzVector* Ln, int lepcharge, double weight)
@@ -101,6 +102,7 @@ void TTBarPlotsBase::Fill(Permutation& per, double weight)
 	plot1d["wjet_eta"]->Fill(per.WJa()->Eta(), weight);
 	plot1d["wjet_eta"]->Fill(per.WJb()->Eta(), weight);
 	plot1d["dbeta"]->Fill((per.THad().BoostVector() - per.TLep().BoostVector()).Mag(), weight);
+	plot1d["dymp"]->Fill(Abs(per.T().Rapidity())-Abs(per.Tb().Rapidity()), weight);
 
 }
 
