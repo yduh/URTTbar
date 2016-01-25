@@ -52,14 +52,14 @@ double IDElectron::CorPFIsolation2015_25ns() const
 {
 	//double eta = Abs(TVector3(x(), y(), z()).Eta());
 	double eta = Abs(Eta());
-	double effarea = 0.1475;
+	double effarea = 0.2687;
 	//25ns
-	if(eta < 1.){ effarea = 0.0960;}
-	else if(eta < 1.479){ effarea = 0.0947;}
-	else if(eta < 2.){ effarea = 0.0580;}
-	else if(eta < 2.2){ effarea = 0.0688;}
-	else if(eta < 2.3){ effarea = 0.0967;}
-	else if(eta < 2.4){ effarea = 0.1195;}
+	if(eta < 1.){ effarea = 0.1752;}
+	else if(eta < 1.479){ effarea = 0.1862;}
+	else if(eta < 2.){ effarea = 0.1411;}
+	else if(eta < 2.2){ effarea = 0.1534;}
+	else if(eta < 2.3){ effarea = 0.1903;}
+	else if(eta < 2.4){ effarea = 0.2243;}
 
 	if(streamer != 0)
 	{

@@ -38,14 +38,16 @@ void BTagWeight::Init(ttbar* an, string filename, double bunc, double lunc)
 double BTagWeight::scalebM(IDJet* jet)
 {
 	double x = jet->Pt();
-	double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));//MEDIUM
+	//double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));//MEDIUM
+	double scale = 0.941;
 	return(scale);
 }
 
 double BTagWeight::scalecM(IDJet* jet)
 {
 	double x = jet->Pt();
-	double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));//MEDIUM
+	//double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));//MEDIUM
+	double scale = 0.941;
 	return(scale);
 }
 double BTagWeight::scalelM(IDJet* jet)
@@ -58,14 +60,16 @@ double BTagWeight::scalelM(IDJet* jet)
 double BTagWeight::scalebL(IDJet* jet)
 {
 	double x = jet->Pt();
-	double scale = 0.908299+(2.70877e-06*(log(x+370.144)*(log(x+370.144)*(3-(-(104.614*log(x+370.144)))))));//LOOSE
+	//double scale = 0.908299+(2.70877e-06*(log(x+370.144)*(log(x+370.144)*(3-(-(104.614*log(x+370.144)))))));//LOOSE
+	double scale = 0.956;
 	return(scale);
 }
 
 double BTagWeight::scalecL(IDJet* jet)
 {
 	double x = jet->Pt();
-	double scale = 0.908299+(2.70877e-06*(log(x+370.144)*(log(x+370.144)*(3-(-(104.614*log(x+370.144)))))));//LOOSE
+	//double scale = 0.908299+(2.70877e-06*(log(x+370.144)*(log(x+370.144)*(3-(-(104.614*log(x+370.144)))))));//LOOSE
+	double scale = 0.956;
 	return(scale);
 }
 

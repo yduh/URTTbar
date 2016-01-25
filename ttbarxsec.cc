@@ -899,37 +899,28 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		IDJet jet(*jetit);
 		//double sf = gRandom->Gaus(1., 0.05);
 		double jetcorr = 1.;
-//		if(!isMC)
-//		{
-//			if(Abs(jet.Eta()) < 1.5)
-//			{
-//				//jetcorr = 1.055 - 0.0006637*jet.Pt();
-//				//if(jet.Pt() > 100.) {jetcorr = 1.04;}
-//				//jetcorr = 1.027;
-//				//jetcorr = 1.013;
-//				jetcorr = 0.01551*Exp(-0.02492*jet.Pt()) + 1.01124;
-//			}
-//			else
-//			{
-//				//jetcorr = 0.9765;
-//				//jetcorr = 1.0095;
-//				jetcorr = 0.05939*Exp(-0.02042*jet.Pt()) + 1.000533;
-//			}
-//		}
-//		if(isMC)
-//		{
-//			if(Abs(jet.Eta()) < 1.5)
-//			{
-//				//jetcorr = gRandom->Gaus(jetcorr, 0.088);
-//				jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
-//			}
-//			else
-//			{
-//				//jetcorr = gRandom->Gaus(jetcorr, 0.12);
-//				//jetcorr = gRandom->Gaus(jetcorr, 0.096);
-//				jetcorr = gRandom->Gaus(jetcorr, 0.3683*Exp(-0.04285*jet.Pt()) + 0.03816);
-//			}
-//		}
+		if(!isMC)
+		{
+			if(Abs(jet.Eta()) < 1.5)
+			{
+				jetcorr = 0.01551*Exp(-0.02492*jet.Pt()) + 1.01124;
+			}
+			else
+			{
+				jetcorr = 0.05939*Exp(-0.02042*jet.Pt()) + 1.000533;
+			}
+		}
+		if(isMC)
+		{
+			if(Abs(jet.Eta()) < 1.5)
+			{
+				jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
+			}
+			else
+			{
+				jetcorr = gRandom->Gaus(jetcorr, 0.3683*Exp(-0.04285*jet.Pt()) + 0.03816);
+			}
+		}
 		double sf = csigmajet;
 		if(sf < 0.){sf *= jetscaler.GetUncM(jet);}
 		if(sf > 0.){sf *= jetscaler.GetUncP(jet);}
