@@ -1147,7 +1147,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		double btw = btagweight.SF(reducedjets);
 //cout << weight << " " << btw << endl;
-		//weight *= btw;
+		weight *= btw;
 	}
 	reco1d["bjetmultiW"]->Fill(nbjets, weight);
 
