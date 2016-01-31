@@ -21,7 +21,7 @@ for dir in jobdirs:
 	num =  max(nums)+1
 	files = os.listdir(dir)
 	files = [f for f in files if ('%s_out_' % dir) in f]
-	failed = [f for f in files if os.path.getsize(os.path.join(dir, f)) < 1024*100]
+	failed = [f for f in files if os.path.getsize(os.path.join(dir, f)) < 1024*1000]
 
 	for n in failed:
 		num = n.split('_')[-1].split('.')[0] 
