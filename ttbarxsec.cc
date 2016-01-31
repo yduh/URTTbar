@@ -50,9 +50,9 @@ ttbar::ttbar(const std::string output_filename):
 	JETSCALEMODE(false), //set true for jet scale measurement
 	ELECTRONS(true),
 	MUONS(true),
-	B_TIGHT(0.97),
-	B_MEDIUM(0.89),
-	B_LOOSE(0.605),
+	B_TIGHT(0.935),
+	B_MEDIUM(0.800),
+	B_LOOSE(0.460),
 	cnbtag(2), //1: one thight b-jet, 2: two medium b-jets
 	cnusedjets(1000), //only nused jets, ordered by pT are used for the permutations
 	cwjetptsoft(25.), //min pT of softer W-jet
@@ -899,28 +899,29 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		IDJet jet(*jetit);
 		//double sf = gRandom->Gaus(1., 0.05);
 		double jetcorr = 1.;
-//		if(!isMC)
-//		{
-//			if(Abs(jet.Eta()) < 1.5)
-//			{
-//				jetcorr = 0.01551*Exp(-0.02492*jet.Pt()) + 1.01124;
-//			}
-//			else
-//			{
-//				jetcorr = 0.05939*Exp(-0.02042*jet.Pt()) + 1.000533;
-//			}
-//		}
-//		if(isMC)
-//		{
-//			if(Abs(jet.Eta()) < 1.5)
-//			{
-//				jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
-//			}
-//			else
-//			{
-//				jetcorr = gRandom->Gaus(jetcorr, 0.3683*Exp(-0.04285*jet.Pt()) + 0.03816);
-//			}
-//		}
+		if(!isMC)
+		{
+			if(Abs(jet.Eta()) < 1.5)
+			{
+				jetcorr = 1. + (-0.1719*Exp(-0.07861*jet.Pt()) - 0.003335);
+			}
+			else
+			{
+				jetcorr = 1. + (-0.0176);
+			}
+		}
+		if(isMC)
+		{
+			if(Abs(jet.Eta()) < 1.5)
+			{
+				//jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
+				jetcorr = gRandom->Gaus(jetcorr, 0.1468*Exp(-0.0165*jet.Pt()) + 0.01973);
+			}
+			else
+			{
+				jetcorr = gRandom->Gaus(jetcorr, 3.031*Exp(-0.1092*jet.Pt()) + 0.0344);
+			}
+		}
 		double sf = csigmajet;
 		if(sf < 0.){sf *= jetscaler.GetUncM(jet);}
 		if(sf > 0.){sf *= jetscaler.GetUncP(jet);}
@@ -1155,7 +1156,8 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
 	if(!BTAGMODE)
 	{
-		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
+		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
+		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}
 	}
 	reco1d["c_btag"]->Fill(event.run+0.5);
 	reco1d["counter"]->Fill(3.5, weight);
