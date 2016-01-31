@@ -396,12 +396,12 @@ void ttbar::begin()
 		//ttsolver.Init(probfilename, false, true);
 	}
 	btagweight.Init(this, "btaggingeff.root", cbtagunc, cltagunc);
-	string pufile("PUweight.root");
-	if(cpileup == -1) pufile = "PUweightm2.root";
-	if(cpileup == 1) pufile = "PUweightp2.root";
+	string puhistname("pu_central");
+	if(cpileup == -1) puhistname = "pu_minus";
+	if(cpileup == 1) puhistname = "pu_plus";
 
-	TFile* f = TFile::Open(pufile.c_str());
-	puhist = (TH1D*)f->Get("muweight");
+	TFile* f = TFile::Open("PUweight.root");
+	puhist = (TH1D*)f->Get(puhistname.c_str());
 	TFile* fl = TFile::Open("Lep_SF.root");
 	musfhist = (TH2D*)fl->Get("MuTOT");
 	elsfhist = (TH2D*)fl->Get("ElTOT");
@@ -899,28 +899,28 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		IDJet jet(*jetit);
 		//double sf = gRandom->Gaus(1., 0.05);
 		double jetcorr = 1.;
-		if(!isMC)
-		{
-			if(Abs(jet.Eta()) < 1.5)
-			{
-				jetcorr = 0.01551*Exp(-0.02492*jet.Pt()) + 1.01124;
-			}
-			else
-			{
-				jetcorr = 0.05939*Exp(-0.02042*jet.Pt()) + 1.000533;
-			}
-		}
-		if(isMC)
-		{
-			if(Abs(jet.Eta()) < 1.5)
-			{
-				jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
-			}
-			else
-			{
-				jetcorr = gRandom->Gaus(jetcorr, 0.3683*Exp(-0.04285*jet.Pt()) + 0.03816);
-			}
-		}
+//		if(!isMC)
+//		{
+//			if(Abs(jet.Eta()) < 1.5)
+//			{
+//				jetcorr = 0.01551*Exp(-0.02492*jet.Pt()) + 1.01124;
+//			}
+//			else
+//			{
+//				jetcorr = 0.05939*Exp(-0.02042*jet.Pt()) + 1.000533;
+//			}
+//		}
+//		if(isMC)
+//		{
+//			if(Abs(jet.Eta()) < 1.5)
+//			{
+//				jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
+//			}
+//			else
+//			{
+//				jetcorr = gRandom->Gaus(jetcorr, 0.3683*Exp(-0.04285*jet.Pt()) + 0.03816);
+//			}
+//		}
 		double sf = csigmajet;
 		if(sf < 0.){sf *= jetscaler.GetUncM(jet);}
 		if(sf > 0.){sf *= jetscaler.GetUncP(jet);}
@@ -1146,7 +1146,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		double btw = btagweight.SF(reducedjets);
 //cout << weight << " " << btw << endl;
-		weight *= btw;
+		//weight *= btw;
 	}
 	reco1d["bjetmultiW"]->Fill(nbjets, weight);
 
@@ -1671,7 +1671,8 @@ void ttbar::analyze()
 				 isMC && 
 				 (
 				  event.trigger().HLT_IsoMu20() == 1
-				  || event.trigger().HLT_Ele27_WP85_Gsf() == 1
+				  || event.trigger().HLT_IsoTkMu20() == 1
+				  || event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1
 				 )
 				) ||
 				(
@@ -1680,7 +1681,7 @@ void ttbar::analyze()
 				  //event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 && event.filter().HBHEnew() == 1 &&
 				  (
 				   //event.trigger().HLT_IsoMu24_eta2p1() == 1 || (event.trigger().HLT_IsoMu24_eta2p1() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1)
-				   event.trigger().HLT_IsoMu22() == 1 || (event.trigger().HLT_IsoMu22() == -1 && event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1)
+				   event.trigger().HLT_IsoMu20() == 1 || event.trigger().HLT_IsoTkMu20() == 1 || (event.trigger().HLT_IsoMu22() == -1 && event.trigger().HLT_IsoTkMu20() == -1 && event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1)
 				  )
 				 )
 				)
