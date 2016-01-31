@@ -47,7 +47,7 @@ transferfiles_config = ', '.join(transferfiles)
 
 for sf in samplefiles:
 	if 'tt_' in sf:
-		filesperjob = 5
+		filesperjob = 8
 	elif 'DATA_' in sf:
 		filesperjob = 8
 	else:
