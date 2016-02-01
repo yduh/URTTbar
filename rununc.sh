@@ -1,5 +1,5 @@
 #!/bin/bash
-TYP=JOBS10_parton
+TYP=JOBS10_pseudo
 VER=V4
 
 cp ttbarxsec.cfg ttbarxsec.tmp
