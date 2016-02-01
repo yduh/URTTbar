@@ -1,6 +1,6 @@
 #!/bin/bash
-TYP=JOBS10_pseudo
-VER=V3
+TYP=JOBS10_parton
+VER=V4
 
 cp ttbarxsec.cfg ttbarxsec.tmp
 ./updateconfig.py sigmajet -1
