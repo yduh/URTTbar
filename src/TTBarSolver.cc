@@ -145,13 +145,21 @@ double TTBarSolver::Test(double* par)
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
 	//cout << mwhad << " M " << mthad << endl; 
-	if(mthad < 500. && mwhad < 500.)
-	{
-		double massdisval = WTmass_right->Interpolate(mthad, mwhad);
-//		cout << massdisval << endl;
-		if(massdisval > 1.0E-10) {masstest = -1.*Log(massdisval);}
-		//masstest = -1.*Log(WTmass_right->Interpolate(mthad, mwhad)/Max(1., WTmass_wrong->Interpolate(mthad, mwhad)));
-	}
+	double c_mt = 168.218;
+	double c_mw = 81.0519;
+	double c_rw = 2.105E-3;
+	double c_rt = 5.444E-3;
+	double c_rwt = -2.1583E-3;
+	double norm = Sqrt(c_rw*c_rt - c_rwt*c_rwt)/Pi(); 
+	double massdisval = norm * Exp(-1.*((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt));
+	masstest = -1.*Log(massdisval);
+	//cout << massdisval << endl;
+//	if(mthad < 500. && mwhad < 500.)
+//	{
+//		double massdisval = WTmass_right->Interpolate(mthad, mwhad);
+//		if(massdisval > 1.0E-10) {masstest = -1.*Log(massdisval);}
+//		//masstest = -1.*Log(WTmass_right->Interpolate(mthad, mwhad)/Max(1., WTmass_wrong->Interpolate(mthad, mwhad)));
+//	}
 
 	double mtwlep = Sqrt(Power(met_->Pt() + llep_->Pt(),2) - Power(met_->Px() + llep_->Px(),2) - Power(met_->Py() + llep_->Py(),2));
 	double mttlep = Sqrt(Power(met_->Pt() + llep_->Pt() + Sqrt(blep_->M()*blep_->M() + blep_->Pt()*blep_->Pt()),2) - Power(met_->Px() + llep_->Px() + blep_->Px(),2) - Power(met_->Py() + llep_->Py() + blep_->Py(),2));
