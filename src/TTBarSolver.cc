@@ -146,16 +146,16 @@ double TTBarSolver::Test(double* par)
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
 	//cout << mwhad << " M " << mthad << endl; 
 	
-//	double c_mt = 168.218;
-//	double c_mw = 81.0519;
-//	double c_rt = 2.105E-3;
-//	double c_rw = 5.444E-3;
-//	double c_rwt = -2.1583E-3;
-	double c_mt = 171.5;
-	double c_mw = 83.1;
-	double c_rt = 1.2376E-3;
-	double c_rw = 2.6318E-3;
-	double c_rwt = -9.761E-3;
+	double c_mt = 168.218;
+	double c_mw = 81.0519;
+	double c_rt = 2.105E-3;
+	double c_rw = 5.444E-3;
+	double c_rwt = -2.1583E-3;
+	//double c_mt = 171.5;
+	//double c_mw = 83.1;
+	//double c_rt = 1.2376E-3;
+	//double c_rw = 2.6318E-3;
+	//double c_rwt = -9.761E-3;
 	double norm = Sqrt(c_rw*c_rt - c_rwt*c_rwt)/Pi(); 
 	double massdisval = norm * Exp(-1.*((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt));
 	masstest = -1.*Log(massdisval);
