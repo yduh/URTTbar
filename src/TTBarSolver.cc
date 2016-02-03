@@ -20,7 +20,7 @@ TTBarSolver::~TTBarSolver()
 	if(probfile != 0) {probfile->Close();}
 }
 
-void TTBarSolver::Init(string filename, bool usebtag, bool usens, bool usemass)
+void TTBarSolver::Init(bool pseudo, string filename, bool usebtag, bool usens, bool usemass)
 {
 	USEBTAG = usebtag;
 	USENS = usens;
@@ -41,6 +41,23 @@ void TTBarSolver::Init(string filename, bool usebtag, bool usens, bool usemass)
 	N_right->Scale(1./N_right->Integral("width"));
 	//N_wrong = dynamic_cast<TH1D*>(probfile->Get("TRUTH/truth_nschi_wrong"));
 	//N_wrong->Scale(1./N_wrong->Integral("width"));
+	if(pseudo)
+	{
+		c_mt = 171.5;
+		c_mw = 83.1;
+		c_rt = 1.2376E-3;
+		c_rw = 2.6318E-3;
+		c_rwt = -9.761E-4;
+	}
+	else
+	{
+		c_mt = 168.218;
+		c_mw = 81.0519;
+		c_rt = 2.105E-3;
+		c_rw = 5.444E-3;
+		c_rwt = -2.1583E-3;
+	}
+	norm = -1.* Log(Sqrt(c_rw*c_rt - c_rwt*c_rwt)/Pi()); 
 	dir->cd();
 }
 
@@ -146,19 +163,9 @@ double TTBarSolver::Test(double* par)
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
 	//cout << mwhad << " M " << mthad << endl; 
 	
-//	double c_mt = 168.218;
-//	double c_mw = 81.0519;
-//	double c_rt = 2.105E-3;
-//	double c_rw = 5.444E-3;
-//	double c_rwt = -2.1583E-3;
-	double c_mt = 171.5;
-	double c_mw = 83.1;
-	double c_rt = 1.2376E-3;
-	double c_rw = 2.6318E-3;
-	double c_rwt = -9.761E-4;
-	double norm = Sqrt(c_rw*c_rt - c_rwt*c_rwt)/Pi(); 
-	double massdisval = norm * Exp(-1.*((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt));
-	masstest = -1.*Log(massdisval);
+	//double massdisval = norm * Exp(-1.*((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt));
+	double massdisval = norm  + ((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt);
+	masstest = Min(massdisval, 20.);
 	//cout << massdisval << endl;
 //	if(mthad < 500. && mwhad < 500.)
 //	{
