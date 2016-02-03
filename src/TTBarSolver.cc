@@ -164,8 +164,7 @@ double TTBarSolver::Test(double* par)
 	//cout << mwhad << " M " << mthad << endl; 
 	
 	//double massdisval = norm * Exp(-1.*((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt));
-	double massdisval = norm  + ((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt);
-	masstest = Min(massdisval, 20.);
+	masstest = norm  + ((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt);
 	//cout << massdisval << endl;
 //	if(mthad < 500. && mwhad < 500.)
 //	{
@@ -174,13 +173,13 @@ double TTBarSolver::Test(double* par)
 //		//masstest = -1.*Log(WTmass_right->Interpolate(mthad, mwhad)/Max(1., WTmass_wrong->Interpolate(mthad, mwhad)));
 //	}
 
-	double mtwlep = Sqrt(Power(met_->Pt() + llep_->Pt(),2) - Power(met_->Px() + llep_->Px(),2) - Power(met_->Py() + llep_->Py(),2));
-	double mttlep = Sqrt(Power(met_->Pt() + llep_->Pt() + Sqrt(blep_->M()*blep_->M() + blep_->Pt()*blep_->Pt()),2) - Power(met_->Px() + llep_->Px() + blep_->Px(),2) - Power(met_->Py() + llep_->Py() + blep_->Py(),2));
-	if(mtwlep < 500. && mttlep < 500.)
-	{
-		double mtdisval = WTmt_right->Interpolate(mttlep, mtwlep);
-		if(mtdisval > 1.0E-10) {mttest = -1.*Log(mtdisval);}
-	}
+	//double mtwlep = Sqrt(Power(met_->Pt() + llep_->Pt(),2) - Power(met_->Px() + llep_->Px(),2) - Power(met_->Py() + llep_->Py(),2));
+	//double mttlep = Sqrt(Power(met_->Pt() + llep_->Pt() + Sqrt(blep_->M()*blep_->M() + blep_->Pt()*blep_->Pt()),2) - Power(met_->Px() + llep_->Px() + blep_->Px(),2) - Power(met_->Py() + llep_->Py() + blep_->Py(),2));
+	//if(mtwlep < 500. && mttlep < 500.)
+	//{
+	//	double mtdisval = WTmt_right->Interpolate(mttlep, mtwlep);
+	//	if(mtdisval > 1.0E-10) {mttest = -1.*Log(mtdisval);}
+	//}
 
 	res = 0.;
 	double sqrt2 = Sqrt(2);

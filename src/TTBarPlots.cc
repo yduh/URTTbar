@@ -50,7 +50,7 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot1d.AddHist("Mt_t", 500, 0, 1000, "M_{t}(t_{l}) [GeV]", "Events");
 	plot1d.AddHist("mttest", 500, 0, 100, "mttest", "Events");
 	plot1d.AddHist("masstest", 500, 0, 100, "-log(#lambda_{m})", "Events");
-	plot1d.AddHist("nutest", 500, 0, 100, "mttest", "Events");
+	plot1d.AddHist("nutest", 500, 0, 100, "nutest", "Events");
 	plot1d.AddHist("chiqtest", 500, 0, 100, "D_{#nu,min}", "Events");
 	plot1d.AddHist("massmttest", 500, 0, 100, "mttest", "Events");
 	plot1d.AddHist("massnutest", 500, 0, 100, "-log(#lambda)", "Events");
