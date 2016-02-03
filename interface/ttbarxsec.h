@@ -82,6 +82,10 @@ class ttbar : public AnalyzerBase
 		TH2DCollection reco2d;
 		TH1DCollection truth1d;
 		TH2DCollection truth2d;
+                TH1DCollection yuka1d_gen;
+                TH1DCollection yuka1d_reco;
+                TH2DCollection yuka2d_gen;
+                TH2DCollection yuka2d_reco;
 
         TTBarGenPlots ttp_genall;
         TTBarGenPlots ttp_genacc;
@@ -189,6 +193,10 @@ class ttbar : public AnalyzerBase
 		TH2D* elsfhist;
 		TH2D* mutrgsfhist;
 		TH2D* eltrgsfhist;
+                TH1D* yukahist_mtt;
+                TH1D* yukahist_dely;
+                TH1D* yukahist_beta;
+                TH2D* yukahist_2d;
 	public:
 
 		ttbar(const std::string output_filename);
