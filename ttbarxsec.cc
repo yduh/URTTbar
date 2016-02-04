@@ -463,8 +463,8 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-	TFile* fyuka_2d = TFile::Open("yukawa_reweighing1_0.root");
-	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
+	//TFile* fyuka_2d = TFile::Open("yukawa_reweighing1_0.root");
+	//yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
 }
@@ -1707,12 +1707,12 @@ void ttbar::analyze()
 				//weight *= yukahist_2d->GetBinContent(weight_bin_mtt+1, weight_bin_dely+1) + 1
                                 //
                                 
-                                
+                                /*
                                 if(Mtt>= 2*173*cosh(deltaY/2))
                                 weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 else 
                                 weight *= 1;
-                                
+                                */
 
 				//CASE3: deltaBate
 				double deltaBeta = genallper.TLep().P()/genallper.TLep().E() - genallper.THad().P()/genallper.THad().E(); //gentoplep.P()/gentoplep.E() - gentophad.P()/gentophad.E();
