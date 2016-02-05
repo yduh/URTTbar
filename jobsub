@@ -49,9 +49,9 @@ for sf in samplefiles:
 	if 'QCD' in sf:
 		filesperjob = 12
 	elif 'DATA_' in sf:
-		filesperjob = 8
+		filesperjob = 10
 	else:
-		filesperjob = 6
+		filesperjob = 12
 	#infile = os.path.join(inputdir, sf)
 	jobpath = os.path.join(jobdir, sf.split('.txt')[0])
 	os.mkdir(jobpath)
