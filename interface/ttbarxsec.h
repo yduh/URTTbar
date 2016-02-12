@@ -84,8 +84,16 @@ class ttbar : public AnalyzerBase
 		TH2DCollection truth2d;
                 TH1DCollection yuka1d_gen;
                 TH1DCollection yuka1d_reco;
+                TH1DCollection yuka1d_reco_right;
+                TH1DCollection yuka1d_reco_wrong;
+                TH1DCollection yuka1d_reco_semi;
+                TH1DCollection yuka1d_reco_other;
                 TH2DCollection yuka2d_gen;
                 TH2DCollection yuka2d_reco;
+                TH2DCollection yuka2d_reco_right;
+                TH2DCollection yuka2d_reco_wrong;
+                TH2DCollection yuka2d_reco_semi;
+                TH2DCollection yuka2d_reco_other;
 
         TTBarGenPlots ttp_genall;
         TTBarGenPlots ttp_genacc;

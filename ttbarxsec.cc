@@ -42,8 +42,16 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_nsemi_right("ttp_nsemi_right"),
         yuka1d_gen("yukawa"),
         yuka1d_reco("yukawa"),
+        yuka1d_reco_right("yukawa"),
+        yuka1d_reco_wrong("yukawa"),
+        yuka1d_reco_semi("yukawa"),
+        yuka1d_reco_other("yukawa"),
         yuka2d_gen("yukawa"),
         yuka2d_reco("yukawa"),
+        yuka2d_reco_right("yukawa"),
+        yuka2d_reco_wrong("yukawa"),
+        yuka2d_reco_semi("yukawa"),
+        yuka2d_reco_other("yukawa"),
 	response("response", this),
 	response2d("response"),
 	response_ps("response_ps", this),
@@ -422,6 +430,89 @@ void ttbar::begin()
 	yuka2d_reco.AddHist("Mtt_delBeta_boo", 1000, 0, 2000, 200, 0, 2, "CM M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
 	yuka2d_reco.AddHist("delY_delBeta_boo", 1200, -6, 6, 200, 0, 2, "CM #Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
+	TDirectory* dir_yukawareco_right = outFile_.mkdir("YUKAWA_RECO_right");
+	dir_yukawareco_right->cd();
+	yuka1d_reco_right.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	yuka1d_reco_right.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	yuka1d_reco_right.AddHist("Y", 160, -4, 4,"y_t", "Events");
+	yuka1d_reco_right.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_right.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_right.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_right.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_right.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_right.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+
+	yuka1d_reco_right.AddHist("Mtt_boo", 1000, 0, 2000, "CM M(t#bar{t})", "Events");
+	yuka1d_reco_right.AddHist("costheta_boo", 40, -1, 1, "CM cos#theta", "Events");
+	yuka1d_reco_right.AddHist("delY_boo", 1200, -6, 6,"CM #Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_right.AddHist("delBeta_boo", 200, 0, 2, "CM #Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_right.AddHist("Mtt_costheta_boo", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_right.AddHist("Mtt_delY_boo", 1000, 0, 2000, 1200, -6, 6, "CM M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_right.AddHist("Mtt_delBeta_boo", 1000, 0, 2000, 200, 0, 2, "CM M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_right.AddHist("delY_delBeta_boo", 1200, -6, 6, 200, 0, 2, "CM #Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+
+	TDirectory* dir_yukawareco_wrong = outFile_.mkdir("YUKAWA_RECO_wrong");
+	dir_yukawareco_wrong->cd();
+	yuka1d_reco_wrong.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	yuka1d_reco_wrong.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	yuka1d_reco_wrong.AddHist("Y", 160, -4, 4,"y_t", "Events");
+	yuka1d_reco_wrong.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_wrong.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_wrong.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_wrong.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_wrong.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_wrong.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+
+	yuka1d_reco_wrong.AddHist("Mtt_boo", 1000, 0, 2000, "CM M(t#bar{t})", "Events");
+	yuka1d_reco_wrong.AddHist("costheta_boo", 40, -1, 1, "CM cos#theta", "Events");
+	yuka1d_reco_wrong.AddHist("delY_boo", 1200, -6, 6,"CM #Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_wrong.AddHist("delBeta_boo", 200, 0, 2, "CM #Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_wrong.AddHist("Mtt_costheta_boo", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_wrong.AddHist("Mtt_delY_boo", 1000, 0, 2000, 1200, -6, 6, "CM M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_wrong.AddHist("Mtt_delBeta_boo", 1000, 0, 2000, 200, 0, 2, "CM M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_wrong.AddHist("delY_delBeta_boo", 1200, -6, 6, 200, 0, 2, "CM #Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+
+	TDirectory* dir_yukawareco_semi = outFile_.mkdir("YUKAWA_RECO_semi");
+	dir_yukawareco_semi->cd();
+	yuka1d_reco_semi.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	yuka1d_reco_semi.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	yuka1d_reco_semi.AddHist("Y", 160, -4, 4,"y_t", "Events");
+	yuka1d_reco_semi.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_semi.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_semi.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_semi.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_semi.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_semi.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+
+	yuka1d_reco_semi.AddHist("Mtt_boo", 1000, 0, 2000, "CM M(t#bar{t})", "Events");
+	yuka1d_reco_semi.AddHist("costheta_boo", 40, -1, 1, "CM cos#theta", "Events");
+	yuka1d_reco_semi.AddHist("delY_boo", 1200, -6, 6,"CM #Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_semi.AddHist("delBeta_boo", 200, 0, 2, "CM #Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_semi.AddHist("Mtt_costheta_boo", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_semi.AddHist("Mtt_delY_boo", 1000, 0, 2000, 1200, -6, 6, "CM M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_semi.AddHist("Mtt_delBeta_boo", 1000, 0, 2000, 200, 0, 2, "CM M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_semi.AddHist("delY_delBeta_boo", 1200, -6, 6, 200, 0, 2, "CM #Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+
+	TDirectory* dir_yukawareco_other = outFile_.mkdir("YUKAWA_RECO_other");
+	dir_yukawareco_other->cd();
+	yuka1d_reco_other.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	yuka1d_reco_other.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	yuka1d_reco_other.AddHist("Y", 160, -4, 4,"y_t", "Events");
+	yuka1d_reco_other.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_other.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_other.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_other.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_other.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_other.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+
+	yuka1d_reco_other.AddHist("Mtt_boo", 1000, 0, 2000, "CM M(t#bar{t})", "Events");
+	yuka1d_reco_other.AddHist("costheta_boo", 40, -1, 1, "CM cos#theta", "Events");
+	yuka1d_reco_other.AddHist("delY_boo", 1200, -6, 6,"CM #Deltay_{t#bar{t}}", "Events");
+	yuka1d_reco_other.AddHist("delBeta_boo", 200, 0, 2, "CM #Delta#beta_{t#bar{t}}", "Events");
+        yuka2d_reco_other.AddHist("Mtt_costheta_boo", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+	yuka2d_reco_other.AddHist("Mtt_delY_boo", 1000, 0, 2000, 1200, -6, 6, "CM M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco_other.AddHist("Mtt_delBeta_boo", 1000, 0, 2000, 200, 0, 2, "CM M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	yuka2d_reco_other.AddHist("delY_delBeta_boo", 1200, -6, 6, 200, 0, 2, "CM #Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
 	//string probfilename("Prob_parton.root");
 	string probfilename("Prob_parton.root");
@@ -463,7 +554,7 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-	TFile* fyuka_2d = TFile::Open("yukawa_reweighing0.root");
+	TFile* fyuka_2d = TFile::Open("yukawa_reweighing1_0.root");
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
@@ -1556,6 +1647,32 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		ttp_right.Fill(bestper, weight);
 		truth1d["counter"]->Fill(8.5, weight);
+                //for yukawa studies
+		yuka1d_reco_right["Mtt"]->Fill(Mtt, weight);
+		yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
+		yuka1d_reco_right["costheta"]->Fill(costheta_lep, weight);
+		yuka1d_reco_right["delY"]->Fill(deltaY, weight);
+		yuka1d_reco_right["Y"]->Fill(bestper.TLep().Rapidity(), weight);
+		yuka1d_reco_right["Y"]->Fill(bestper.THad().Rapidity(), weight);
+		yuka1d_reco_right["delBeta"]->Fill(deltaBeta, weight);
+                yuka2d_reco_right["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                yuka2d_reco_right["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+		yuka2d_reco_right["Mtt_delY"]->Fill(Mtt, deltaY, weight);
+		yuka2d_reco_right["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		yuka2d_reco_right["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+	
+		yuka1d_reco_right["Mtt_boo"]->Fill(Mtt_boost, weight);
+		yuka1d_reco_right["costheta"]->Fill(costheta_had_boost, weight);
+		yuka1d_reco_right["costheta"]->Fill(costheta_lep_boost, weight);
+		yuka1d_reco_right["delY_boo"]->Fill(deltaY_boost, weight);
+		yuka1d_reco_right["delBeta_boo"]->Fill(deltaBeta_boost, weight);
+                yuka2d_reco_right["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_had_boost, weight);
+                yuka2d_reco_right["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_lep_boost, weight);
+		yuka2d_reco_right["Mtt_delY_boo"]->Fill(Mtt_boost, deltaY_boost, weight);
+		yuka2d_reco_right["Mtt_delBeta_boo"]->Fill(Mtt_boost, deltaBeta_boost, weight);
+		yuka2d_reco_right["delY_delBeta_boo"]->Fill(deltaY_boost, deltaBeta_boost, weight);
+		//end of yukawa studies
+
 		truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(genper->Nu()), weight);
 		truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
 		truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), weight);
@@ -1572,14 +1689,92 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		ttp_wrong.Fill(bestper, weight);
 		truth1d["counter"]->Fill(9.5, weight);
+                //for yukawa studies
+		yuka1d_reco_wrong["Mtt"]->Fill(Mtt, weight);
+		yuka1d_reco_wrong["costheta"]->Fill(costheta_had, weight);
+		yuka1d_reco_wrong["costheta"]->Fill(costheta_lep, weight);
+		yuka1d_reco_wrong["delY"]->Fill(deltaY, weight);
+		yuka1d_reco_wrong["Y"]->Fill(bestper.TLep().Rapidity(), weight);
+		yuka1d_reco_wrong["Y"]->Fill(bestper.THad().Rapidity(), weight);
+		yuka1d_reco_wrong["delBeta"]->Fill(deltaBeta, weight);
+                yuka2d_reco_wrong["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                yuka2d_reco_wrong["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+		yuka2d_reco_wrong["Mtt_delY"]->Fill(Mtt, deltaY, weight);
+		yuka2d_reco_wrong["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		yuka2d_reco_wrong["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+	
+		yuka1d_reco_wrong["Mtt_boo"]->Fill(Mtt_boost, weight);
+		yuka1d_reco_wrong["costheta"]->Fill(costheta_had_boost, weight);
+		yuka1d_reco_wrong["costheta"]->Fill(costheta_lep_boost, weight);
+		yuka1d_reco_wrong["delY_boo"]->Fill(deltaY_boost, weight);
+		yuka1d_reco_wrong["delBeta_boo"]->Fill(deltaBeta_boost, weight);
+                yuka2d_reco_wrong["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_had_boost, weight);
+                yuka2d_reco_wrong["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_lep_boost, weight);
+		yuka2d_reco_wrong["Mtt_delY_boo"]->Fill(Mtt_boost, deltaY_boost, weight);
+		yuka2d_reco_wrong["Mtt_delBeta_boo"]->Fill(Mtt_boost, deltaBeta_boost, weight);
+		yuka2d_reco_wrong["delY_delBeta_boo"]->Fill(deltaY_boost, deltaBeta_boost, weight);
+		//end of yukawa studies
+
 	}
 	else if(SEMILEP)
 	{
 		ttp_semi.Fill(bestper, weight);
+                //for yukawa studies
+		yuka1d_reco_semi["Mtt"]->Fill(Mtt, weight);
+		yuka1d_reco_semi["costheta"]->Fill(costheta_had, weight);
+		yuka1d_reco_semi["costheta"]->Fill(costheta_lep, weight);
+		yuka1d_reco_semi["delY"]->Fill(deltaY, weight);
+		yuka1d_reco_semi["Y"]->Fill(bestper.TLep().Rapidity(), weight);
+		yuka1d_reco_semi["Y"]->Fill(bestper.THad().Rapidity(), weight);
+		yuka1d_reco_semi["delBeta"]->Fill(deltaBeta, weight);
+                yuka2d_reco_semi["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                yuka2d_reco_semi["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+		yuka2d_reco_semi["Mtt_delY"]->Fill(Mtt, deltaY, weight);
+		yuka2d_reco_semi["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		yuka2d_reco_semi["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+	
+		yuka1d_reco_semi["Mtt_boo"]->Fill(Mtt_boost, weight);
+		yuka1d_reco_semi["costheta"]->Fill(costheta_had_boost, weight);
+		yuka1d_reco_semi["costheta"]->Fill(costheta_lep_boost, weight);
+		yuka1d_reco_semi["delY_boo"]->Fill(deltaY_boost, weight);
+		yuka1d_reco_semi["delBeta_boo"]->Fill(deltaBeta_boost, weight);
+                yuka2d_reco_semi["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_had_boost, weight);
+                yuka2d_reco_semi["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_lep_boost, weight);
+		yuka2d_reco_semi["Mtt_delY_boo"]->Fill(Mtt_boost, deltaY_boost, weight);
+		yuka2d_reco_semi["Mtt_delBeta_boo"]->Fill(Mtt_boost, deltaBeta_boost, weight);
+		yuka2d_reco_semi["delY_delBeta_boo"]->Fill(deltaY_boost, deltaBeta_boost, weight);
+		//end of yukawa studies
+
 	}
 	else
 	{
 		ttp_other.Fill(bestper, weight);
+                //for yukawa studies
+		yuka1d_reco_other["Mtt"]->Fill(Mtt, weight);
+		yuka1d_reco_other["costheta"]->Fill(costheta_had, weight);
+		yuka1d_reco_other["costheta"]->Fill(costheta_lep, weight);
+		yuka1d_reco_other["delY"]->Fill(deltaY, weight);
+		yuka1d_reco_other["Y"]->Fill(bestper.TLep().Rapidity(), weight);
+		yuka1d_reco_other["Y"]->Fill(bestper.THad().Rapidity(), weight);
+		yuka1d_reco_other["delBeta"]->Fill(deltaBeta, weight);
+                yuka2d_reco_other["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                yuka2d_reco_other["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+		yuka2d_reco_other["Mtt_delY"]->Fill(Mtt, deltaY, weight);
+		yuka2d_reco_other["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		yuka2d_reco_other["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+	
+		yuka1d_reco_other["Mtt_boo"]->Fill(Mtt_boost, weight);
+		yuka1d_reco_other["costheta"]->Fill(costheta_had_boost, weight);
+		yuka1d_reco_other["costheta"]->Fill(costheta_lep_boost, weight);
+		yuka1d_reco_other["delY_boo"]->Fill(deltaY_boost, weight);
+		yuka1d_reco_other["delBeta_boo"]->Fill(deltaBeta_boost, weight);
+                yuka2d_reco_other["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_had_boost, weight);
+                yuka2d_reco_other["Mtt_costheta_boo"]->Fill(Mtt_boost, costheta_lep_boost, weight);
+		yuka2d_reco_other["Mtt_delY_boo"]->Fill(Mtt_boost, deltaY_boost, weight);
+		yuka2d_reco_other["Mtt_delBeta_boo"]->Fill(Mtt_boost, deltaBeta_boost, weight);
+		yuka2d_reco_other["delY_delBeta_boo"]->Fill(deltaY_boost, deltaBeta_boost, weight);
+		//end of yukawa studies
+
 	}
 
 	if(bestper.AreHadJetsCorrect(rightper) && bestper.IsBLepCorrect(rightper))
