@@ -549,7 +549,7 @@ void ttbar::begin()
 	// this is for yukawa studies:
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
-	TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
+	TFile* fyuka_2d = TFile::Open("yukawa_reweighing2.0.root");
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
