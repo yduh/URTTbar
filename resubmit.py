@@ -11,7 +11,7 @@ allfiles = os.listdir('.')
 jobdirs = [d for d in allfiles if os.path.isdir(d)]
 
 for dir in jobdirs:
-	
+
 	files = os.listdir(dir)
 	nums = [int(f.split('_')[-1].split('.jdl')[0]) for f in files if '.jdl' in f]
 	#confile = open(dir+'/condor.jdl', 'r')
@@ -22,11 +22,16 @@ for dir in jobdirs:
 	files = os.listdir(dir)
 	files = [f for f in files if ('%s_out_' % dir) in f]
 	failed = [f for f in files if os.path.getsize(os.path.join(dir, f)) < 1024*100]
+	failed_suspicious= [f for f in files if os.path.getsize(os.path.join(dir, f)) < 1024*100]
 
 	for n in failed:
-		num = n.split('_')[-1].split('.')[0] 
+		num = n.split('_')[-1].split('.')[0]
 		command = 'cd ' + dir + ' && rm ' + n + ' && condor_submit condor_' + num + '.jdl && cd ..'
 		print dir, command
 		if typ == 'R':
 			os.system(command)
-	
+'''
+        for n in failed_suspicious:
+            num = n.split('_')[-1].split('.')[0]
+            command = 'cd' + dir
+'''
