@@ -549,8 +549,9 @@ void ttbar::begin()
 	// this is for yukawa studies:
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
-	TFile* fyuka_2d = TFile::Open("yukawa_reweighing2.0.root");
-	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
+	
+        //TFile* fyuka_2d = TFile::Open("yukawa_reweighing2.0.root");
+	//yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
 }
@@ -1847,6 +1848,7 @@ void ttbar::analyze()
 			truth1d["counter"]->Fill(19.5, weight);
 			const vector<Mcweight>& ws =  event.MCWeights();
 			//mcweight = (ws[0].weights() < 1. ? -1. : 1.);
+                        //these lines below are frac. and ren. scale reweighnig, for sys uncertainties 
 			if(cfacscale == -1) mcweight = ws[2].weights()/Abs(ws[0].weights());
 			else if(cfacscale == 1) mcweight = ws[1].weights()/Abs(ws[0].weights());
 			if(crenscale == -1) mcweight = ws[6].weights()/Abs(ws[0].weights());
@@ -1898,9 +1900,9 @@ void ttbar::analyze()
                                 //
                                 
                                 
-                                if(Mtt>= 2*173*cosh(deltaY/2))
+                                /*if(Mtt>= 2*173*cosh(deltaY/2))
                                 weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                else
+                                else*/
                                 weight *= 1;
                                 
 
