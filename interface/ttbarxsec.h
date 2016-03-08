@@ -175,6 +175,7 @@ class ttbar : public AnalyzerBase
 		int cpileup;
 		bool HERWIGPP;
 		bool PYTHIA6;
+                //const char yukawatxt;
 		//
 		double jetptmin;
 	

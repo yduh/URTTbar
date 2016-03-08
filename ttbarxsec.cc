@@ -94,6 +94,7 @@ ttbar::ttbar(const std::string output_filename):
 	cpileup(0),
 	HERWIGPP(false),
 	PYTHIA6(false)
+        //yukawatxt("yukawa_reweighing1.0.root")
 {
 	ConfigParser CP("ttbarxsec.cfg");
 	PSEUDOTOP = CP.Get<bool>("PSEUDOTOP");
@@ -136,6 +137,8 @@ ttbar::ttbar(const std::string output_filename):
 	cbtagunc = CP.Get<int>("btagunc");
 	cltagunc = CP.Get<int>("ltagunc");
 	cpileup = CP.Get<int>("pileupunc");
+
+        //yukawatxt = CP.Get<const char>("yukawa");
 
 	cout << output_filename << endl;
 	if(output_filename.find("Hpp") != string::npos){HERWIGPP = true;}
@@ -550,7 +553,8 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-        TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
+        TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0_169.5.root");
+        //TFile* fyuka_2d = TFile::Open(yukawatxt);
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
