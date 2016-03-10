@@ -22,7 +22,7 @@ for dir in jobdirs:
 	files = os.listdir(dir)
 	files = [f for f in files if ('%s_out_' % dir) in f]
 	failed = [f for f in files if os.path.getsize(os.path.join(dir, f)) < 1024*100]
-	failed_suspicious= [f for f in files if os.path.getsize(os.path.join(dir, f)) < 1024*100]
+	#failed_suspicious= [f for f in files if os.path.getsize(os.path.join(dir, f)) < 1024*100]
 
 	for n in failed:
 		num = n.split('_')[-1].split('.')[0]

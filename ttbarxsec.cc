@@ -1276,7 +1276,7 @@ void ttbar::ttanalysis(URStreamer& event)
 //cout << "NC: " << cleanedjets.size() << endl;
 	if(cleanedjets.size() < 4){return;}
 	reco1d["c_jets"]->Fill(event.run+0.5);
-	if(BTAGMODE && cleanedjets.size() > 4){return;}
+	if(BTAGMODE && cleanedjets.size() > 3){return;}
 	reco1d["counter"]->Fill(2.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
 	if(tightmuons.size() == 1)
@@ -1647,6 +1647,8 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		ttp_right.Fill(bestper, weight);
 		truth1d["counter"]->Fill(8.5, weight);
+                //for 3j
+                //end of 3j studies
                 //for yukawa studies
 		yuka1d_reco_right["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
