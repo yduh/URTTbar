@@ -1274,9 +1274,9 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 4){return;}
+	if(cleanedjets.size() < 3){return;}
 	reco1d["c_jets"]->Fill(event.run+0.5);
-	if(BTAGMODE && cleanedjets.size() > 3){return;}
+	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
 	if(tightmuons.size() == 1)
