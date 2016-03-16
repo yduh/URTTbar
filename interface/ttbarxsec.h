@@ -76,6 +76,7 @@ class ttbar : public AnalyzerBase
 		IDMet met;
 
 		//hists
+                TH1DCollection threejets;
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
 		TH1DCollection reco1d;

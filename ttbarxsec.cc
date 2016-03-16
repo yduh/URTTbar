@@ -5,11 +5,13 @@
 #include "PDFuncertainty.h"
 #include "NeutrinoSolver.h"
 #include "ConfigParser.h"
+//#include "jet3.h"
 
 using namespace std;
 
 ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
+        threejets("3j"), 
 	gen1d("gen"),
 	gen2d("gen"),
 	ttp_genall("genall"),
@@ -195,6 +197,12 @@ ttbar::ttbar(const std::string output_filename):
 void ttbar::begin()
 {
 	outFile_.cd();
+
+        TDirectory* dir_3j = outFile_.mkdir("3j");
+        dir_3j->cd();
+        threejets.AddHist("Mtt_3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("Mtt_4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+
 	TDirectory* dir_gen = outFile_.mkdir("GEN");
 	dir_gen->cd();
 	gen1d.AddHist("TYP", 4, 0., 4., "Decay TYP", "Events");
@@ -553,9 +561,8 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-        TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
-        //TFile* fyuka_2d = TFile::Open(yukawatxt);
-	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
+        //TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
+	//yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
 }
@@ -1291,6 +1298,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["Mt_W"]->Fill(Mt_W, weight);
 	//calculating btag eff.
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
+	sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});// add for 3j test
 	int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [&](IDJet* A){return(A->csvIncl() > B_MEDIUM);});
 	reco1d["bjetmulti"]->Fill(nbjets, weight);
 	if(isMC && !BTAGMODE)
@@ -1307,11 +1315,18 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(!BTAGMODE)
 	{
 		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
+		if(cleanedjets[0]->csvIncl() < B_MEDIUM || cleanedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
 		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}
 	}
 	reco1d["c_btag"]->Fill(event.run+0.5);
 	reco1d["counter"]->Fill(3.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
+        if(cleanedjets.size() >= 3){
+            //threejets["Mtt_3j"]->Fill((cleanedjets[0]->Mag() + cleanedjets[1]->Mag() + cleanedjets[2]->Mag() + lep->Mag() + met.Mag()), weight); // add for 3j test
+            threejets["Mtt_3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight); // add for 3j test
+        }else if(cleanedjets.size() >= 4){
+            threejets["Mtt_4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight); // add for 3j test
+        }
 
 	//check what we have reconstructed
 	if(SEMILEP)
@@ -1647,8 +1662,6 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		ttp_right.Fill(bestper, weight);
 		truth1d["counter"]->Fill(8.5, weight);
-                //for 3j
-                //end of 3j studies
                 //for yukawa studies
 		yuka1d_reco_right["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
@@ -1906,9 +1919,9 @@ void ttbar::analyze()
                                 //
                                 
                                 
-                                if(Mtt>= 2*173*cosh(deltaY/2))
-                                weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                else
+                                //if(Mtt>= 2*173*cosh(deltaY/2))
+                                //weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                //else
                                 weight *= 1;
                                 
 
