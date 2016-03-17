@@ -12,6 +12,7 @@ using namespace std;
 ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
         threejets("3j"), 
+        fourjets("4j"), 
 	gen1d("gen"),
 	gen2d("gen"),
 	ttp_genall("genall"),
@@ -200,11 +201,16 @@ void ttbar::begin()
 
         TDirectory* dir_3j = outFile_.mkdir("3j");
         dir_3j->cd();
-        threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_above3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_above4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
 
-	TDirectory* dir_gen = outFile_.mkdir("GEN");
+        fourjets.AddHist("Mtt_above3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        fourjets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        fourjets.AddHist("Mtt_above4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	
+        TDirectory* dir_gen = outFile_.mkdir("GEN");
 	dir_gen->cd();
 	gen1d.AddHist("TYP", 4, 0., 4., "Decay TYP", "Events");
 	gen1d.AddHist("DRW", 600, 0., 6., "DR", "Events");
@@ -1323,16 +1329,24 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["counter"]->Fill(3.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
+        threejets["Mtt_above3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight);
+        fourjets["Mtt_above3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight);
         if(cleanedjets.size() == 3){
             threejets["Mtt_exact3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight);
         }
-        if(cleanedjets.size() >= 3){
-            //threejets["Mtt_3j"]->Fill((cleanedjets[0]->Mag() + cleanedjets[1]->Mag() + cleanedjets[2]->Mag() + lep->Mag() + met.Mag()), weight); // add for 3j test
-            threejets["Mtt_above3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight); // add for 3j test
+        if(cleanedjets.size() == 4){
+            threejets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight); // add for 3j test
+            fourjets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight); // add for 3j test
         }
-        if(cleanedjets.size() >= 4){
-            threejets["Mtt_above4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight); // add for 3j test
-        }
+
+	if(cleanedjets.size() < 4){return;}
+        threejets["Mtt_above4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight);
+        fourjets["Mtt_above4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight);
+
+        /*if(cleanedjets.size() == 4){
+            threejets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight); // add for 3j test
+            fourjets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight); // add for 3j test
+        }*/
 
 	//check what we have reconstructed
 	if(SEMILEP)
