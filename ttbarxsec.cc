@@ -620,7 +620,7 @@ ttbar::~ttbar()
 	}
 	cout << "Number of LS: " << lscounter << endl;
 }
-
+/*
 void ttbar::SelectGenParticles(URStreamer& event)
 {
 	int lepdecays = 0;
@@ -882,8 +882,313 @@ void ttbar::SelectGenParticles(URStreamer& event)
 			ttp_genjet.Fill(jetper, weight);
 		}
 	}
-}
+}*/
+void ttbar::SelectGenParticles(URStreamer& event)
+{
+    int lepdecays = 0;
+    int topcounter = 0;
+    vector<GenObject*> genwpartons;
+    vector<GenObject*> gencls;
+    vector<GenObject*> gennls;
+    GenObject* genb = 0;
+    GenObject* genbbar = 0;
+    GenObject* genwm = 0;
+    GenObject* genwp = 0;
 
+//      const vector<Pxlhe>& lhepx = event.PXLHEs();
+//      const vector<Pylhe>& lhepy = event.PYLHEs();
+//      const vector<Pzlhe>& lhepz = event.PZLHEs();
+//      const vector<Elhe>& lhee = event.ELHEs();
+//      const vector<Pdgidlhe>& lhepdgid = event.PDGIDLHEs();
+//      const vector<Statuslhe>& lhestatus = event.STATUSLHEs();
+//      int npnlo = event.NPNLOLHE().npnlo();
+//      for(size_t s = 0 ; s < lhepx.size() ; ++s)
+//      {
+//              TLorentzVector tm(lhepx[s].px(), lhepy[s].py(), lhepz[s].pz(), lhee[s].e());
+//              cout << lhestatus[s].status() << " lhe " << lhepdgid[s].pdgid() << " " << tm.M() << endl;
+//      }
+
+    const vector<Genparticle>& gps = event.genParticles();
+    for(vector<Genparticle>::const_iterator igp = gps.begin(); igp != gps.end(); ++igp)
+    {
+        Genparticle gp(*igp);
+        gp.SetE(gp.e());
+
+        //cout << gp.status() << " " << gp.pdgId() << " " << gp.M() << " " << gp.Pt() << endl;
+
+        if(int(Abs(gp.pdgId()) % 10000) / 1000 == 5 || int(Abs(gp.pdgId()) % 1000) / 100 == 5)
+        {
+            sgenparticles.push_back(gp);
+            genbpartons.push_back(&(sgenparticles.back()));
+        }
+        else if(int(Abs(gp.pdgId()) % 10000) / 1000 == 4 || int(Abs(gp.pdgId()) % 1000) / 100 == 4)
+        {
+            sgenparticles.push_back(gp);
+            gencpartons.push_back(&(sgenparticles.back()));
+        }
+        if(HERWIGPP)
+        {
+            if(gp.status() == 11)
+            {
+                if(gp.pdgId() == 6 && gps[gp.firstDaughtIdx()].pdgId() != 6)
+                {
+                    weight *= 1.+ctopptweight*(gp.Pt()-200.)/1000.;
+                    //weight *= 1.+ctoprapweight*(0.2-0.2*Abs(gp.Rapidity()));
+                    topcounter++;
+                    gentq = gp;
+                }
+                else if(gp.pdgId() == -6 && gps[gp.firstDaughtIdx()].pdgId() != -6)
+                {
+                    topcounter++;
+                    gentqbar = gp;
+                }
+                else if(gp.pdgId() == 5 && gps[gp.momIdx()[0]].pdgId() == 6)
+                {
+                    int dindex = igp-gps.begin();
+                    for(int i = 0 ; i < 2 ; ++i)
+                    {
+                        dindex = gps[dindex].firstDaughtIdx();
+                    }
+                    sgenparticles.push_back(gps[dindex]);
+                    genb = &(sgenparticles.back());
+                    //cout << "B " << gps[dindex].pdgId() << " " << gps[gps[dindex].firstDaughtIdx()].pdgId() << endl;
+                }
+                else if(gp.pdgId() == -5 && gps[gp.momIdx()[0]].pdgId() == -6)
+                {
+                    int dindex = igp-gps.begin();
+                    for(int i = 0 ; i < 2 ; ++i)
+                    {
+                        dindex = gps[dindex].firstDaughtIdx();
+                    }
+                    sgenparticles.push_back(gps[dindex]);
+                    genbbar = &(sgenparticles.back());
+                    //cout << "Bb " << gps[dindex].pdgId() << " " << gps[gps[dindex].firstDaughtIdx()].pdgId() << endl;
+                }
+                else if(Abs(gp.pdgId()) < 6 && gp.momIdx().size() != 0 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
+                {
+                    int dindex = igp-gps.begin();
+                    for(int i = 0 ; i < 1 ; ++i)
+                    {
+                        dindex = gps[dindex].firstDaughtIdx();
+                    }
+                    //cout << "Q " << gps[dindex].pdgId() << " " << gps[gps[dindex].firstDaughtIdx()].pdgId() << endl;
+                    sgenparticles.push_back(gps[dindex]);
+                    genwpartons.push_back(&(sgenparticles.back()));
+                }
+                else if(gp.momIdx().size() != 0 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
+                {
+                    if(Abs(gp.pdgId()) == 11 || Abs(gp.pdgId()) == 13)
+                    {
+                        int dindex = igp-gps.begin();
+                        for(int i = 0 ; i < 1 ; ++i)
+                        {
+                            dindex = gps[dindex].firstDaughtIdx();
+                        }
+                        //cout << gps[dindex].pdgId() << " lc " << gps[dindex].status() << endl;
+                        sgenparticles.push_back(gps[dindex]);
+                        gencls.push_back(&(sgenparticles.back()));
+                        //genfincls.push_back(&(sgenparticles.back()));
+                        lepdecays++;
+                    }
+                    if(Abs(gp.pdgId()) == 12 || Abs(gp.pdgId()) == 14)
+                    {
+                        int dindex = igp-gps.begin();
+                        for(int i = 0 ; i < 1 ; ++i)
+                        {
+                            dindex = gps[dindex].firstDaughtIdx();
+                        }
+                        //cout << gps[dindex].pdgId() << " ln " << gps[dindex].status() << endl;
+                        sgenparticles.push_back(gps[dindex]);
+                        gennls.push_back(&(sgenparticles.back()));
+                    }
+                    if(Abs(gp.pdgId()) == 16)
+                    {
+                        //cout << "tau" << endl;
+                        lepdecays++;
+                    }
+                }
+            }
+        }
+        else
+        {
+
+            //if(gp.status() > 21 && gp.status() < 30 && gp.momIdx().size() != 0)
+            if(gp.status() > 60 && gp.status() < 70)
+            {
+                if(gp.pdgId() == 6)
+                {
+                    weight *= 1.+ctopptweight*(gp.Pt()-200.)/1000.;
+                    //weight *= 1.+ctoprapweight*(0.2-0.2*Abs(gp.Rapidity()));
+                    topcounter++;
+                    gentq = gp;
+                }
+                else if(gp.pdgId() == -6)
+                {
+                    topcounter++;
+                    gentqbar = gp;
+                }
+            }
+            if(gp.status() > 21 && gp.status() < 30 && gp.momIdx().size() != 0)
+            {
+                if(gp.pdgId() == 5 && gps[gp.momIdx()[0]].pdgId() != 24)
+                {
+                    sgenparticles.push_back(gp);
+                    genb = &(sgenparticles.back());
+                }
+                else if(gp.pdgId() == -5 && gps[gp.momIdx()[0]].pdgId() != -24)
+                {
+                    sgenparticles.push_back(gp);
+                    genbbar = &(sgenparticles.back());
+                }
+                else if(Abs(gp.pdgId()) < 6 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
+                {
+                    sgenparticles.push_back(gp);
+                    genwpartons.push_back(&(sgenparticles.back()));
+                }
+            }
+
+            if(gp.momIdx().size() != 0 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
+            {
+                if(Abs(gp.pdgId()) == 11 || Abs(gp.pdgId()) == 13)
+                {
+                    sgenparticles.push_back(gp);
+                    gencls.push_back(&(sgenparticles.back()));
+                }
+                if(Abs(gp.pdgId()) == 12 || Abs(gp.pdgId()) == 14)
+                {
+                    sgenparticles.push_back(gp);
+                    gennls.push_back(&(sgenparticles.back()));
+                    lepdecays++;
+                }
+                if(Abs(gp.pdgId()) == 16)
+                {
+                    lepdecays++;
+                }
+            }
+
+        //      if(gp->status() == 1 && gp->momIdx().size() != 0 && (Abs(gps[gp->momIdx()[0]].pdgId()) == 24 || gp->pdgId() == gps[gp->momIdx()[0]].pdgId()))
+        //      {
+        //              if(Abs(gp->pdgId()) == 11 || Abs(gp->pdgId()) == 13)
+        //              {
+        //                      sgenparticles.push_back(*gp);
+        //                      genfincls.push_back(&(sgenparticles.back()));
+        //              }
+        //      }
+
+        }
+    }
+    //cout << gentq.Pt() << " " << gentqbar.Pt() << endl;
+    FULLHAD = false;
+    SEMILEP = false;
+    FULLLEP = false;
+    SEMILEPACC = false;
+    //cout << topcounter << " " << lepdecays << " " << genwpartons.size() << " " << genfincls.size() << endl;
+    if(topcounter == 2 && genb != 0 && genbbar != 0)
+    {
+        weight *= 1.+cttptweight*((gentq + gentqbar).Pt()-100.)/500.;
+        //weight *= 1.+ Gaus((gentq + gentqbar).M(), 600, 30)*0.2;
+        if(lepdecays == 2 && genwpartons.size() == 0)
+        {
+            FULLLEP = true; gen1d["TYP"]->Fill(0.5, weight);
+        }
+        else if(lepdecays == 1 && genwpartons.size() == 2)
+        {
+            gen1d["TYP"]->Fill(1.5, weight);
+        }
+        else if(lepdecays == 0 && genwpartons.size() == 4)
+        {
+            FULLHAD = true; gen1d["TYP"]->Fill(2.5, weight);
+        }
+    }
+    else
+    {
+        gen1d["TYP"]->Fill(3.5, weight);
+    }
+
+    if(topcounter == 2 && genwpartons.size() == 2 && gencls.size() == 1 && gennls.size() == 1 && genb != 0 && genbbar != 0)//no tau
+    {
+        SEMILEP = true;
+        SEMILEPACC = true;
+        if(gencls[0]->pdgId() > 0)
+        {
+            genallper.Init(genwpartons[0], genwpartons[1], genb, genbbar, gencls[0], gencls[0]->pdgId(), gennls[0]);
+            gentqlep = gentqbar;
+            gentqhad = gentq;
+        }
+        else
+        {
+            genallper.Init(genwpartons[0], genwpartons[1], genbbar, genb, gencls[0], gencls[0]->pdgId(), gennls[0]);
+            gentqlep = gentq;
+            gentqhad = gentqbar;
+        }
+    }
+
+    if(SEMILEPACC)
+    {
+        const vector<Genparticle>& gps = event.genParticles();
+        for(vector<Genparticle>::const_iterator gp = gps.begin(); gp != gps.end(); ++gp)
+        {
+            if(gp->status() == 1)
+            {
+                gen1d["DRW"]->Fill(genallper.WJa()->DeltaR(*gp), gp->E()/genallper.WJa()->E());
+                gen1d["DRW"]->Fill(genallper.WJb()->DeltaR(*gp), gp->E()/genallper.WJb()->E());
+                gen1d["DRB"]->Fill(genallper.BHad()->DeltaR(*gp), gp->E()/genallper.BHad()->E());
+                gen1d["DRB"]->Fill(genallper.BLep()->DeltaR(*gp), gp->E()/genallper.BLep()->E());
+            }
+
+        }
+    }
+
+//Jet studies
+//      if(SEMILEP)
+//      {
+//              Permutation jetper;
+//              jetper.Nu(gennls[0]);
+//              if(Abs(gencls[0]->Eta()) < cpletamax && gencls[0]->Pt() > cplptmin)
+//              {
+//                      jetper.L(gencls[0], gencls[0]->pdgId());
+//              }
+//              double wa = 0.;
+//              double wb = 0.;
+//              double bl = 0.;
+//              double bh = 0.;
+//              const vector<Genjet>& genjets = event.genjets();
+//              for(vector<Genjet>::const_iterator Gj = genjets.begin(); Gj != genjets.end(); ++Gj)
+//              {
+//                      if(Gj->Pt() < jetptmin || Abs(Gj->Eta()) > cjetetamax) {continue;}
+//                      sgenjets.push_back(Genjet(*Gj));
+//                      Genjet* gj = &(sgenjets.back());
+//                      if(gj->DeltaR(*gencls[0]) < 0.4)
+//                      {
+//                              continue;
+//                      }
+//                      if(gj->DeltaR(*genallper.WJa()) < 0.4 && gj->Pt() > wa)
+//                      {
+//                              wa = gj->Pt();
+//                              jetper.WJa(gj);
+//                      }
+//                      if(gj->DeltaR(*genallper.WJb()) < 0.4 && gj->Pt() > wb)
+//                      {
+//                              wb = gj->Pt();
+//                              jetper.WJb(gj);
+//                      }
+//                      if(gj->DeltaR(*genallper.BLep()) < 0.4 && gj->Pt() > bl)
+//                      {
+//                              bl = gj->Pt();
+//                              jetper.BLep(gj);
+//                      }
+//                      if(gj->DeltaR(*genallper.BHad()) < 0.4 && gj->Pt() > bh)
+//                      {
+//                              bh = gj->Pt();
+//                              jetper.BHad(gj);
+//                      }
+//              }
+//              if(jetper.IsComplete())
+//              {
+//                      ttp_genjet.Fill(jetper, weight);
+//              }
+//      }
+}
 void ttbar::SelectPseudoTop(URStreamer& event)
 {
 	const vector<Pstlepton>& psls = event.PSTleptons();
@@ -1855,8 +2160,8 @@ void ttbar::analyze()
 		genfincls.clear();
 		genbpartons.clear();
 		gencpartons.clear();
-		gent = 0;
-		gentbar = 0;
+		//gent = 0;
+		//gentbar = 0;
 
 		sgenjets.clear();
 		genaddjets.clear();

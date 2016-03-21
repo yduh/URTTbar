@@ -46,12 +46,21 @@ class ttbar : public AnalyzerBase
 		vector<GenObject*> genfincls;
 	  	vector<GenObject*> genbpartons;
 	  	vector<GenObject*> gencpartons;
-		GenObject* gent;
-		GenObject* gentbar;
+		//GenObject* gent;
+		//GenObject* gentbar;
 		//GenObject* genbl;
 		//GenObject* genbh;
 		//TLorentzVector gentoplep;
 		//TLorentzVector gentophad;
+        TLorentzVector gentq;
+        TLorentzVector gentqbar;
+        TLorentzVector gentqlep;
+        TLorentzVector gentqhad;
+        TLorentzVector gent;
+        TLorentzVector gentbar;
+        TLorentzVector gentlep;
+        TLorentzVector genthad;
+
 
 		list<Genjet> sgenjets;
 		vector<Genjet*> genaddjets;
