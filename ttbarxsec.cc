@@ -1593,7 +1593,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 4){return;}
+	if(cleanedjets.size() < 3){return;}
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1626,34 +1626,40 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
 	if(!BTAGMODE)
 	{
-		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
-		//if(cleanedjets[0]->csvIncl() < B_MEDIUM || cleanedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
+		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
+		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
 		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}
 	}
 	reco1d["c_btag"]->Fill(event.run+0.5);
 	reco1d["counter"]->Fill(3.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
-/*
-        threejets["Mtt_above3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight);
-        fourjets["Mtt_above3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight);
-        if(cleanedjets.size() == 3){
-            threejets["Mtt_exact3j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight);
+
+// add for 3j test
+        threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+        fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+        if(reducedjets.size() == 3){
+            threejets["Mtt_exact3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
         }
-        if(cleanedjets.size() == 4){
-            threejets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight); // add for 3j test
-            fourjets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight); // add for 3j test
+        if(reducedjets.size() == 4){
+            threejets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight); // add for 3j test
+            fourjets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight); // add for 3j test
         }
-*/
-	if(cleanedjets.size() < 4){return;}
-//        threejets["Mtt_above4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight);
-//        fourjets["Mtt_above4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight);
+        if(reducedjets.size() >4){
+            threejets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+            fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight); // add for 3j test
+        }
+
+	//if(reducedjets.size() < 4){return;}
+        //threejets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+        //fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
 
         /*if(cleanedjets.size() == 4){
             threejets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight); // add for 3j test
             fourjets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight); // add for 3j test
         }*/
+// end for the 3j test
 
-	//check what we have reconstructed
+        //check what we have reconstructed
 	if(SEMILEP)
 	{
 		truth2d["tt_jets"]->Fill(rightper.NumBJets()+0.5, rightper.NumWJets()+0.5, weight);
