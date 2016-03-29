@@ -2217,26 +2217,26 @@ void ttbar::analyze()
 		SelectPseudoTop(event);
 		// Reweighting stuffs for yukawa study (should do it before next if statement, doesn't matter before or after the SelectPseudoTop(event) but keep after the SelecGenParticles())
                 if(genallper.IsComplete()){
-                                TLorentzVector CMttbar = genallper.THad() + genallper.TLep(); //gentoplep + gentophad;
-				TLorentzVector CMhadt = genallper.THad(); //gentophad;
-				TLorentzVector CMlept = genallper.TLep(); //gentoplep;
+                                TLorentzVector CMttbar = gentq + gentqbar; //genallper.THad() + genallper.TLep(); //gentoplep + gentophad;
+				TLorentzVector CMhadt = gentqhad; //genallper.THad(); //gentophad;
+				TLorentzVector CMlept = gentqlep; //genallper.TLep(); //gentoplep;
 				CMttbar.Boost(-CMttbar.BoostVector());
 				CMhadt.Boost(-CMttbar.BoostVector());
 				CMlept.Boost(-CMttbar.BoostVector());
 
 				//CASE1: Mtt and cos(theta)
-				double Mtt = (genallper.TLep() + genallper.THad()).M(); //(gentoplep + gentophad).M();
+				double Mtt = (gentq + gentqbar).M();//(genallper.TLep() + genallper.THad()).M(); //(gentoplep + gentophad).M();
 				double Mtt_boost = CMttbar.M();
 				//if(Mtt >3000 || Mtt<346) continue;
 				//int weight_bin_mtt = int( (Mtt - 346)/1 + 0.5);//0.5 is for int
 				
-				double costheta_had = genallper.THad().Px()/genallper.THad().Mag(); //gentophad.Pz()/gentophad.Mag();
-				double costheta_lep = genallper.TLep().Pz()/genallper.TLep().Mag(); //gentoplep.Pz()/gentoplep.Mag();
+				double costheta_had = gentqhad.Pz()/gentqhad.Mag(); //genallper.THad().Px()/genallper.THad().Mag(); //gentophad.Pz()/gentophad.Mag();
+				double costheta_lep = gentqlep.Pz()/gentqlep.Mag(); //genallper.TLep().Pz()/genallper.TLep().Mag(); //gentoplep.Pz()/gentoplep.Mag();
 				double costheta_had_boost = CMhadt.Pz()/CMhadt.Mag();
 				double costheta_lep_boost = CMlept.Pz()/CMlept.Mag();
 
 				//CASE2: deltaY
-				double deltaY = genallper.TLep().Rapidity() - genallper.THad().Rapidity(); //gentoplep.Rapidity() - gentophad.Rapidity();
+				double deltaY = gentqlep.Rapidity() - gentqhad.Rapidity(); //genallper.TLep().Rapidity() - genallper.THad().Rapidity(); //gentoplep.Rapidity() - gentophad.Rapidity();
 				double deltaY_boost = CMlept.Rapidity() - CMhadt.Rapidity();
 				//if(Abs(deltaY) >5.69) continue;
 				//int weight_bin_dely = int( (deltaY + 5.69)/0.01 + 0.5);
@@ -2251,7 +2251,7 @@ void ttbar::analyze()
                                 
 
 				//CASE3: deltaBate
-				double deltaBeta = genallper.TLep().P()/genallper.TLep().E() - genallper.THad().P()/genallper.THad().E(); //gentoplep.P()/gentoplep.E() - gentophad.P()/gentophad.E();
+				double deltaBeta = gentqlep.P()/gentqlep.E() - gentqhad.P()/gentqhad.E(); //genallper.TLep().P()/genallper.TLep().E() - genallper.THad().P()/genallper.THad().E(); //gentoplep.P()/gentoplep.E() - gentophad.P()/gentophad.E();
 				double deltaBeta_boost = CMlept.P()/CMlept.E() + CMhadt.P()/CMhadt.E();
 				//if(deltaBeta >2) continue;
 				//int weight_bin_beta = int(deltaBeta/0.1 + 0.5);
@@ -2263,8 +2263,8 @@ void ttbar::analyze()
 				yuka1d_gen["costheta"]->Fill(costheta_lep, weight);
 				yuka1d_gen["costheta"]->Fill(costheta_had, weight);
 				yuka1d_gen["delY"]->Fill(deltaY, weight);
-				yuka1d_gen["Y"]->Fill(genallper.TLep().Rapidity(), weight);
-				yuka1d_gen["Y"]->Fill(genallper.THad().Rapidity(), weight);
+				yuka1d_gen["Y"]->Fill(gentq.Rapidity(), weight); //Fill(genallper.TLep().Rapidity(), weight);
+				yuka1d_gen["Y"]->Fill(gentqbar.Rapidity(), weight); //Fill(genallper.THad().Rapidity(), weight);
 				yuka1d_gen["delBeta"]->Fill(deltaBeta, weight);
                                 yuka2d_gen["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
                                 yuka2d_gen["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
@@ -2291,15 +2291,15 @@ void ttbar::analyze()
 		{
 			if(genallper.IsComplete())
 			{
-				response_ps.FillTruth("thardpt", genallper.THard().Pt(), weight);
-				response_ps.FillTruth("tsoftpt", genallper.TSoft().Pt(), weight);
-				response_ps.FillTruth("thadpt", genallper.THad().Pt(), weight);
-				response_ps.FillTruth("thady", Abs(genallper.THad().Rapidity()), weight);
-				response_ps.FillTruth("tleppt", genallper.TLep().Pt(), weight);
-				response_ps.FillTruth("tlepy", Abs(genallper.TLep().Rapidity()), weight);
-				response_ps.FillTruth("ttm", genallper.TT().M(), weight);
-				response_ps.FillTruth("ttpt", genallper.TT().Pt(), weight);
-				response_ps.FillTruth("tty", Abs(genallper.TT().Rapidity()), weight);
+				response_ps.FillTruth("thardpt", Max(gentq.Pt(), gentqbar.Pt()), weight);
+				response_ps.FillTruth("tsoftpt", Min(gentq.Pt(), gentqbar.Pt()), weight);
+				response_ps.FillTruth("thadpt", gentqhad.Pt(), weight);
+				response_ps.FillTruth("thady", Abs(gentqhad.Rapidity()), weight);
+				response_ps.FillTruth("tleppt", gentqlep.Pt(), weight);
+				response_ps.FillTruth("tlepy", Abs(gentqlep.Rapidity()), weight);
+				response_ps.FillTruth("ttm", (gentq+gentqbar).M(), weight);
+				response_ps.FillTruth("ttpt",(gentq+gentqbar).Pt(), weight);
+				response_ps.FillTruth("tty", Abs((gentq+gentqbar).Rapidity()), weight);
 			}
 			if(psper.IsComplete())
 			{
@@ -2315,23 +2315,35 @@ void ttbar::analyze()
 			}
 			if(genallper.IsComplete() && psper.IsComplete())
 			{
-				response_ps.FillTruthReco("thardpt", genallper.THard().Pt(), psper.THard().Pt(), weight);
-				response_ps.FillTruthReco("tsoftpt", genallper.TSoft().Pt(), psper.TSoft().Pt(), weight);
-				response_ps.FillTruthReco("thadpt", genallper.THad().Pt(), psper.THad().Pt(), weight);
-				response_ps.FillTruthReco("thady", Abs(genallper.THad().Rapidity()), Abs(psper.THad().Rapidity()), weight);
-				response_ps.FillTruthReco("tleppt", genallper.TLep().Pt(), psper.TLep().Pt(), weight);
-				response_ps.FillTruthReco("tlepy", Abs(genallper.TLep().Rapidity()), Abs(psper.TLep().Rapidity()), weight);
-				response_ps.FillTruthReco("ttm", genallper.TT().M(), psper.TT().M(), weight);
-				response_ps.FillTruthReco("ttpt", genallper.TT().Pt(), psper.TT().Pt(), weight);
-				response_ps.FillTruthReco("tty", Abs(genallper.TT().Rapidity()), Abs(psper.TT().Rapidity()), weight);
+				response_ps.FillTruthReco("thardpt", Max(gentq.Pt(), gentqbar.Pt()), psper.THard().Pt(), weight);
+				response_ps.FillTruthReco("tsoftpt", Min(gentq.Pt(), gentqbar.Pt()), psper.TSoft().Pt(), weight);
+				response_ps.FillTruthReco("thadpt", gentqhad.Pt(), psper.THad().Pt(), weight);
+				response_ps.FillTruthReco("thady", Abs(gentqhad.Rapidity()), Abs(psper.THad().Rapidity()), weight);
+				response_ps.FillTruthReco("tleppt", gentqlep.Pt(), psper.TLep().Pt(), weight);
+				response_ps.FillTruthReco("tlepy", Abs(gentqlep.Rapidity()), Abs(psper.TLep().Rapidity()), weight);
+				response_ps.FillTruthReco("ttm", (gentq+gentqbar).M(), psper.TT().M(), weight);
+				response_ps.FillTruthReco("ttpt", (gentq+gentqbar).Pt(), psper.TT().Pt(), weight);
+				response_ps.FillTruthReco("tty", Abs((gentq+gentqbar).Rapidity()), Abs(psper.TT().Rapidity()), weight);
 			}
 			genper = &psper;
 			SEMILEP = psper.IsComplete();
 			SEMILEPACC = SEMILEP;
+                        if(psper.IsComplete())
+                        {
+                            gent = psper.T();
+                            gentbar = psper.Tb();
+                            gentlep = psper.TLep();
+                            genthad = psper.THad();
+                        }
+                                
 		}
 		else
 		{
 			genper = &genallper;
+                        gent = gentq;
+                        gentbar = gentqbar;
+                        gentlep = gentqlep;
+                        genthad = gentqhad;
 		}
 		AddGenJetSelection(event);
 
