@@ -1596,7 +1596,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 3){return;}
+	if(cleanedjets.size() < 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1642,13 +1642,13 @@ void ttbar::ttanalysis(URStreamer& event)
         }
         if(reducedjets.size() == 4){
             threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
-            fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+            //fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
             threejets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight); 
             fourjets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight); 
         }
         if(reducedjets.size() == 5){
             threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
-            fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+            //fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
             threejets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
             fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
             threejets["Mtt_exact5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
@@ -1656,7 +1656,7 @@ void ttbar::ttanalysis(URStreamer& event)
         }
         if(reducedjets.size() > 5){
             threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
-            fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+            //fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
             threejets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
             fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
             threejets["Mtt_above5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
