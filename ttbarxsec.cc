@@ -201,14 +201,17 @@ void ttbar::begin()
 
         TDirectory* dir_3j = outFile_.mkdir("3j");
         dir_3j->cd();
-        threejets.AddHist("Mtt_above3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("Mtt_exact5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("Mtt_above3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_above4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("Mtt_above5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
 
-        fourjets.AddHist("Mtt_above3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         fourjets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        fourjets.AddHist("Mtt_exact5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         fourjets.AddHist("Mtt_above4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        fourjets.AddHist("Mtt_above5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	
         TDirectory* dir_gen = outFile_.mkdir("GEN");
 	dir_gen->cd();
@@ -1593,7 +1596,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 4){return;}
+	if(cleanedjets.size() < 3){return;}
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1610,7 +1613,6 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["Mt_W"]->Fill(Mt_W, weight);
 	//calculating btag eff.
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
-	//sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});// add for 3j test
 	int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [&](IDJet* A){return(A->csvIncl() > B_MEDIUM);});
 	reco1d["bjetmulti"]->Fill(nbjets, weight);
 	if(isMC && !BTAGMODE)
@@ -1635,28 +1637,31 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j test
-        threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
-        fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
         if(reducedjets.size() == 3){
             threejets["Mtt_exact3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
         }
         if(reducedjets.size() == 4){
-            threejets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight); // add for 3j test
-            fourjets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight); // add for 3j test
+            threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+            fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+            threejets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight); 
+            fourjets["Mtt_exact4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight); 
         }
-        if(reducedjets.size() >4){
+        if(reducedjets.size() == 5){
+            threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+            fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
             threejets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
-            fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight); // add for 3j test
+            fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+            threejets["Mtt_exact5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+            fourjets["Mtt_exact5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight); 
         }
-
-	//if(reducedjets.size() < 4){return;}
-        //threejets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
-        //fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
-
-        /*if(cleanedjets.size() == 4){
-            threejets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *lep + met).Mag(), weight); // add for 3j test
-            fourjets["Mtt_exact4j"]->Fill((*cleanedjets[0] + *cleanedjets[1] + *cleanedjets[2] + *cleanedjets[3] + *lep + met).Mag(), weight); // add for 3j test
-        }*/
+        if(reducedjets.size() > 5){
+            threejets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+            fourjets["Mtt_above3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+            threejets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+            fourjets["Mtt_above4j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+            threejets["Mtt_above5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
+            fourjets["Mtt_above5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
+        }
 // end for the 3j test
 
         //check what we have reconstructed
