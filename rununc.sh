@@ -1,5 +1,5 @@
 #!/bin/bash
-TYP=results/yukawa/1.0y
+TYP=results/yukawa/3.0y
 VER=V0
 
 cp ttbarxsec.cfg ttbarxsec.tmp
