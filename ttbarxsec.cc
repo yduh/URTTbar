@@ -1973,7 +1973,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka2d_reco["delY_tlepy"]->Fill(deltaY, tlepy, weight);
 
 
 		//end of yukawa studies
@@ -2066,7 +2066,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_right["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_right["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_right["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka2d_reco_right["delY_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
@@ -2115,7 +2115,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_wrong["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_wrong["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_wrong["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka2d_reco_wrong["delY_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
@@ -2152,7 +2152,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_semi["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_semi["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_semi["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka2d_reco_semi["delY_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
@@ -2189,7 +2189,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_other["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_other["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_other["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka2d_reco_other["delY_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
