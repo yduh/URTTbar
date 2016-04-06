@@ -432,7 +432,7 @@ void ttbar::begin()
 
         yuka1d_gen.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_gen.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
-        yuka2d_gen.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
+        //yuka2d_gen.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 
 
 	TDirectory* dir_yukawareco = outFile_.mkdir("YUKAWA_RECO");
@@ -459,7 +459,7 @@ void ttbar::begin()
 
         yuka1d_reco.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
-        yuka2d_reco.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
+       // yuka2d_reco.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 	
         TDirectory* dir_yukawareco_right = outFile_.mkdir("YUKAWA_RECO_right");
 	dir_yukawareco_right->cd();
@@ -485,7 +485,7 @@ void ttbar::begin()
 
         yuka1d_reco_right.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_right.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
-        yuka2d_reco_right.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
+        //yuka2d_reco_right.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 
 	TDirectory* dir_yukawareco_wrong = outFile_.mkdir("YUKAWA_RECO_wrong");
 	dir_yukawareco_wrong->cd();
@@ -511,7 +511,7 @@ void ttbar::begin()
 
         yuka1d_reco_wrong.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_wrong.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
-        yuka2d_reco_wrong.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
+        //yuka2d_reco_wrong.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 
 	TDirectory* dir_yukawareco_semi = outFile_.mkdir("YUKAWA_RECO_semi");
 	dir_yukawareco_semi->cd();
@@ -538,7 +538,7 @@ void ttbar::begin()
 
         yuka1d_reco_semi.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_semi.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
-        yuka2d_reco_semi.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
+        //yuka2d_reco_semi.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 
 	TDirectory* dir_yukawareco_other = outFile_.mkdir("YUKAWA_RECO_other");
 	dir_yukawareco_other->cd();
@@ -564,7 +564,7 @@ void ttbar::begin()
 
         yuka1d_reco_other.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_other.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
-        yuka2d_reco_other.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
+        //yuka2d_reco_other.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 
 	//string probfilename("Prob_parton.root");
 	string probfilename("Prob_parton.root");
@@ -1973,7 +1973,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                //yuka2d_reco["dely_tlepy"]->Fill(deltaY, tlepy, weight);
 
 
 		//end of yukawa studies
@@ -2066,7 +2066,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_right["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_right["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_right["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                //yuka2d_reco_right["dely_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
@@ -2115,7 +2115,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_wrong["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_wrong["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_wrong["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                //yuka2d_reco_wrong["dely_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
@@ -2152,7 +2152,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_semi["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_semi["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_semi["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                //yuka2d_reco_semi["dely_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
@@ -2189,7 +2189,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco_other["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_other["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                yuka2d_reco_other["dely_tlepy"]->Fill(deltaY, tlepy, weight);
+                //yuka2d_reco_other["dely_tlepy"]->Fill(deltaY, tlepy, weight);
 
 		//end of yukawa studies
 
@@ -2368,7 +2368,7 @@ void ttbar::analyze()
 
                                 yuka1d_gen["tlepy"]->Fill(tlepy, weight);
                                 yuka2d_gen["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
-                                yuka2d_gen["delY_tlepy"]->Fill(deltaY, tlepy, weight);
+                                //yuka2d_gen["delY_tlepy"]->Fill(deltaY, tlepy, weight);
 				//cout<<"yukawa sample weight = "<<weight<<endl;
 				//the end of the twice yukawa const test.
                     }
