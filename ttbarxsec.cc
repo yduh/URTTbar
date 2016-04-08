@@ -11,8 +11,9 @@ using namespace std;
 
 ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
+        threej2d("3j"),
         threejets("3j"), 
-        fourjets("4j"), 
+        //fourjets("4j"), 
 	gen1d("gen"),
 	gen2d("gen"),
 	ttp_genall("genall"),
@@ -96,7 +97,7 @@ ttbar::ttbar(const std::string output_filename):
 	cltagunc(0),
 	cpileup(0),
 	HERWIGPP(false),
-	PYTHIA6(false)
+	PYTHIA6(false) 
         //yukawatxt("yukawa_reweighing1.0.root")
 {
 	ConfigParser CP("ttbarxsec.cfg");
@@ -201,17 +202,27 @@ void ttbar::begin()
 
         TDirectory* dir_3j = outFile_.mkdir("3j");
         dir_3j->cd();
-        threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threej2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
+        threejets.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
+        threejets.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
+        threejets.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
+        threejets.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
+        threejets.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
+        threejets.AddHist("tlep_M", 500, 0, 1000, "M(t_{h})", "Events");
+        threejets.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
+
+        /*threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_above3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_above4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
-        threejets.AddHist("Mtt_above5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        threejets.AddHist("Mtt_above5j", 1000, 0, 2000, "M(t#bar{t})", "Events");*/
 
-        fourjets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        /*fourjets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         fourjets.AddHist("Mtt_exact5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         fourjets.AddHist("Mtt_above4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
-        fourjets.AddHist("Mtt_above5j", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        fourjets.AddHist("Mtt_above5j", 1000, 0, 2000, "M(t#bar{t})", "Events");*/
 	
         TDirectory* dir_gen = outFile_.mkdir("GEN");
 	dir_gen->cd();
@@ -602,8 +613,8 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-        TFile* fyuka_2d = TFile::Open("yukawa_reweighing3.0.root");
-	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
+        //TFile* fyuka_2d = TFile::Open("yukawa_reweighing3.0.root");
+	//yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
 }
@@ -1627,7 +1638,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 4){return;} // change for 3j test
+	if(cleanedjets.size() < 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1668,6 +1679,43 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j test
+        //NeutrinoSolver NS_3j;
+        const TLorentzVector * bcandidate1 = (TLorentzVector*)reducedjets[0];
+        const TLorentzVector * bcandidate2 = (TLorentzVector*)reducedjets[1];
+        const TLorentzVector * lcandidate = (TLorentzVector*)lep;
+        double chi2candidate1;
+        double chi2candidate2;
+        const TLorentzVector * blepjet_3j;
+        const TLorentzVector * bhadjet_3j;
+        NeutrinoSolver NS_3ja = NeutrinoSolver(lcandidate, bcandidate1, 80., 173.);
+        NS_3ja.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate1);
+        NeutrinoSolver NS_3jb = NeutrinoSolver(lcandidate, bcandidate2, 80., 173.);
+        NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
+
+        //b jet permutation
+        if(chi2candidate1 >= chi2candidate2){
+            blepjet_3j = bcandidate1;
+            bhadjet_3j = bcandidate2;
+        }
+        else{
+            blepjet_3j = bcandidate2;
+            bhadjet_3j = bcandidate1;
+        }
+
+        TLorentzVector tlep_3j = *blepjet_3j + *lcandidate + met;
+        TLorentzVector thad_3j = *bhadjet_3j + *reducedjets[2];
+
+        threej2d["blep_bhad_pt"]->Fill(blepjet_3j->Pt(), bhadjet_3j->Pt(), weight);
+        threejets["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        threejets["thad_pt"]->Fill(thad_3j.Pt(), weight);
+        threejets["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
+        threejets["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
+        threejets["tlep_M"]->Fill(tlep_3j.Mag(), weight);
+        threejets["thad_M"]->Fill(thad_3j.Mag(), weight);
+        threejets["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
+        threejets["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+
+  /*      
         if(reducedjets.size() == 3){
             threejets["Mtt_exact3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
         }
@@ -1693,6 +1741,7 @@ void ttbar::ttanalysis(URStreamer& event)
             threejets["Mtt_above5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
             fourjets["Mtt_above5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
         }
+*/
 // end for the 3j test
 
         //check what we have reconstructed
@@ -2322,9 +2371,9 @@ void ttbar::analyze()
                                 //
                                
                                 
-                                if(Mtt>= 2*173*cosh(deltaY/2))
+                                /*if(Mtt>= 2*173*cosh(deltaY/2))
                                 weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                else
+                                else*/
                                 weight *= 1;
                                 
 

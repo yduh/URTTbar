@@ -33,6 +33,7 @@ class NeutrinoSolver
 		pair<double, double> Extrem(double t, bool MIN = true);
 	public:
 		NeutrinoSolver(const TLorentzVector* lep, const TLorentzVector* bjet, double MW = 80, double MT = 173);
+                //NeutrinoSolver();
 		TLorentzVector GetBest(double metx, double mety, double metxerr, double metyerr, double metxyrho, double& test, bool INFO = false);
 
 };

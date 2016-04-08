@@ -21,6 +21,7 @@
 #include "JetScale.h"
 #include "JetScaler.h"
 #include "BTagWeight.h"
+//#include "NeutrinoSolver.h"
 
 using namespace std;
 class PDFuncertainty;
@@ -31,6 +32,7 @@ class ttbar : public AnalyzerBase
     friend class TTBarPlots;
     friend class TTBarResponse;
     friend class BTagWeight;
+    //friend class NeutrinoSolver;
 
 	private:
 		bool isMC = false;
@@ -85,8 +87,9 @@ class ttbar : public AnalyzerBase
 		IDMet met;
 
 		//hists
+                TH2DCollection threej2d;
                 TH1DCollection threejets;
-                TH1DCollection fourjets;
+                //TH1DCollection fourjets;
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
 		TH1DCollection reco1d;
@@ -141,6 +144,7 @@ class ttbar : public AnalyzerBase
 		BtagEff btageff;
 		BTagWeight btagweight;
 
+                //NeutrinoSolver NS_3j;
 		//ttbar solver
 		TTBarSolver ttsolver;
 
