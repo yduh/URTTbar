@@ -208,7 +208,7 @@ void ttbar::begin()
         threejets.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
         threejets.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         threejets.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
-        threejets.AddHist("tlep_M", 500, 0, 1000, "M(t_{h})", "Events");
+        threejets.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
         threejets.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
 
