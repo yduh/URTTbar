@@ -203,8 +203,8 @@ void ttbar::begin()
         TDirectory* dir_3j = outFile_.mkdir("3j");
         dir_3j->cd();
         threej2d.AddHist("selectchi2", 200, 0, 100, 200, 0, 100, "#chi^{2} b[0]", "#chi^{2} b[1]");
-        threej1d.AddHist("selectchi2_b1", 200, 0, 100, "#chi^{2} b[0]", "Events");
-        threej1d.AddHist("selectchi2_b2", 200, 0, 100, "#chi^{2} b[1]", "Events");
+        //threej1d.AddHist("selectchi2_b1", 200, 0, 100, "#chi^{2} b[0]", "Events");
+        //threej1d.AddHist("selectchi2_b2", 200, 0, 100, "#chi^{2} b[1]", "Events");
         threej2d.AddHist("selectcsv", 12, 0.4, 1, 12, 0.4, 1, "CSV b[0]", "CSV b[1]");
         threej2d.AddHist("blep_bhad_csv", 12, 0.4, 1, 12, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
         threej2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
@@ -1701,9 +1701,9 @@ void ttbar::ttanalysis(URStreamer& event)
         NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
 
         threej2d["selectchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+        //threej1d["selectchi2_b1"]->Fill(chi2candidate1, weight);
+        //threej1d["selectchi2_b2"]->Fill(reducedjets[1]->csvIncl(), weight);
         threej2d["selectcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
-        threej1d["selectcsv_b1"]->Fill(reducedjets[0]->csvIncl(), weight);
-        threej1d["selectcsv_b2"]->Fill(reducedjets[1]->csvIncl(), weight);
         //b jet permutation
         if(chi2candidate1 >= chi2candidate2){
             blepjet_3j = bcandidate1;
