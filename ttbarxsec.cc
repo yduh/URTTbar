@@ -203,7 +203,7 @@ void ttbar::begin()
         TDirectory* dir_3j = outFile_.mkdir("3j");
         dir_3j->cd();
         threej2d.AddHist("selectchi2", 100, 0, 100, 100, 0, 100, "#chi^{2} b[0]", "#chi^{2} b[1]");
-        threej2d.AddHist("selectcsv", 10, 0, 1, 10, 0, 10, "CSV b[0]", "CSV b[1]");
+        threej2d.AddHist("selectcsv", 12, 0.4, 1, 12, 0.4, 1, "CSV b[0]", "CSV b[1]");
         threej2d.AddHist("blep_bhad_csv", 10, 0, 1, 10, 0, 1, "CSV b_{l}", "CSV b_{h}");
         threej2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
         threej1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
