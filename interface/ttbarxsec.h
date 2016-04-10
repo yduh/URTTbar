@@ -88,7 +88,7 @@ class ttbar : public AnalyzerBase
 
 		//hists
                 TH2DCollection threej2d;
-                TH1DCollection threejets;
+                TH1DCollection threej1d;
                 //TH1DCollection fourjets;
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
