@@ -58,6 +58,7 @@ class ttbar : public AnalyzerBase
         TLorentzVector gentqbar;
         TLorentzVector gentqlep;
         TLorentzVector gentqhad;
+        TLorentzVector gentqhad_3j;
         TLorentzVector gent;
         TLorentzVector gentbar;
         TLorentzVector gentlep;
@@ -87,8 +88,10 @@ class ttbar : public AnalyzerBase
 		IDMet met;
 
 		//hists
-                TH2DCollection threej2d;
-                TH1DCollection threej1d;
+                TH2DCollection reco3j2d;
+                TH1DCollection reco3j1d;
+                TH2DCollection gen3j2d;
+                TH1DCollection gen3j1d;
                 //TH1DCollection fourjets;
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;

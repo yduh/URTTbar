@@ -11,8 +11,10 @@ using namespace std;
 
 ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
-        threej2d("3j"),
-        threej1d("3j"), 
+        reco3j2d("3j"),
+        reco3j1d("3j"),
+        gen3j2d("3j"), 
+        gen3j1d("3j"),
         //fourjets("4j"), 
 	gen1d("gen"),
 	gen2d("gen"),
@@ -200,25 +202,40 @@ void ttbar::begin()
 {
 	outFile_.cd();
 
-        TDirectory* dir_3j = outFile_.mkdir("3j");
-        dir_3j->cd();
-        threej2d.AddHist("selectchi2", 200, 0, 100, 200, 0, 100, "#chi^{2} b[0]", "#chi^{2} b[1]");
+        TDirectory* dir_3j_gen = outFile_.mkdir("3j_GEN");
+        dir_3j_gen->cd();
+        gen3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
+        gen3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
+        gen3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
+        gen3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
+        gen3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
+        gen3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        gen3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
+        gen3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
+        gen3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        gen3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
+        gen3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+
+
+        TDirectory* dir_3j_reco = outFile_.mkdir("3j_RECO");
+        dir_3j_reco->cd();
+        reco3j2d.AddHist("selectchi2", 200, 0, 100, 200, 0, 100, "#chi^{2} b[0]", "#chi^{2} b[1]");
         //threej1d.AddHist("selectchi2_b1", 200, 0, 100, "#chi^{2} b[0]", "Events");
         //threej1d.AddHist("selectchi2_b2", 200, 0, 100, "#chi^{2} b[1]", "Events");
-        threej2d.AddHist("selectcsv", 12, 0.4, 1, 12, 0.4, 1, "CSV b[0]", "CSV b[1]");
-        threej2d.AddHist("blep_bhad_csv", 12, 0.4, 1, 12, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
-        threej2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
-        threej1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
-        threej1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
-        threej1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
-        threej1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
-        threej1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
-        threej1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
-        threej1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
-        threej1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
-        threej1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-        threej1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
-        threej2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+        reco3j2d.AddHist("selectcsv", 12, 0.4, 1, 12, 0.4, 1, "CSV b[0]", "CSV b[1]");
+        reco3j2d.AddHist("blep_bhad_csv", 12, 0.4, 1, 12, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
+        reco3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
+        reco3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
+        reco3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
+        reco3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
+        reco3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
+        reco3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
+        reco3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        reco3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
+        reco3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
+        reco3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        reco3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
+        reco3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
 
         /*threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -947,6 +964,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
     GenObject* genbbar = 0;
     GenObject* genwm = 0;
     GenObject* genwp = 0;
+    TLorentzVector* genmiss = 0;
 
 //      const vector<Pxlhe>& lhepx = event.PXLHEs();
 //      const vector<Pylhe>& lhepy = event.PYLHEs();
@@ -1027,6 +1045,8 @@ void ttbar::SelectGenParticles(URStreamer& event)
                     //cout << "Q " << gps[dindex].pdgId() << " " << gps[gps[dindex].firstDaughtIdx()].pdgId() << endl;
                     sgenparticles.push_back(gps[dindex]);
                     genwpartons.push_back(&(sgenparticles.back()));
+	            sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
+                    genmiss = genwpartons[1];
                 }
                 else if(gp.momIdx().size() != 0 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
                 {
@@ -1097,6 +1117,8 @@ void ttbar::SelectGenParticles(URStreamer& event)
                 {
                     sgenparticles.push_back(gp);
                     genwpartons.push_back(&(sgenparticles.back()));
+	            sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
+                    genmiss = genwpartons[1];
                 }
             }
 
@@ -1162,17 +1184,20 @@ void ttbar::SelectGenParticles(URStreamer& event)
     {
         SEMILEP = true;
         SEMILEPACC = true;
+        
         if(gencls[0]->pdgId() > 0)
         {
             genallper.Init(genwpartons[0], genwpartons[1], genb, genbbar, gencls[0], gencls[0]->pdgId(), gennls[0]);
             gentqlep = gentqbar;
             gentqhad = gentq;
+            gentqhad_3j = gentqhad - *genmiss;
         }
         else
         {
             genallper.Init(genwpartons[0], genwpartons[1], genbbar, genb, gencls[0], gencls[0]->pdgId(), gennls[0]);
             gentqlep = gentq;
             gentqhad = gentqbar;
+            gentqhad_3j = gentqhad - *genmiss;
         }
     }
 
@@ -1646,7 +1671,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 3){return;} // change for 3j test
+	if(cleanedjets.size() != 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1700,37 +1725,37 @@ void ttbar::ttanalysis(URStreamer& event)
         NeutrinoSolver NS_3jb = NeutrinoSolver(lcandidate, bcandidate2, 80., 173.);
         NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
 
-        threej2d["selectchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+        reco3j2d["selectchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         //threej1d["selectchi2_b1"]->Fill(chi2candidate1, weight);
         //threej1d["selectchi2_b2"]->Fill(reducedjets[1]->csvIncl(), weight);
-        threej2d["selectcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        reco3j2d["selectcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         //b jet permutation
         if(chi2candidate1 >= chi2candidate2){
             blepjet_3j = bcandidate1;
             bhadjet_3j = bcandidate2;
-            threej2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+            reco3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         }
         else{
             blepjet_3j = bcandidate2;
             bhadjet_3j = bcandidate1;
-            threej2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
+            reco3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
         }
 
         TLorentzVector tlep_3j = *blepjet_3j + *lcandidate + met;
         TLorentzVector thad_3j = *bhadjet_3j + *reducedjets[2];
 
-        threej2d["blep_bhad_pt"]->Fill(blepjet_3j->Pt(), bhadjet_3j->Pt(), weight);
-        threej1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
-        threej1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
-        threej1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
-        threej1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
-        threej1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
-        threej1d["thad_M"]->Fill(thad_3j.Mag(), weight);
-        threej1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
-        threej1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
-        threej1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
-        threej1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
-        threej2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        reco3j2d["blep_bhad_pt"]->Fill(blepjet_3j->Pt(), bhadjet_3j->Pt(), weight);
+        reco3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        reco3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
+        reco3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
+        reco3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
+        reco3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
+        reco3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        reco3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
+        reco3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
+        reco3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
+        reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
   /*      
         if(reducedjets.size() == 3){
@@ -2360,7 +2385,26 @@ void ttbar::analyze()
 		SelectGenParticles(event);
 		SelectPseudoTop(event);
 		// Reweighting stuffs for yukawa study (should do it before next if statement, doesn't matter before or after the SelectPseudoTop(event) but keep after the SelecGenParticles())
-                if(genallper.IsComplete()){
+        
+        if(SEMILEP){
+	//sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});
+        //TLorentzVector tlep_3j = gentqlep;
+        //TLorentzVector thad_3j_gen = gentqhad - genwpartons[1];
+
+        gen3j1d["tlep_pt"]->Fill(gentqlep.Pt(), weight);
+        gen3j1d["thad_pt"]->Fill(gentqhad_3j.Pt(), weight);
+        gen3j1d["tlep_y"]->Fill(Abs(gentqlep.Rapidity()), weight);
+        gen3j1d["thad_y"]->Fill(Abs(gentqhad_3j.Rapidity()), weight);
+        gen3j1d["tlep_M"]->Fill(gentqlep.Mag(), weight);
+        gen3j1d["thad_M"]->Fill(gentqhad_3j.Mag(), weight);
+        gen3j1d["tt_pt"]->Fill((gentqlep + gentqhad_3j).Pt(), weight);
+        gen3j1d["tt_y"]->Fill(Abs((gentqlep + gentqhad_3j).Rapidity()), weight);
+        gen3j1d["Mtt"]->Fill((gentqlep + gentqhad_3j).Mag(), weight);
+        gen3j1d["delY"]->Fill(gentqlep.Rapidity() - gentqhad_3j.Rapidity(), weight);
+        gen3j2d["Mtt_delY"]->Fill((gentqlep + gentqhad_3j).Mag(), gentqlep.Rapidity()-gentqhad_3j.Rapidity(), weight);
+        //}
+
+                //if(genallper.IsComplete()){
                                 TLorentzVector CMttbar = gentq + gentqbar; //genallper.THad() + genallper.TLep(); //gentoplep + gentophad;
 				TLorentzVector CMhadt = gentqhad; //genallper.THad(); //gentophad;
 				TLorentzVector CMlept = gentqlep; //genallper.TLep(); //gentoplep;
