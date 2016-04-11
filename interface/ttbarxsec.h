@@ -59,6 +59,8 @@ class ttbar : public AnalyzerBase
         TLorentzVector gentqlep;
         TLorentzVector gentqhad;
         TLorentzVector gentqhad_3j;
+        TLorentzVector gentqhad_miss;
+        TLorentzVector gentqhad_misspartner;
         TLorentzVector gent;
         TLorentzVector gentbar;
         TLorentzVector gentlep;
