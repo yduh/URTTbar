@@ -1692,7 +1692,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 3){return;} // change for 3j test
+	if(cleanedjets.size() != 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1733,7 +1733,6 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j test
-	if(cleanedjets.size() == 3){
         const TLorentzVector * bcandidate1 = (TLorentzVector*)reducedjets[0];
         const TLorentzVector * bcandidate2 = (TLorentzVector*)reducedjets[1];
         const TLorentzVector * lcandidate = (TLorentzVector*)lep;
@@ -1746,30 +1745,38 @@ void ttbar::ttanalysis(URStreamer& event)
         NeutrinoSolver NS_3jb = NeutrinoSolver(lcandidate, bcandidate2, 80., 173.);
         NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
 
+        
+        //if(cleanedjets.size() == 3){
         reco3j2d["selectchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-        //threej1d["selectchi2_b1"]->Fill(chi2candidate1, weight);
-        //threej1d["selectchi2_b2"]->Fill(reducedjets[1]->csvIncl(), weight);
         reco3j2d["selectcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        //}
+        
         //b jet permutation
         if(chi2candidate1 <= chi2candidate2){
             blepjet_3j = bcandidate1;
             bhadjet_3j = bcandidate2;
+
+            //if(cleanedjets.size() == 3){
             reco3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
             reco3j1d["blepwrong_chi2"]->Fill(chi2candidate2, weight);
             reco3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
-        }
-        else{
+            //}
+        }else{
             blepjet_3j = bcandidate2;
             bhadjet_3j = bcandidate1;
+
+            //if(cleanedjets.size() == 3){
             reco3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
             reco3j1d["blepwrong_chi2"]->Fill(chi2candidate1, weight);
             reco3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
+            //}
         }
 
         TLorentzVector tlep_3j = *blepjet_3j + *lcandidate + met;
         TLorentzVector thad_3j = *bhadjet_3j + *reducedjets[2];
-        TLorentzVector thad_miss = *reducedjets[3];
+        //TLorentzVector thad_miss = *reducedjets[3];
 
+        reco3j2d["blep_bhad_pt"]->Fill(blepjet_3j->Pt(), bhadjet_3j->Pt(), weight);
         reco3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
         reco3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
         reco3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
@@ -1782,14 +1789,14 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
-        reco3j2d["blep_bhad_pt"]->Fill(blepjet_3j->Pt(), bhadjet_3j->Pt(), weight);
+        /*
         reco3j1d["thadmiss_e"]->Fill(thad_miss.E(), weight);
         reco3j1d["thadmiss_pt"]->Fill(thad_miss.Pt(), weight);
         reco3j1d["thadmiss_y"]->Fill(thad_miss.Rapidity(), weight);
         reco3j1d["thadmiss_DeltaR"]->Fill(thad_miss.DeltaR(*reducedjets[2]), weight);
         reco3j1d["delpt_pt"]->Fill(((thad_3j + *reducedjets[3]).Pt() - thad_3j.Pt())/thad_3j.Pt(), weight);
         reco3j1d["dely_y"]->Fill(((thad_3j + *reducedjets[3]).Rapidity() - thad_3j.Rapidity())/thad_3j.Rapidity(), weight);
-
+        */
   /*      
         if(reducedjets.size() == 3){
             threejets["Mtt_exact3j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *lep + met).Mag(), weight);
@@ -1817,7 +1824,6 @@ void ttbar::ttanalysis(URStreamer& event)
             fourjets["Mtt_above5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
         }
 */
-        }// end for the 3j test
 
 	if(cleanedjets.size() < 4){return;} // change for 3j test
 
