@@ -1692,48 +1692,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() != 3){return;} // change for 3j test
-	reco1d["c_jets"]->Fill(event.run+0.5);
-	if(BTAGMODE && cleanedjets.size() > 4){return;}
-	reco1d["counter"]->Fill(2.5, weight);
-	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
-	if(tightmuons.size() == 1)
-	{
-		reco1d["MuIsolation"]->Fill(tightmuons[0]->trackiso()/tightmuons[0]->Pt() , weight);
-	}
-	else
-	{
-		reco1d["ElIsolation"]->Fill(mediumelectrons[0]->CorPFIsolation2015(), weight);
-	}
-	double Mt_W = Sqrt(2.*met.Pt()*lep->Pt()-2.*(met.Px()*lep->Px() + met.Py()*lep->Py()));
-	reco1d["Mt_W"]->Fill(Mt_W, weight);
-	//calculating btag eff.
-	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
-	int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [&](IDJet* A){return(A->csvIncl() > B_MEDIUM);});
-	reco1d["bjetmulti"]->Fill(nbjets, weight);
-	if(isMC && !BTAGMODE)
-	{
-		double btw = btagweight.SF(reducedjets);
-//cout << weight << " " << btw << endl;
-		weight *= btw;
-	}
-	reco1d["bjetmultiW"]->Fill(nbjets, weight);
-
-	//check for b-jets
-	reco1d["btag_high"]->Fill(reducedjets[0]->csvIncl(), weight);
-	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
-	if(!BTAGMODE)
-	{
-		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
-		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
-		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}
-	}
-	reco1d["c_btag"]->Fill(event.run+0.5);
-	reco1d["counter"]->Fill(3.5, weight);
-	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
-
-// add for 3j test
-        //NeutrinoSolver NS_3j;
+        if(cleanedjets.size() == 3){
         const TLorentzVector * bcandidate1 = (TLorentzVector*)reducedjets[0];
         const TLorentzVector * bcandidate2 = (TLorentzVector*)reducedjets[1];
         const TLorentzVector * lcandidate = (TLorentzVector*)lep;
@@ -1817,7 +1776,49 @@ void ttbar::ttanalysis(URStreamer& event)
             fourjets["Mtt_above5j"]->Fill((*reducedjets[0] + *reducedjets[1] + *reducedjets[2] + *reducedjets[3] + *lep + met).Mag(), weight);
         }
 */
-// end for the 3j test
+
+        }//end of 3j
+
+	if(cleanedjets.size() < 4){return;} // change for 3j test
+	reco1d["c_jets"]->Fill(event.run+0.5);
+	if(BTAGMODE && cleanedjets.size() > 4){return;}
+	reco1d["counter"]->Fill(2.5, weight);
+	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
+	if(tightmuons.size() == 1)
+	{
+		reco1d["MuIsolation"]->Fill(tightmuons[0]->trackiso()/tightmuons[0]->Pt() , weight);
+	}
+	else
+	{
+		reco1d["ElIsolation"]->Fill(mediumelectrons[0]->CorPFIsolation2015(), weight);
+	}
+	double Mt_W = Sqrt(2.*met.Pt()*lep->Pt()-2.*(met.Px()*lep->Px() + met.Py()*lep->Py()));
+	reco1d["Mt_W"]->Fill(Mt_W, weight);
+	//calculating btag eff.
+	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
+	int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [&](IDJet* A){return(A->csvIncl() > B_MEDIUM);});
+	reco1d["bjetmulti"]->Fill(nbjets, weight);
+	if(isMC && !BTAGMODE)
+	{
+		double btw = btagweight.SF(reducedjets);
+//cout << weight << " " << btw << endl;
+		weight *= btw;
+	}
+	reco1d["bjetmultiW"]->Fill(nbjets, weight);
+
+	//check for b-jets
+	reco1d["btag_high"]->Fill(reducedjets[0]->csvIncl(), weight);
+	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
+	if(!BTAGMODE)
+	{
+		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
+		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
+		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}
+	}
+	reco1d["c_btag"]->Fill(event.run+0.5);
+	reco1d["counter"]->Fill(3.5, weight);
+	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
+
 
         //check what we have reconstructed
 	if(SEMILEP)
