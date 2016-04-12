@@ -1796,9 +1796,10 @@ void ttbar::ttanalysis(URStreamer& event)
         const TLorentzVector * bleper;
         const TLorentzVector * bhadper;
         NeutrinoSolver NS_3ja = NeutrinoSolver(lcandidate, bcandidate1, 80., 173.);
-        NS_3ja.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate1);
+        TLorentzVector meta = NS_3ja.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate1);
         NeutrinoSolver NS_3jb = NeutrinoSolver(lcandidate, bcandidate2, 80., 173.);
-        NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
+        TLorentzVector metb = NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
+        TLorentzVector metsolver;
 
         
         //if(cleanedjets.size() == 3){
@@ -1811,6 +1812,7 @@ void ttbar::ttanalysis(URStreamer& event)
         if(chi2candidate1 <= chi2candidate2){
             bleper = bcandidate1;
             bhadper = bcandidate2;
+            metsolver = meta;
 
             //if(cleanedjets.size() == 3){
             reco3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
@@ -1820,6 +1822,7 @@ void ttbar::ttanalysis(URStreamer& event)
         }else{
             bleper = bcandidate2;
             bhadper = bcandidate1;
+            metsolver = metb;
 
             //if(cleanedjets.size() == 3){
             reco3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
@@ -1828,7 +1831,7 @@ void ttbar::ttanalysis(URStreamer& event)
             //}
         }
 
-        TLorentzVector tlep_3j = *bleper + *lcandidate + met;
+        TLorentzVector tlep_3j = *bleper + *lcandidate + metsolver;
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
         //TLorentzVector thad_miss = *reducedjets[3];
         TLorentzVector thadwrong_3j = *bleper + *reducedjets[2];
