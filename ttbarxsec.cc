@@ -1847,26 +1847,16 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
-
+    //truth matching for 3j
     if(rightper.BLep() == bleper && rightper.BHad() == bhadper && rightper.IsComplete3J()){  
-    //if(rightper.IsComplete3J()){
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
 
-        if(chi2candidate1 <= chi2candidate2){
-            bleper = bcandidate1;
-            bhadper = bcandidate2;
-            truth3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
-            truth3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
-            truth3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
-        }else{
-            bleper = bcandidate2;
-            bhadper = bcandidate1;
-            truth3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
-            truth3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
-            truth3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
-        }
+        double chi2;
+        NeutrinoSolver NS_3j_right = NeutrinoSolver(lcandidate, bleper, 80., 173.);
+        NS_3j_right.GetBest(met.X(), met.Y(), 1, 1, 0, chi2);
+        truth3j1d["blep_chi2"]->Fill(chi2, weight); 
 
         truth3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         truth3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
@@ -1886,19 +1876,10 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         wrong3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
 
-        if(chi2candidate1 <= chi2candidate2){
-            bleper = bcandidate1;
-            bhadper = bcandidate2;
-            wrong3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
-            wrong3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
-            wrong3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
-        }else{
-            bleper = bcandidate2;
-            bhadper = bcandidate1;
-            wrong3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
-            wrong3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
-            wrong3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
-        }
+        double chi2;
+        NeutrinoSolver NS_3j_right = NeutrinoSolver(lcandidate, bleper, 80., 173.);
+        NS_3j_right.GetBest(met.X(), met.Y(), 1, 1, 0, chi2);
+        truth3j1d["blep_chi2"]->Fill(chi2, weight); 
 
         wrong3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         wrong3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
