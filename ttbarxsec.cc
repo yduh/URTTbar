@@ -13,6 +13,10 @@ ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
         reco3j2d("3j"),
         reco3j1d("3j"),
+        truth3j2d("3j"),
+        truth3j1d("3j"),
+        wrong3j2d("3j"),
+        wrong3j1d("3j"),
         gen3j2d("3j"), 
         gen3j1d("3j"),
         //fourjets("4j"), 
@@ -220,11 +224,11 @@ void ttbar::begin()
         gen3j1d.AddHist("thadmiss_pt", 250, 0, 500, "miss-jet p_{T}", "Events"); 
         gen3j1d.AddHist("thadmiss_y", 200, 0, 5, "miss-jet |y|", "Events");
         gen3j1d.AddHist("thadmiss_DeltaR", 100, 0, 5, "W-jets #DeltaR", "Events");
-        gen3j1d.AddHist("de_e", 20, -2, 2, "#DeltaE(t_{h})/E(t_{h})", "Events");
-        gen3j1d.AddHist("dy_y", 20, -2, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
-        gen3j1d.AddHist("dpt_pt", 20, -2, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
-        gen3j1d.AddHist("dmtt_mtt", 20, -2, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
-        gen3j1d.AddHist("ddely_dely", 20, -2, 2, "#Delta(#Deltay(t#bar{t}))/#Deltay(t#bar{t})", "Events");
+        gen3j1d.AddHist("de_e", 40, 0, 2, "#DeltaE(t_{h})/E(t_{h})", "Events");
+        gen3j1d.AddHist("dy_y", 80, -2, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
+        gen3j1d.AddHist("dpt_pt", 80, -2, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
+        gen3j1d.AddHist("dmtt_mtt", 40, 0, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
+        gen3j1d.AddHist("ddely_dely", 80, -2, 2, "#Delta(#Deltay(t#bar{t}))/(#Deltay(t#bar{t}))", "Events");
 
         TDirectory* dir_3j_reco = outFile_.mkdir("3j_RECO");
         dir_3j_reco->cd();
@@ -240,12 +244,13 @@ void ttbar::begin()
         reco3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
         reco3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
        
-        reco3j2d.AddHist("selectchi2", 500, 0, 500, 500, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
-        reco3j2d.AddHist("selectcsv", 12, 0.4, 1, 12, 0.4, 1, "CSV b[0]", "CSV b[1]");
-        reco3j2d.AddHist("blep_bhad_csv", 12, 0.4, 1, 12, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
+        reco3j2d.AddHist("select_bchi2", 500, 0, 500, 500, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
+        reco3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
+        reco3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
+        reco3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
         reco3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
         reco3j1d.AddHist("blep_chi2", 500, 0, 500, "#chi^{2} right", "Events");
-        reco3j1d.AddHist("blepwrong_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
+        reco3j1d.AddHist("bhad_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
         //reco3j1d.AddHist("thadmiss_e", 250, 0, 500, "miss-jet E", "Events");
         //reco3j1d.AddHist("thadmiss_pt", 250, 0, 500, "miss-jet p_{T}", "Events"); 
         //reco3j1d.AddHist("thadmiss_y", 200, 0, 5, "miss-jet |y|", "Events");
@@ -253,6 +258,49 @@ void ttbar::begin()
         //reco3j1d.AddHist("delpt_pt", 20, 0, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
         //reco3j1d.AddHist("dely_y", 20, 0, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
 
+        TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
+        dir_3j_truth->cd();
+        truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
+        truth3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
+        truth3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
+        truth3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
+        truth3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
+        truth3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        truth3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
+        truth3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
+        truth3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        truth3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
+        truth3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+       
+        truth3j2d.AddHist("select_bchi2", 500, 0, 500, 500, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
+        truth3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
+        truth3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
+        truth3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
+        truth3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
+        truth3j1d.AddHist("blep_chi2", 500, 0, 500, "#chi^{2} right", "Events");
+        truth3j1d.AddHist("bhad_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
+
+        TDirectory* dir_3j_wrong = outFile_.mkdir("3j_WRONG");
+        dir_3j_wrong->cd();
+        wrong3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
+        wrong3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
+        wrong3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
+        wrong3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
+        wrong3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
+        wrong3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        wrong3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
+        wrong3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
+        wrong3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        wrong3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
+        wrong3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+       
+        wrong3j2d.AddHist("select_bchi2", 500, 0, 500, 500, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
+        wrong3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
+        wrong3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
+        wrong3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
+        wrong3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
+        wrong3j1d.AddHist("blep_chi2", 500, 0, 500, "#chi^{2} right", "Events");
+        wrong3j1d.AddHist("bhad_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
 
         /*threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -1177,6 +1225,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
     SEMILEP = false;
     FULLLEP = false;
     SEMILEPACC = false;
+    //3JTRUTH = false;
     //cout << topcounter << " " << lepdecays << " " << genwpartons.size() << " " << genfincls.size() << endl;
     if(topcounter == 2 && genb != 0 && genbbar != 0)
     {
@@ -1741,8 +1790,8 @@ void ttbar::ttanalysis(URStreamer& event)
         const TLorentzVector * lcandidate = (TLorentzVector*)lep;
         double chi2candidate1;
         double chi2candidate2;
-        const TLorentzVector * blepjet_3j;
-        const TLorentzVector * bhadjet_3j;
+        const TLorentzVector * bleper;
+        const TLorentzVector * bhadper;
         NeutrinoSolver NS_3ja = NeutrinoSolver(lcandidate, bcandidate1, 80., 173.);
         NS_3ja.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate1);
         NeutrinoSolver NS_3jb = NeutrinoSolver(lcandidate, bcandidate2, 80., 173.);
@@ -1750,36 +1799,37 @@ void ttbar::ttanalysis(URStreamer& event)
 
         
         //if(cleanedjets.size() == 3){
-        reco3j2d["selectchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-        reco3j2d["selectcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        reco3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+        reco3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        reco3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
         //}
         
         //b jet permutation
         if(chi2candidate1 <= chi2candidate2){
-            blepjet_3j = bcandidate1;
-            bhadjet_3j = bcandidate2;
+            bleper = bcandidate1;
+            bhadper = bcandidate2;
 
             //if(cleanedjets.size() == 3){
             reco3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
-            reco3j1d["blepwrong_chi2"]->Fill(chi2candidate2, weight);
+            reco3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
             reco3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
             //}
         }else{
-            blepjet_3j = bcandidate2;
-            bhadjet_3j = bcandidate1;
+            bleper = bcandidate2;
+            bhadper = bcandidate1;
 
             //if(cleanedjets.size() == 3){
             reco3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
-            reco3j1d["blepwrong_chi2"]->Fill(chi2candidate1, weight);
+            reco3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
             reco3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
             //}
         }
 
-        TLorentzVector tlep_3j = *blepjet_3j + *lcandidate + met;
-        TLorentzVector thad_3j = *bhadjet_3j + *reducedjets[2];
+        TLorentzVector tlep_3j = *bleper + *lcandidate + met;
+        TLorentzVector thad_3j = *bhadper + *reducedjets[2];
         //TLorentzVector thad_miss = *reducedjets[3];
 
-        reco3j2d["blep_bhad_pt"]->Fill(blepjet_3j->Pt(), bhadjet_3j->Pt(), weight);
+        reco3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         reco3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
         reco3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
         reco3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
@@ -1791,6 +1841,75 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+
+
+
+    if(SEMILEP){
+        truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+        truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        truth3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
+
+        if(chi2candidate1 <= chi2candidate2){
+            bleper = bcandidate1;
+            bhadper = bcandidate2;
+            truth3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
+            truth3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
+            truth3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        }else{
+            bleper = bcandidate2;
+            bhadper = bcandidate1;
+            truth3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
+            truth3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
+            truth3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
+        }
+
+        truth3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
+        truth3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        truth3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
+        truth3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
+        truth3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
+        truth3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
+        truth3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        truth3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
+        truth3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
+        truth3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
+        truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+    }else{
+        wrong3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+        wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        wrong3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
+
+        if(chi2candidate1 <= chi2candidate2){
+            bleper = bcandidate1;
+            bhadper = bcandidate2;
+            wrong3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
+            wrong3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
+            wrong3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        }else{
+            bleper = bcandidate2;
+            bhadper = bcandidate1;
+            wrong3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
+            wrong3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
+            wrong3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
+        }
+
+        wrong3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
+        wrong3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        wrong3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
+        wrong3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
+        wrong3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
+        wrong3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
+        wrong3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        wrong3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
+        wrong3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
+        wrong3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
+        wrong3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        wrong3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+    }
+
+
+
 
         /*
         reco3j1d["thadmiss_e"]->Fill(thad_miss.E(), weight);
