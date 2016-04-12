@@ -68,6 +68,7 @@ class Permutation
 		}
 		void Reset();
 		bool IsComplete() const {return(wja_ != 0 && wjb_ != 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5)&& wja_ != wjb_ && wja_ != bjh_ && wja_ != bjl_ && wjb_ != bjl_ && wjb_ != bjh_ && bjl_ != bjh_);}
+		bool IsComplete3J() const {return(wja_ != 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && met_ != 0 && wja_ != bjh_ && wja_ != bjl_ && bjl_ != bjh_);}
 		int NumBJets() const {return((bjl_ != 0 ? 1 : 0) + (bjh_ != 0 ? 1 : 0));}
 		int NumWJets() const {return((wja_ != 0 ? 1 : 0) + (wjb_ != 0 ? 1 : 0));}
 		int NumTTBarJets() const {return(NumBJets() + NumWJets());}

@@ -1844,7 +1844,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
 
 
-    if(SEMILEP){
+    if(rightper.IsComplete3J()){
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
