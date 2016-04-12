@@ -277,10 +277,10 @@ void ttbar::begin()
         truth3j2d.AddHist("select_bchi2", 500, 0, 500, 500, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
         truth3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
         truth3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
-        truth3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
+        //truth3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
         truth3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
         truth3j1d.AddHist("blep_chi2", 500, 0, 500, "#chi^{2} right", "Events");
-        truth3j1d.AddHist("bhad_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
+        //truth3j1d.AddHist("bhad_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
 
         TDirectory* dir_3j_wrong = outFile_.mkdir("3j_WRONG");
         dir_3j_wrong->cd();
@@ -300,10 +300,10 @@ void ttbar::begin()
         wrong3j2d.AddHist("select_bchi2", 500, 0, 500, 500, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
         wrong3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
         wrong3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
-        wrong3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
+        //wrong3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
         wrong3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
         wrong3j1d.AddHist("blep_chi2", 500, 0, 500, "#chi^{2} right", "Events");
-        wrong3j1d.AddHist("bhad_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
+        //wrong3j1d.AddHist("bhad_chi2", 500, 0, 500, "#chi^{2} wrong", "Events");
 
         /*threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -1877,9 +1877,9 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
 
         double chi2;
-        NeutrinoSolver NS_3j_right = NeutrinoSolver(lcandidate, bleper, 80., 173.);
-        NS_3j_right.GetBest(met.X(), met.Y(), 1, 1, 0, chi2);
-        truth3j1d["blep_chi2"]->Fill(chi2, weight); 
+        NeutrinoSolver NS_3j_wrong = NeutrinoSolver(lcandidate, bleper, 80., 173.);
+        NS_3j_wrong.GetBest(met.X(), met.Y(), 1, 1, 0, chi2);
+        wrong3j1d["blep_chi2"]->Fill(chi2, weight); 
 
         wrong3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         wrong3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
