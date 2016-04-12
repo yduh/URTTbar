@@ -1819,7 +1819,8 @@ void ttbar::ttanalysis(URStreamer& event)
             reco3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
             reco3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
             //}
-        }else if(chi2candidate1 > chi2candidate2){
+        }
+        if(chi2candidate1 > chi2candidate2){
             bleper = bcandidate2;
             bhadper = bcandidate1;
             metsolver = metb;
