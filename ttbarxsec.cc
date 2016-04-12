@@ -238,6 +238,7 @@ void ttbar::begin()
         reco3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         reco3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
         reco3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        reco3j1d.AddHist("thadwrong_M", 500, 0, 1000, "M(t_{h})", "Events");
         reco3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
         reco3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
         reco3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -266,6 +267,7 @@ void ttbar::begin()
         truth3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         truth3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
         truth3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        truth3j1d.AddHist("thadwrong_M", 500, 0, 1000, "M(t_{h})", "Events");
         truth3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
         truth3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
         truth3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -288,6 +290,7 @@ void ttbar::begin()
         wrong3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         wrong3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
         wrong3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        wrong3j1d.AddHist("thadwrong_M", 500, 0, 1000, "M(t_{h})", "Events");
         wrong3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
         wrong3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
         wrong3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -1828,6 +1831,7 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector tlep_3j = *bleper + *lcandidate + met;
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
         //TLorentzVector thad_miss = *reducedjets[3];
+        TLorentzVector thadwrong_3j = *bleper + *reducedjets[2];
 
         reco3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         reco3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
@@ -1836,6 +1840,7 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
         reco3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
         reco3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        reco3j1d["thadwrong_M"]->Fill(thadwrong_3j.Mag(), weight);
         reco3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         reco3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         reco3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
@@ -1843,8 +1848,8 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
 
-
-    if(rightper.IsComplete3J()){
+    if(rightper.BLep() == bleper && rightper.BHad() == bhadper){  
+    //if(rightper.IsComplete3J()){
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
@@ -1870,6 +1875,7 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
         truth3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
         truth3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        truth3j1d["thadwrong_M"]->Fill(thadwrong_3j.Mag(), weight);
         truth3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         truth3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         truth3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
@@ -1901,6 +1907,7 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
         wrong3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
         wrong3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        wrong3j1d["thadwrong_M"]->Fill(thadwrong_3j.Mag(), weight);
         wrong3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         wrong3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         wrong3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
