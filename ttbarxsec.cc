@@ -1831,6 +1831,8 @@ void ttbar::ttanalysis(URStreamer& event)
             //}
         }
 
+        if(chi2candidate1 == chi2candidate2)
+
         TLorentzVector tlep_3j = *bleper + *lcandidate + metsolver;
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
         //TLorentzVector thad_miss = *reducedjets[3];
