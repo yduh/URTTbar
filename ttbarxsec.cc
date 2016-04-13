@@ -1526,11 +1526,11 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		{
 			if(Abs(jet.Eta()) < 1.5)
 			{
-				jetcorr = 1. + (-0.1719*Exp(-0.07861*jet.Pt()) - 0.003335);
+				//jetcorr = 1. + (-0.1719*Exp(-0.07861*jet.Pt()) - 0.003335);
 			}
 			else
 			{
-				jetcorr = 1. + (-0.0176);
+				//jetcorr = 1. + (-0.0176);
 			}
 		}
 		if(isMC)
@@ -1538,11 +1538,11 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 			if(Abs(jet.Eta()) < 1.5)
 			{
 				//jetcorr = gRandom->Gaus(jetcorr, 0.4546*Exp(-0.05498*jet.Pt()) + 0.05571);
-				jetcorr = gRandom->Gaus(jetcorr, 0.1468*Exp(-0.0165*jet.Pt()) + 0.01973);
+				//jetcorr = gRandom->Gaus(jetcorr, 0.1468*Exp(-0.0165*jet.Pt()) + 0.01973);
 			}
 			else
 			{
-				jetcorr = gRandom->Gaus(jetcorr, 3.031*Exp(-0.1092*jet.Pt()) + 0.0344);
+				//jetcorr = gRandom->Gaus(jetcorr, 3.031*Exp(-0.1092*jet.Pt()) + 0.0344);
 			}
 		}
 		double sf = csigmajet;
@@ -1859,7 +1859,7 @@ void ttbar::ttanalysis(URStreamer& event)
     NS_3jlep.GetBest(met.X(), met.Y(), 1, 1, 0, chi2lep);
     NS_3jhad.GetBest(met.X(), met.Y(), 1, 1, 0, chi2had);
 
-    if(rightper.BLep() == bleper && rightper.BHad() == bhadper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && SEMILEP){  
+    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && SEMILEP){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
