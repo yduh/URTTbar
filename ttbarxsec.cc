@@ -1853,7 +1853,7 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
     //truth matching for 3j
-    if(rightper.BLep() == bleper && rightper.BHad() == bhadper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) ){  
+    if(rightper.BLep() == bleper && rightper.BHad() == bhadper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && SEMILEP){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
