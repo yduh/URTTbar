@@ -1809,7 +1809,7 @@ void ttbar::ttanalysis(URStreamer& event)
         //}
         
         //b jet permutation
-        if(chi2candidate1 < chi2candidate2){
+        if(chi2candidate1 <= chi2candidate2){
             bleper = bcandidate1;
             bhadper = bcandidate2;
             metsolver = meta;
@@ -1831,7 +1831,7 @@ void ttbar::ttanalysis(URStreamer& event)
             //}
         }
 
-        if(chi2candidate1 == chi2candidate2)
+        //if(chi2candidate1 == chi2candidate2)
 
         TLorentzVector tlep_3j = *bleper + *lcandidate + metsolver;
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
@@ -1876,7 +1876,7 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
-    }else{
+    }else if(rightper.IsComplete3J()){
         wrong3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         wrong3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
