@@ -1853,7 +1853,7 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
     //truth matching for 3j
-    if(rightper.BLep() == bleper && rightper.BHad() == bhadper && rightper.IsComplete3J()){  
+    if(rightper.BLep() == bleper && rightper.BHad() == bhadper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) ){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
@@ -1876,7 +1876,7 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
-    }else if(rightper.IsComplete3J()){
+    }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
         wrong3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         wrong3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
@@ -1900,8 +1900,53 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         wrong3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
     }
+    /*else if(SEMILEP){
+        semi3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+        semi3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        semi3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
 
+        double chi2;
+        NeutrinoSolver NS_3j_semi = NeutrinoSolver(lcandidate, bleper, 80., 173.);
+        NS_3j_semi.GetBest(met.X(), met.Y(), 1, 1, 0, chi2);
+        semi3j1d["blep_chi2"]->Fill(chi2, weight); 
 
+        semi3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
+        semi3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        semi3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
+        semi3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
+        semi3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
+        semi3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
+        semi3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        semi3j1d["thadwrong_M"]->Fill(thadwrong_3j.Mag(), weight);
+        semi3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
+        semi3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
+        semi3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
+        semi3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        semi3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+    }else{
+        other3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+        other3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+        other3j2d["select_bpt"]->Fill(bcandidate1->Pt(), bcandidate2->Pt(), weight);
+
+        double chi2;
+        NeutrinoSolver NS_3j_other = NeutrinoSolver(lcandidate, bleper, 80., 173.);
+        NS_3j_other.GetBest(met.X(), met.Y(), 1, 1, 0, chi2);
+        other3j1d["blep_chi2"]->Fill(chi2, weight); 
+
+        other3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
+        other3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        other3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
+        other3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
+        other3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
+        other3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
+        other3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        other3j1d["thadwrong_M"]->Fill(thadwrong_3j.Mag(), weight);
+        other3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
+        other3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
+        other3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
+        other3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        other3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+    }*/
 
 
         /*
