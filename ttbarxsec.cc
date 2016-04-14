@@ -1855,9 +1855,10 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
-    reco3j1d["counter"]->Fill(0.5, weight);
+    reco3j1d["counter2"]->Fill(0.5, weight);
     if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){ 
-    reco3j1d["counter"]->Fill(1.5, weight);
+    reco3j1d["counter"]->Fill(0.5, weight);
+    reco3j1d["counter2"]->Fill(1.5, weight);
 
     if(rightper.BLep() == reducedjets[0]){ 
         reco3j1d["counter"]->Fill(1.5, weight); 
@@ -1867,22 +1868,45 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["counter"]->Fill(2.5, weight); 
         if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(12.5, weight); 
         if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(22.5, weight);}
-    if(rightper.BLep() == reducedjets[2]) reco3j1d["counter"]->Fill(3.5, weight);
-    if(rightper.BHad() == reducedjets[0]) reco3j1d["counter"]->Fill(4.5, weight);
-    if(rightper.BHad() == reducedjets[1]) reco3j1d["counter"]->Fill(5.5, weight);
-    if(rightper.BHad() == reducedjets[2]) reco3j1d["counter"]->Fill(6.5, weight);
-    if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]) reco3j1d["counter"]->Fill(7.5, weight);
-    if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) reco3j1d["counter"]->Fill(8.5, weight);
+    if(rightper.BLep() == reducedjets[2]){
+        reco3j1d["counter"]->Fill(3.5, weight);
+        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(13.5, weight);
+        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(23.5, weight);}
+    if(rightper.BHad() == reducedjets[0]){
+        reco3j1d["counter"]->Fill(4.5, weight);
+        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(14.5, weight);
+        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(24.5, weight);}
+    if(rightper.BHad() == reducedjets[1]){
+        reco3j1d["counter"]->Fill(5.5, weight);
+        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(15.5, weight);
+        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(25.5, weight);}
+    if(rightper.BHad() == reducedjets[2]){ 
+        reco3j1d["counter"]->Fill(6.5, weight);
+        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(16.5, weight);
+        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(26.5, weight);}
 
-        if(rightper.BLep() == bleper)   reco3j1d["counter"]->Fill(8.5, weight);
-        if(rightper.BLep() == bhadper)  reco3j1d["counter"]->Fill(9.5, weight);
-        //if(rightper.BLep() == bleper && rightper.BHad() == bhadper)   reco3j1d["counter"]->Fill(9.5, weight);
+
+    if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
+        reco3j1d["counter"]->Fill(7.5, weight);
+        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(17.5, weight); 
+        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(27.5, weight);
+    }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
+        reco3j1d["counter"]->Fill(8.5, weight);
+        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(18.5, weight);
+        if(rightper.BHad() == bhadper) reco3j1d["counter"]->Fill(28.5, weight);
+    }else{
+        reco3j1d["counter"]->Fill(9.5, weight);
+    }
+
+        if(rightper.BLep() == bleper)   reco3j1d["counter2"]->Fill(2.5, weight);
+        if(rightper.BLep() == bhadper)  reco3j1d["counter2"]->Fill(3.5, weight);
+        if(rightper.BLep() == bleper && rightper.BHad() == bhadper)   reco3j1d["counter2"]->Fill(4.5, weight);
     }
     
-    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())) reco3j1d["counter2"]->Fill(1.5, weight);
-    else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) reco3j1d["counter2"]->Fill(2.5, weight);
-    else if(SEMILEP) reco3j1d["counter2"]->Fill(3.5, weight);
-    else reco3j1d["counter2"]->Fill(4.5, weight);
+    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())) reco3j1d["counter2"]->Fill(6.5, weight);
+    else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) reco3j1d["counter2"]->Fill(7.5, weight);
+    else if(SEMILEP) reco3j1d["counter2"]->Fill(8.5, weight);
+    else reco3j1d["counter2"]->Fill(9.5, weight);
 
     //truth matching for 3j
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
