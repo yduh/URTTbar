@@ -1855,20 +1855,16 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
     reco3j1d["counter"]->Fill(0.5, weight);
-    if(SEMILEP) reco3j1d["counter"]->Fill(1.5, weight);
-    if(rightper.BLep() == bleper && SEMILEP)   reco3j1d["counter"]->Fill(2.5, weight);
-    if(rightper.BLep() == bleper && SEMILEP)   reco3j1d["counter"]->Fill(3.5, weight);
-    if(rightper.BLep() == bleper && rightper.BHad() == bhadper && SEMILEP){
-        reco3j1d["counter"]->Fill(4.5, weight);
-        if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) reco3j1d["counter"]->Fill(5.5, weight);
-    }else{
-        reco3j1d["counter"]->Fill(6.5, weight);
-    }
-
-
+    if(rightper.BLep() == bleper)   reco3j1d["counter"]->Fill(1.5, weight);
+    if(rightper.BLep() == bleper && rightper.BHad() == bhadper)   reco3j1d["counter"]->Fill(2.5, weight);
+    
+    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())) reco3j1d["counter"]->Fill(4.5, weight);
+    else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) reco3j1d["counter"]->Fill(5.5, weight);
+    else if(SEMILEP) reco3j1d["counter"]->Fill(6.5, weight);
+    else reco3j1d["counter"]->Fill(7.5, weight);
 
     //truth matching for 3j
-    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && SEMILEP){  
+    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
@@ -1891,7 +1887,7 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
-    }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb() && SEMILEP){
+    }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
         wrong3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         wrong3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
