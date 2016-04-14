@@ -234,6 +234,7 @@ void ttbar::begin()
         dir_3j_reco->cd();
         reco3j1d.AddHist("counter", 30, 0, 30, "counter", "Events");
         reco3j1d.AddHist("counter2", 10, 0, 10, "counter", "Events");
+        reco3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         reco3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         reco3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         reco3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -1887,10 +1888,12 @@ void ttbar::ttanalysis(URStreamer& event)
 
 
     if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
+        reco3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         reco3j1d["counter"]->Fill(7.5, weight);
         if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(17.5, weight); 
         if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(27.5, weight);
     }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
+        reco3j2d["chi2"]->Fill(chi2candidate2, chi2candidate2, weight);
         reco3j1d["counter"]->Fill(8.5, weight);
         if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(18.5, weight);
         if(rightper.BHad() == bhadper) reco3j1d["counter"]->Fill(28.5, weight);
@@ -1908,7 +1911,8 @@ void ttbar::ttanalysis(URStreamer& event)
     else if(SEMILEP) reco3j1d["counter2"]->Fill(8.5, weight);
     else reco3j1d["counter2"]->Fill(9.5, weight);
 
-    //truth matching for 3j
+
+    //truth matching for 3j - part II
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
