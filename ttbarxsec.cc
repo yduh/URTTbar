@@ -1672,6 +1672,7 @@ void ttbar::ttanalysis(URStreamer& event)
 {
 	reco1d["counter"]->Fill(0.5, weight);
 
+        cout<< "hihi-1"<< endl;
 	if(SEMILEPACC)
 	{
 		if(Abs(genper->LPDGId()) == 11) {truth2d["Ne_Nmu"]->Fill(mediumelectrons.size()+0.5, tightmuons.size()+0.5, weight);}
@@ -1701,6 +1702,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	}
 	if(SEMILEPACC && rightper.IsComplete()){ttp_truth.Fill(rightper, weight);}
 	if(lep == 0){return;}
+        cout<< "hihi0"<< endl;
 	reco1d["c_lep"]->Fill(event.run+0.5);
 
 	double nvtx = event.vertexs().size();
@@ -1753,6 +1755,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
+        cout<< "hihi1"<< endl;
 	if(cleanedjets.size() != 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
@@ -1793,6 +1796,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["counter"]->Fill(3.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
+        cout<< "hihi2"<< endl;
 // add for 3j test
         //const TLorentzVector * bcandidate1 = (TLorentzVector*)reducedjets[0];
         //const TLorentzVector * bcandidate2 = (TLorentzVector*)reducedjets[1];
@@ -1808,11 +1812,13 @@ void ttbar::ttanalysis(URStreamer& event)
         NeutrinoSolver NS_3jb = NeutrinoSolver(lep, reducedjets[1], 80., 173.);
         TLorentzVector metb = NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
         TLorentzVector metsolver;
+        cout<< chi2candidate1 <<", "<< chi2candidate2 <<endl;
         
         reco3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         reco3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         reco3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
         
+        cout<< "hihi3"<< endl;
         //b jet permutation
         if(chi2candidate1 <= chi2candidate2){
             bleper = reducedjets[0];
