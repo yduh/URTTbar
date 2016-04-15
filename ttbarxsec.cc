@@ -234,6 +234,7 @@ void ttbar::begin()
         dir_3j_reco->cd();
         reco3j1d.AddHist("counter", 30, 0, 30, "counter", "Events");
         reco3j1d.AddHist("counter2", 10, 0, 10, "counter", "Events");
+        reco3j1d.AddHist("counter_chi2", 10, 0, 10, "counter", "Events");
         reco3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         reco3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         reco3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
@@ -251,11 +252,11 @@ void ttbar::begin()
         reco3j2d.AddHist("select_bchi2", 100, 0, 500, 100, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
         reco3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
         reco3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
-        reco3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
+        //reco3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
         reco3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
-        reco3j1d.AddHist("blep_chi2", 100, 0, 500, "#chi^{2} right", "Events");
-        reco3j1d.AddHist("bhad_chi2", 100, 0, 500, "#chi^{2} wrong", "Events");
-        reco3j2d.AddHist("blep_bhad_chi2", 100, 0, 500, 100, 0, 500, "#chi^{2} right", "#chi^{2} wrong");
+        //reco3j1d.AddHist("blep_chi2", 100, 0, 500, "#chi^{2} right", "Events");
+        //reco3j1d.AddHist("bhad_chi2", 100, 0, 500, "#chi^{2} wrong", "Events");
+        //reco3j2d.AddHist("blep_bhad_chi2", 100, 0, 500, 100, 0, 500, "#chi^{2} right", "#chi^{2} wrong");
         //reco3j1d.AddHist("thadmiss_e", 250, 0, 500, "miss-jet E", "Events");
         //reco3j1d.AddHist("thadmiss_pt", 250, 0, 500, "miss-jet p_{T}", "Events"); 
         //reco3j1d.AddHist("thadmiss_y", 200, 0, 5, "miss-jet |y|", "Events");
@@ -283,9 +284,9 @@ void ttbar::begin()
         truth3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
         //truth3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
         truth3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
-        truth3j1d.AddHist("blep_chi2", 100, 0, 500, "#chi^{2} right", "Events");
-        truth3j1d.AddHist("bhad_chi2", 100, 0, 500, "#chi^{2} wrong", "Events");
-        truth3j2d.AddHist("blep_bhad_chi2", 100, 0, 500, 100, 0, 500, "#chi^{2} right", "#chi^{2} wrong");
+        //truth3j1d.AddHist("blep_chi2", 100, 0, 500, "#chi^{2} right", "Events");
+        //truth3j1d.AddHist("bhad_chi2", 100, 0, 500, "#chi^{2} wrong", "Events");
+        //truth3j2d.AddHist("blep_bhad_chi2", 100, 0, 500, 100, 0, 500, "#chi^{2} right", "#chi^{2} wrong");
 
         TDirectory* dir_3j_wrong = outFile_.mkdir("3j_WRONG");
         dir_3j_wrong->cd();
@@ -307,9 +308,9 @@ void ttbar::begin()
         wrong3j2d.AddHist("select_bpt", 250, 0, 500, 250, 0, 500, "p_{T}(b[0])", "p_{T}(b[1])");
         //wrong3j2d.AddHist("blep_bhad_csv", 24, 0.4, 1, 24, 0.4, 1, "CSV b_{l}", "CSV b_{h}");
         wrong3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
-        wrong3j1d.AddHist("blep_chi2", 100, 0, 500, "#chi^{2} right", "Events");
-        wrong3j1d.AddHist("bhad_chi2", 100, 0, 500, "#chi^{2} wrong", "Events");
-        wrong3j2d.AddHist("blep_bhad_chi2", 100, 0, 500, 100, 0, 500, "#chi^{2} right", "#chi^{2} wrong");
+        //wrong3j1d.AddHist("blep_chi2", 100, 0, 500, "#chi^{2} right", "Events");
+        //wrong3j1d.AddHist("bhad_chi2", 100, 0, 500, "#chi^{2} wrong", "Events");
+        //wrong3j2d.AddHist("blep_bhad_chi2", 100, 0, 500, 100, 0, 500, "#chi^{2} right", "#chi^{2} wrong");
 
         /*threejets.AddHist("Mtt_exact3j", 1000, 0, 2000, "M(t#bar{t})", "Events");
         threejets.AddHist("Mtt_exact4j", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -1809,7 +1810,8 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector metb = NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
         TLorentzVector metsolver;
 
-        if(chi2candidate2<0 && chi2candidate1<0) {return;}
+        reco3j1d["counter_chi2"]->Fill(0.5, weight);
+        if(chi2candidate2<0 && chi2candidate1<0) {reco3j1d["counter_chi2"]->Fill(1.5, weight); return;}
         
         reco3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         reco3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
@@ -1817,6 +1819,7 @@ void ttbar::ttanalysis(URStreamer& event)
         
         //b jet permutation
     if(chi2candidate1 >0 && chi2candidate2 >0){
+        reco3j1d["counter_chi2"]->Fill(2.5, weight);
         if(chi2candidate1 <= chi2candidate2){
             bleper = reducedjets[0];
             bhadper = reducedjets[1];
@@ -1824,10 +1827,10 @@ void ttbar::ttanalysis(URStreamer& event)
             chi2lep = chi2candidate1;
             chi2had = chi2candidate2;
 
-            reco3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
-            reco3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
-            reco3j2d["blep_bhad_chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-            reco3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
+            //reco3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
+            //reco3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
+            //reco3j2d["blep_bhad_chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+            //reco3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         }else{
             bleper = reducedjets[1];
             bhadper = reducedjets[0];
@@ -1835,20 +1838,22 @@ void ttbar::ttanalysis(URStreamer& event)
             chi2lep = chi2candidate2;
             chi2had = chi2candidate1;
 
-            reco3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
-            reco3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
-            reco3j2d["blep_bhad_chi2"]->Fill(chi2candidate2, chi2candidate1, weight);
-            reco3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
+            //reco3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
+            //reco3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
+            //reco3j2d["blep_bhad_chi2"]->Fill(chi2candidate2, chi2candidate1, weight);
+            //reco3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
         }
-    }else if(chi2candidate2<0){
+    }else if(chi2candidate1 >0 && chi2candidate2 <0){
+        reco3j1d["counter_chi2"]->Fill(3.5, weight);
             bleper = reducedjets[0];
             bhadper = reducedjets[1];
             metsolver = meta;
             chi2lep = chi2candidate1;
             chi2had = chi2candidate2;
-    }else if(chi2candidate1<0){
+    }else if(chi2candidate2 >0 && chi2candidate1 <0){
+        reco3j1d["counter_chi2"]->Fill(4.5, weight);
             bleper = reducedjets[1];
-            bhadper = reducedjets[1];
+            bhadper = reducedjets[0];
             metsolver = meta;
             chi2lep = chi2candidate1;
             chi2had = chi2candidate2;
@@ -1936,9 +1941,9 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
 
-        truth3j1d["blep_chi2"]->Fill(chi2lep, weight); 
-        truth3j1d["bhad_chi2"]->Fill(chi2had, weight);
-        truth3j2d["blep_bhad_chi2"]->Fill(chi2lep, chi2had, weight);
+        //truth3j1d["blep_chi2"]->Fill(chi2lep, weight); 
+        //truth3j1d["bhad_chi2"]->Fill(chi2had, weight);
+        //truth3j2d["blep_bhad_chi2"]->Fill(chi2lep, chi2had, weight);
 
         truth3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         truth3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
@@ -1959,9 +1964,9 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         wrong3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
 
-        wrong3j1d["blep_chi2"]->Fill(chi2lep, weight); 
-        wrong3j1d["bhad_chi2"]->Fill(chi2had, weight);
-        wrong3j2d["blep_bhad_chi2"]->Fill(chi2lep, chi2had, weight);
+        //wrong3j1d["blep_chi2"]->Fill(chi2lep, weight); 
+        //wrong3j1d["bhad_chi2"]->Fill(chi2had, weight);
+        //wrong3j2d["blep_bhad_chi2"]->Fill(chi2lep, chi2had, weight);
 
         wrong3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         wrong3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
