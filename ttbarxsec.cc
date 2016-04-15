@@ -1815,8 +1815,6 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j test
-        //const TLorentzVector * bcandidate1 = (TLorentzVector*)reducedjets[0];
-        //const TLorentzVector * bcandidate2 = (TLorentzVector*)reducedjets[1];
         //const TLorentzVector * lcandidate = (TLorentzVector*)lep;
         const TLorentzVector * bleper;
         const TLorentzVector * bhadper;
@@ -1838,46 +1836,36 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
         
         //b jet permutation
-    if(chi2candidate1 >0 && chi2candidate2 >0){
-        reco3j1d["counter_chi2"]->Fill(2.5, weight);
-        if(chi2candidate1 <= chi2candidate2){
-            bleper = reducedjets[0];
-            bhadper = reducedjets[1];
-            metsolver = meta;
-            chi2lep = chi2candidate1;
-            chi2had = chi2candidate2;
-
-            //reco3j1d["blep_chi2"]->Fill(chi2candidate1, weight);
-            //reco3j1d["bhad_chi2"]->Fill(chi2candidate2, weight);
-            //reco3j2d["blep_bhad_chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-            //reco3j2d["blep_bhad_csv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
-        }else{
-            bleper = reducedjets[1];
-            bhadper = reducedjets[0];
-            metsolver = metb;
-            chi2lep = chi2candidate2;
-            chi2had = chi2candidate1;
-
-            //reco3j1d["blep_chi2"]->Fill(chi2candidate2, weight);
-            //reco3j1d["bhad_chi2"]->Fill(chi2candidate1, weight);
-            //reco3j2d["blep_bhad_chi2"]->Fill(chi2candidate2, chi2candidate1, weight);
-            //reco3j2d["blep_bhad_csv"]->Fill(reducedjets[1]->csvIncl(), reducedjets[0]->csvIncl(), weight);
+        if(chi2candidate1 >0 && chi2candidate2 >0){
+            reco3j1d["counter_chi2"]->Fill(2.5, weight);
+            if(chi2candidate1 <= chi2candidate2){
+                bleper = reducedjets[0];
+                bhadper = reducedjets[1];
+                metsolver = meta;
+                chi2lep = chi2candidate1;
+                chi2had = chi2candidate2;
+            }else{
+                bleper = reducedjets[1];
+                bhadper = reducedjets[0];
+                metsolver = metb;
+                chi2lep = chi2candidate2;
+                chi2had = chi2candidate1;
+            }
+        }else if(chi2candidate1 >0 && chi2candidate2 <0){
+            reco3j1d["counter_chi2"]->Fill(3.5, weight);
+                bleper = reducedjets[0];
+                bhadper = reducedjets[1];
+                metsolver = meta;
+                chi2lep = chi2candidate1;
+                chi2had = chi2candidate2;
+        }else if(chi2candidate2 >0 && chi2candidate1 <0){
+            reco3j1d["counter_chi2"]->Fill(4.5, weight);
+                bleper = reducedjets[1];
+                bhadper = reducedjets[0];
+                metsolver = meta;
+                chi2lep = chi2candidate1;
+                chi2had = chi2candidate2;
         }
-    }else if(chi2candidate1 >0 && chi2candidate2 <0){
-        reco3j1d["counter_chi2"]->Fill(3.5, weight);
-            bleper = reducedjets[0];
-            bhadper = reducedjets[1];
-            metsolver = meta;
-            chi2lep = chi2candidate1;
-            chi2had = chi2candidate2;
-    }else if(chi2candidate2 >0 && chi2candidate1 <0){
-        reco3j1d["counter_chi2"]->Fill(4.5, weight);
-            bleper = reducedjets[1];
-            bhadper = reducedjets[0];
-            metsolver = meta;
-            chi2lep = chi2candidate1;
-            chi2had = chi2candidate2;
-    }
 
         TLorentzVector tlep_3j = *bleper + *lep + metsolver;
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
@@ -1919,70 +1907,73 @@ void ttbar::ttanalysis(URStreamer& event)
 
     reco3j1d["counter2"]->Fill(0.5, weight);
     if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){ 
-    reco3j1d["counter"]->Fill(0.5, weight);
-    reco3j1d["counter2"]->Fill(1.5, weight);
+        reco3j1d["counter"]->Fill(0.5, weight);
+        reco3j1d["counter2"]->Fill(1.5, weight);
 
-    if(rightper.BLep() == reducedjets[0]){ 
-        reco3j1d["counter"]->Fill(1.5, weight); 
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(11.5, weight); 
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(21.5, weight);}
-    if(rightper.BLep() == reducedjets[1]){ 
-        reco3j1d["counter"]->Fill(2.5, weight); 
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(12.5, weight); 
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(22.5, weight);}
-    if(rightper.BLep() == reducedjets[2]){
-        reco3j1d["counter"]->Fill(3.5, weight);
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(13.5, weight);
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(23.5, weight);}
-    if(rightper.BHad() == reducedjets[0]){
-        reco3j1d["counter"]->Fill(4.5, weight);
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(14.5, weight);
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(24.5, weight);}
-    if(rightper.BHad() == reducedjets[1]){
-        reco3j1d["counter"]->Fill(5.5, weight);
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(15.5, weight);
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(25.5, weight);}
-    if(rightper.BHad() == reducedjets[2]){ 
-        reco3j1d["counter"]->Fill(6.5, weight);
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(16.5, weight);
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(26.5, weight);}
+        if(rightper.BLep() == reducedjets[0]){ 
+            reco3j1d["counter"]->Fill(1.5, weight); 
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(11.5, weight); 
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(21.5, weight);
+        }
+        if(rightper.BLep() == reducedjets[1]){ 
+            reco3j1d["counter"]->Fill(2.5, weight); 
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(12.5, weight); 
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(22.5, weight);
+        }
+        if(rightper.BLep() == reducedjets[2]){
+            reco3j1d["counter"]->Fill(3.5, weight);
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(13.5, weight);
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(23.5, weight);
+        }
+        if(rightper.BHad() == reducedjets[0]){
+            reco3j1d["counter"]->Fill(4.5, weight);
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(14.5, weight);
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(24.5, weight);
+        }
+        if(rightper.BHad() == reducedjets[1]){
+            reco3j1d["counter"]->Fill(5.5, weight);
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(15.5, weight);
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(25.5, weight);
+        }
+        if(rightper.BHad() == reducedjets[2]){ 
+            reco3j1d["counter"]->Fill(6.5, weight);
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(16.5, weight);
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(26.5, weight);
+        }
 
-    if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
-        reco3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-        if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate1<<", "<< chi2candidate2<< endl;
-        reco3j1d["counter"]->Fill(7.5, weight);
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(17.5, weight); 
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(27.5, weight);
-    }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
-        reco3j2d["chi2"]->Fill(chi2candidate2, chi2candidate2, weight);
-        if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate2<<", "<< chi2candidate1<< endl;
-        reco3j1d["counter"]->Fill(8.5, weight);
-        if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(18.5, weight);
-        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(28.5, weight);
-    }else{
-        reco3j1d["counter"]->Fill(9.5, weight);
-    }
+        reco3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
+        if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
+            reco3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
+            //reco3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+            //if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate1<<", "<< chi2candidate2<< endl;
+            reco3j1d["counter"]->Fill(7.5, weight);
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(17.5, weight); 
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(27.5, weight);
+        }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
+            reco3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
+            //reco3j2d["chi2"]->Fill(chi2candidate2, chi2candidate2, weight);
+            //if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate2<<", "<< chi2candidate1<< endl;
+            reco3j1d["counter"]->Fill(8.5, weight);
+            if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(18.5, weight);
+            if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(28.5, weight);
+        }else  reco3j1d["counter"]->Fill(9.5, weight);
 
         if(rightper.BLep() == bleper)   reco3j1d["counter2"]->Fill(2.5, weight);
         if(rightper.BLep() == bhadper)  reco3j1d["counter2"]->Fill(3.5, weight);
         if(rightper.BLep() == bleper && rightper.BHad() == bhadper)   reco3j1d["counter2"]->Fill(4.5, weight);
     }
-    
+   
+    //counter2 for right/wrong/semi/others
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())) reco3j1d["counter2"]->Fill(6.5, weight);
     else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) reco3j1d["counter2"]->Fill(7.5, weight);
     else if(SEMILEP) reco3j1d["counter2"]->Fill(8.5, weight);
     else reco3j1d["counter2"]->Fill(9.5, weight);
 
-
-    //truth matching for 3j - part II
+    //truth matching for 3j, right/wrong
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
-
-        //truth3j1d["blep_chi2"]->Fill(chi2lep, weight); 
-        //truth3j1d["bhad_chi2"]->Fill(chi2had, weight);
-        //truth3j2d["blep_bhad_chi2"]->Fill(chi2lep, chi2had, weight);
 
         truth3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         truth3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
@@ -1998,16 +1989,13 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
+        truth3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
         if(Abs(chi2lep-chi2had)<5)  reco3j1d["counter_chi2"]->Fill(7.5, weight);
 
     }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
         wrong3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         wrong3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
-
-        //wrong3j1d["blep_chi2"]->Fill(chi2lep, weight); 
-        //wrong3j1d["bhad_chi2"]->Fill(chi2had, weight);
-        //wrong3j2d["blep_bhad_chi2"]->Fill(chi2lep, chi2had, weight);
 
         wrong3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         wrong3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
@@ -2023,6 +2011,7 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         wrong3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         
+        wrong3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
         if(Abs(chi2lep-chi2had)<5)  reco3j1d["counter_chi2"]->Fill(8.5, weight);
     }
     /*else if(SEMILEP){
