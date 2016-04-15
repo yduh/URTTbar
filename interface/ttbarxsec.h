@@ -92,6 +92,8 @@ class ttbar : public AnalyzerBase
 		//hists
                 TH2DCollection reco3j2d;
                 TH1DCollection reco3j1d;
+                TH2DCollection chi2same3j2d;
+                TH1DCollection chi2same3j1d;
                 TH2DCollection truth3j2d;
                 TH1DCollection truth3j1d;
                 TH2DCollection wrong3j2d;

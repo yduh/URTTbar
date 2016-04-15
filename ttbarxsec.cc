@@ -13,6 +13,8 @@ ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
         reco3j2d("3j"),
         reco3j1d("3j"),
+        chi2same3j2d("3j"),
+        chi2same3j1d("3j"),
         truth3j2d("3j"),
         truth3j1d("3j"),
         wrong3j2d("3j"),
@@ -263,6 +265,24 @@ void ttbar::begin()
         //reco3j1d.AddHist("thadmiss_DeltaR", 100, 0, 5, "W-jets #DeltaR", "Events");
         //reco3j1d.AddHist("delpt_pt", 20, 0, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
         //reco3j1d.AddHist("dely_y", 20, 0, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
+
+        TDirectory* dir_3j_chi2same = outFile_.mkdir("3j_chi2same");
+        dir_3j_chi2same->cd();
+        chi2same3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
+        chi2same3j2d.AddHist("blep_chi2_pt", 100, 0, 500, 250, 0, 500, "#chi^{2}(b_{l})", "p_{T}(b_{l})");
+        chi2same3j2d.AddHist("bhad_chi2_pt", 100, 0, 500, 250, 0, 500, "#chi^{2}(b_{h})", "p_{T}(b_{h})");
+        chi2same3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
+        chi2same3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
+        chi2same3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
+        chi2same3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
+        chi2same3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
+        chi2same3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
+        chi2same3j1d.AddHist("thadwrong_M", 500, 0, 1000, "M(t_{h})", "Events");
+        chi2same3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
+        chi2same3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
+        chi2same3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+        chi2same3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
+        chi2same3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
 
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
@@ -1877,6 +1897,26 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
+        if(Abs(chi2candidate1 - chi2candidate2)<5){
+        reco3j1d["counter_chi2"]->Fill(6.5, weight);
+        chi2same3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
+        chi2same3j2d["blep_chi2_pt"]->Fill(chi2lep, bleper->Pt());
+        chi2same3j2d["bhad_chi2_pt"]->Fill(chi2had, bhadper->Pt());
+        chi2same3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        chi2same3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
+        chi2same3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
+        chi2same3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
+        chi2same3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
+        chi2same3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
+        chi2same3j1d["thadwrong_M"]->Fill(thadwrong_3j.Mag(), weight);
+        chi2same3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
+        chi2same3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
+        chi2same3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
+        chi2same3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        chi2same3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        }
+
+
     reco3j1d["counter2"]->Fill(0.5, weight);
     if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){ 
     reco3j1d["counter"]->Fill(0.5, weight);
@@ -1907,7 +1947,6 @@ void ttbar::ttanalysis(URStreamer& event)
         if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(16.5, weight);
         if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(26.5, weight);}
 
-
     if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
         reco3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate1<<", "<< chi2candidate2<< endl;
@@ -1919,7 +1958,7 @@ void ttbar::ttanalysis(URStreamer& event)
         if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate2<<", "<< chi2candidate1<< endl;
         reco3j1d["counter"]->Fill(8.5, weight);
         if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(18.5, weight);
-        if(rightper.BHad() == bhadper) reco3j1d["counter"]->Fill(28.5, weight);
+        if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(28.5, weight);
     }else{
         reco3j1d["counter"]->Fill(9.5, weight);
     }
