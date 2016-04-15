@@ -1902,7 +1902,7 @@ void ttbar::ttanalysis(URStreamer& event)
         chi2same3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         chi2same3j2d["blep_chi2_pt"]->Fill(chi2lep, bleper->Pt());
         chi2same3j2d["bhad_chi2_pt"]->Fill(chi2had, bhadper->Pt());
-        chi2same3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
+        /*chi2same3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
         chi2same3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
         chi2same3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
         chi2same3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
@@ -1912,7 +1912,7 @@ void ttbar::ttanalysis(URStreamer& event)
         chi2same3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         chi2same3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         chi2same3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
-        chi2same3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        chi2same3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);*/
         chi2same3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         }
 
@@ -1998,6 +1998,8 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
+        if(Abs(chi2lep-chi2had)<5)  reco3j1d["counter_chi2"]->Fill(7.5, weight);
+
     }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
         wrong3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         wrong3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
@@ -2020,6 +2022,8 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         wrong3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         wrong3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        
+        if(Abs(chi2lep-chi2had)<5)  reco3j1d["counter_chi2"]->Fill(8.5, weight);
     }
     /*else if(SEMILEP){
         semi3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
