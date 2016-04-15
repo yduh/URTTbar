@@ -286,6 +286,7 @@ void ttbar::begin()
 
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
+        truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         truth3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         truth3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -310,6 +311,7 @@ void ttbar::begin()
 
         TDirectory* dir_3j_wrong = outFile_.mkdir("3j_WRONG");
         dir_3j_wrong->cd();
+        wrong3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         wrong3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         wrong3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         wrong3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
