@@ -287,6 +287,7 @@ void ttbar::begin()
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
         truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
+        truth3j1d.AddHist("met_pz", 30, 0, 300, "met p_{z}", "Events");
         truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         truth3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         truth3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -312,6 +313,7 @@ void ttbar::begin()
         TDirectory* dir_3j_wrong = outFile_.mkdir("3j_WRONG");
         dir_3j_wrong->cd();
         wrong3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
+        wrong3j1d.AddHist("met_pz", 30, 0, 300, "met p_{z}", "Events");
         wrong3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         wrong3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         wrong3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -1992,7 +1994,10 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
         truth3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
-        if(Abs(chi2lep-chi2had)<5)  reco3j1d["counter_chi2"]->Fill(7.5, weight);
+        if(Abs(chi2lep-chi2had)<5){  
+            reco3j1d["counter_chi2"]->Fill(7.5, weight);
+            truth3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+        }
 
     }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
         wrong3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
@@ -2014,7 +2019,10 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         
         wrong3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
-        if(Abs(chi2lep-chi2had)<5)  reco3j1d["counter_chi2"]->Fill(8.5, weight);
+        if(Abs(chi2lep-chi2had)<5){  
+            reco3j1d["counter_chi2"]->Fill(8.5, weight);
+            wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+        }
     }
     /*else if(SEMILEP){
         semi3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
