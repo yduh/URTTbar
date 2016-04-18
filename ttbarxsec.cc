@@ -238,6 +238,10 @@ void ttbar::begin()
         reco3j1d.AddHist("counter2", 10, 0, 10, "counter", "Events");
         reco3j1d.AddHist("counter_chi2", 10, 0, 10, "counter", "Events");
         reco3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
+        reco3j1d.AddHist("met_pz", 30, 0, 300, "met p_{z}", "Events");
+        reco3j1d.AddHist("met_pz_clean", 30, 0, 300, "met p_{z}", "Events");
+        reco3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
+        reco3j1d.AddHist("met_dpz_pz_clean", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         reco3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         reco3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         reco3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -2027,6 +2031,12 @@ void ttbar::ttanalysis(URStreamer& event)
             wrong3j1d["met_dpz_pz"]->Fill(metsolver.Pz()-genper->Nu().Pz()/genper->Nu().Pz(), weight);
         }
     }
+
+    reco3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+    reco3j1d["met_dpz_pz"]->Fill(metsolver.Pz()-genper->Nu().Pz()/genper->Nu().Pz(), weight);
+    if(Abs(chi2lep-chi2had)<5) {return;}
+    reco3j1d["met_pz_clean"]->Fill(metsolver.Pz(), weight);
+    reco3j1d["met_dpz_pz_clean"]->Fill(metsolver.Pz()-genper->Nu().Pz()/genper->Nu().Pz(), weight);
     /*else if(SEMILEP){
         semi3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         semi3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
