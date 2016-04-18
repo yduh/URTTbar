@@ -743,7 +743,7 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-        TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
+        TFile* fyuka_2d = TFile::Open("yukawa_reweighing2.0.root");
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
@@ -1151,9 +1151,9 @@ void ttbar::SelectGenParticles(URStreamer& event)
                     //cout << "Q " << gps[dindex].pdgId() << " " << gps[gps[dindex].firstDaughtIdx()].pdgId() << endl;
                     sgenparticles.push_back(gps[dindex]);
                     genwpartons.push_back(&(sgenparticles.back()));
-	            sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
+	            /*sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
                     genmiss = genwpartons[1];
-                    genmiss = genwpartons[0];
+                    genmiss = genwpartons[0];*/
                 }
                 else if(gp.momIdx().size() != 0 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
                 {
@@ -1224,9 +1224,9 @@ void ttbar::SelectGenParticles(URStreamer& event)
                 {
                     sgenparticles.push_back(gp);
                     genwpartons.push_back(&(sgenparticles.back()));
-	            sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
+	            /*sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
                     genmiss = genwpartons[1];
-                    genmisspartner = genwpartons[0];
+                    genmisspartner = genwpartons[0];*/
                 }
             }
 
@@ -1265,7 +1265,6 @@ void ttbar::SelectGenParticles(URStreamer& event)
     SEMILEP = false;
     FULLLEP = false;
     SEMILEPACC = false;
-    //3JTRUTH = false;
     //cout << topcounter << " " << lepdecays << " " << genwpartons.size() << " " << genfincls.size() << endl;
     if(topcounter == 2 && genb != 0 && genbbar != 0)
     {
@@ -1299,18 +1298,18 @@ void ttbar::SelectGenParticles(URStreamer& event)
             genallper.Init(genwpartons[0], genwpartons[1], genb, genbbar, gencls[0], gencls[0]->pdgId(), gennls[0]);
             gentqlep = gentqbar;
             gentqhad = gentq;
-            gentqhad_3j = gentqhad - *genmiss;
+            /*gentqhad_3j = gentqhad - *genmiss;
             gentqhad_miss = *genmiss;
-            gentqhad_misspartner = *genmisspartner;
+            gentqhad_misspartner = *genmisspartner;*/
         }
         else
         {
             genallper.Init(genwpartons[0], genwpartons[1], genbbar, genb, gencls[0], gencls[0]->pdgId(), gennls[0]);
             gentqlep = gentq;
             gentqhad = gentqbar;
-            gentqhad_3j = gentqhad - *genmiss;
+            /*gentqhad_3j = gentqhad - *genmiss;
             gentqhad_miss = *genmiss;
-            gentqhad_misspartner = *genmisspartner;
+            gentqhad_misspartner = *genmisspartner;*/
         }
     }
 
@@ -1784,9 +1783,9 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() != 3){return;} // change for 3j test
+	if(cleanedjets.size() < 4){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
-	if(BTAGMODE && cleanedjets.size() > 4){return;}
+	if(BTAGMODE && cleanedjets.size() < 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
 	if(tightmuons.size() == 1)
@@ -1816,8 +1815,8 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
 	if(!BTAGMODE)
 	{
-		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
-		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
+		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
+		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
 		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}
 	}
 	reco1d["c_btag"]->Fill(event.run+0.5);
@@ -1825,8 +1824,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j test
-        //const TLorentzVector * lcandidate = (TLorentzVector*)lep;
-        const TLorentzVector * bleper;
+/*        const TLorentzVector * bleper;
         const TLorentzVector * bhadper;
         double chi2candidate1;
         double chi2candidate2;
@@ -1900,17 +1898,6 @@ void ttbar::ttanalysis(URStreamer& event)
         chi2same3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         chi2same3j2d["blep_chi2_pt"]->Fill(chi2lep, bleper->Pt());
         chi2same3j2d["bhad_chi2_pt"]->Fill(chi2had, bhadper->Pt());
-        /*chi2same3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
-        chi2same3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
-        chi2same3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
-        chi2same3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
-        chi2same3j1d["tlep_M"]->Fill(tlep_3j.Mag(), weight);
-        chi2same3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
-        chi2same3j1d["thadwrong_M"]->Fill(thadwrong_3j.Mag(), weight);
-        chi2same3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
-        chi2same3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
-        chi2same3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
-        chi2same3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);*/
         chi2same3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         }
 
@@ -2034,9 +2021,13 @@ void ttbar::ttanalysis(URStreamer& event)
 
     reco3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
     reco3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+    //if(metsolver.Pz()<10) count<< 
     if(Abs(chi2lep-chi2had)<5) {return;}
     reco3j1d["met_pz_clean"]->Fill(metsolver.Pz(), weight);
     reco3j1d["met_dpz_pz_clean"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+*/
+
+
     /*else if(SEMILEP){
         semi3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         semi3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
@@ -2122,7 +2113,7 @@ void ttbar::ttanalysis(URStreamer& event)
         }
 */
 
-	if(cleanedjets.size() < 4){return;} // change for 3j test
+	//if(cleanedjets.size() < 4){return;} // change for 3j test
 
         //check what we have reconstructed
 	if(SEMILEP)
@@ -2728,7 +2719,7 @@ void ttbar::analyze()
 	//sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});
         //TLorentzVector tlep_3j = gentqlep;
         //TLorentzVector thad_3j_gen = gentqhad - genwpartons[1];
-
+/*
         gen3j1d["tlep_pt"]->Fill(gentqlep.Pt(), weight);
         gen3j1d["thad_pt"]->Fill(gentqhad_3j.Pt(), weight);
         gen3j1d["tlep_y"]->Fill(Abs(gentqlep.Rapidity()), weight);
@@ -2750,7 +2741,7 @@ void ttbar::analyze()
         gen3j1d["dpt_pt"]->Fill((gentqhad.Pt() - gentqhad_3j.Pt())/gentqhad_3j.Pt(), weight);
         gen3j1d["dmtt_mtt"]->Fill(((gentqhad+gentqlep).Mag() - (gentqhad_3j+gentqlep).Mag())/(gentqhad_3j+gentqlep).Mag(), weight);
         gen3j1d["ddely_dely"]->Fill(((gentqhad.Rapidity() - gentqlep.Rapidity()) - (gentqhad_3j.Rapidity() - gentqlep.Rapidity()))/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
-
+*/
         //}
 
                 //if(genallper.IsComplete()){
