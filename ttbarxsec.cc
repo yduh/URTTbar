@@ -1787,7 +1787,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 3){return;} // change for 3j test
+	if(cleanedjets.size() != 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1863,7 +1863,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 chi2lep = chi2candidate2;
                 chi2had = chi2candidate1;
             }
-        }else if(chi2candidate1 >0 && chi2candidate2 <0){
+        }/*else if(chi2candidate1 >0 && chi2candidate2 <0){
             reco3j1d["counter_chi2"]->Fill(3.5, weight);
                 bleper = reducedjets[0];
                 bhadper = reducedjets[1];
@@ -1877,7 +1877,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 metsolver = meta;
                 chi2lep = chi2candidate1;
                 chi2had = chi2candidate2;
-        }
+        }*/
 
         TLorentzVector tlep_3j = *bleper + *lep + metsolver;
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
