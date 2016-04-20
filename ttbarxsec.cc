@@ -290,7 +290,7 @@ void ttbar::begin()
         truth3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         truth3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         truth3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
-        truth3j2d.AddHist("met_dpz_dpt", 40, -2, 2, 40, -2, 2, "met #Deltap_{z}/p_{z}", "met #Deltap_{T}/p_{T}");
+        truth3j2d.AddHist("met_dpt_dpz", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
         truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         truth3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         truth3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -320,7 +320,7 @@ void ttbar::begin()
         wrong3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         wrong3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         wrong3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
-        wrong3j2d.AddHist("met_dpz_dpt", 40, -2, 2, 40, -2, 2, "met #Deltap_{z}/p_{z}", "met #Deltap_{T}/p_{T}");
+        wrong3j2d.AddHist("met_dpt_dpz", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
         wrong3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         wrong3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         wrong3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
