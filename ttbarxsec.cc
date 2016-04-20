@@ -1841,7 +1841,7 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector metsolver;
 
         reco3j1d["counter_chi2"]->Fill(0.5, weight);
-        if(chi2candidate2<0 && chi2candidate1<0) {reco3j1d["counter_chi2"]->Fill(1.5, weight); return;}
+        if(chi2candidate2<0 || chi2candidate1<0) {reco3j1d["counter_chi2"]->Fill(1.5, weight); return;}
         
         reco3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         reco3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
