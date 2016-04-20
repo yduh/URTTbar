@@ -2000,7 +2000,8 @@ void ttbar::ttanalysis(URStreamer& event)
             truth3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
             truth3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(6.5, weight);
-            if(metsolver.Pt()<20) cout<<chi2candidate1<<", "<<chi2candidate2<<endl;
+            if(metsolver.Pt()<10){ if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]) cout<<chi2candidate1<<", "<<chi2candidate2<<endl;
+                                   if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) cout<<chi2candidate2<<", "<<chi2candidate1<<endl;}
         }else{
             chi2same3j1d["met_pz_truth"]->Fill(metsolver.Pz(), weight);
             chi2same3j2d["met_pt_pz_truth"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
