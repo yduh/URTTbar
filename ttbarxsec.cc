@@ -283,8 +283,10 @@ void ttbar::begin()
         dir_3j_truth->cd();
         truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         truth3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
+        truth3j1d.AddHist("met_pt", 15, 0, 300, "met p_{T}", "Events");
         truth3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         truth3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
+        truth3j2d.AddHist("met_dpz_dpt", 40, -2, 2, 40, -2, 2, "met #Deltap_{z}/p_{z}", "met #Deltap_{T}/p_{T}");
         truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         truth3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         truth3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -311,8 +313,10 @@ void ttbar::begin()
         dir_3j_wrong->cd();
         wrong3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         wrong3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
+        wrong3j1d.AddHist("met_pt", 15, 0, 300, "met p_{T}", "Events");
         wrong3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         wrong3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
+        wrong3j2d.AddHist("met_dpz_dpt", 40, -2, 2, 40, -2, 2, "met #Deltap_{z}/p_{z}", "met #Deltap_{T}/p_{T}");
         wrong3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         wrong3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         wrong3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -1984,13 +1988,17 @@ void ttbar::ttanalysis(URStreamer& event)
         }
         if(Abs(diffchi2)> 5){
             truth3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+            truth3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             truth3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             truth3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            truth3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(6.5, weight);
         }else{
             chi2same3j1d["met_pz_truth"]->Fill(metsolver.Pz(), weight);
+            chi2same3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             chi2same3j1d["met_dpz_pz_truth"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             chi2same3j1d["met_dpt_pt_truth"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            chi2same3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(7.5, weight);
         }
 
@@ -2022,13 +2030,17 @@ void ttbar::ttanalysis(URStreamer& event)
         }
         if(Abs(diffchi2)> 5){
             wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+            wrong3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             wrong3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             wrong3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            wrong3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(8.5, weight);
         }else{
             chi2same3j1d["met_pz_wrong"]->Fill(metsolver.Pz(), weight);
+            chi2same3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             chi2same3j1d["met_dpz_pz_wrong"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             chi2same3j1d["met_dpt_pt_wrong"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            chi2same3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(9.5, weight);
         }
 
