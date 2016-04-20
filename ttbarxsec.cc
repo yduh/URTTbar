@@ -274,16 +274,20 @@ void ttbar::begin()
         dir_3j_chi2same->cd();
         chi2same3j1d.AddHist("met_pz_truth", 30, -300, 300, "met p_{z}", "Events");
         chi2same3j1d.AddHist("met_pz_wrong", 30, -300, 300, "met p_{z}", "Events");
+        chi2same3j2d.AddHist("met_pt_pz_truth", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
+        chi2same3j2d.AddHist("met_pt_pz_wrong", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         chi2same3j1d.AddHist("met_dpz_pz_truth", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         chi2same3j1d.AddHist("met_dpz_pz_wrong", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         chi2same3j1d.AddHist("met_dpt_pt_truth", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
         chi2same3j1d.AddHist("met_dpt_pt_wrong", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
+        chi2same3j2d.AddHist("met_dpt_dpz_truth", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
+        chi2same3j2d.AddHist("met_dpt_dpz_wrong", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
 
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
         truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         truth3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
-        truth3j1d.AddHist("met_pt", 15, 0, 300, "met p_{T}", "Events");
+        truth3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         truth3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         truth3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
         truth3j2d.AddHist("met_dpz_dpt", 40, -2, 2, 40, -2, 2, "met #Deltap_{z}/p_{z}", "met #Deltap_{T}/p_{T}");
@@ -313,7 +317,7 @@ void ttbar::begin()
         dir_3j_wrong->cd();
         wrong3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         wrong3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
-        wrong3j1d.AddHist("met_pt", 15, 0, 300, "met p_{T}", "Events");
+        wrong3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         wrong3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         wrong3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
         wrong3j2d.AddHist("met_dpz_dpt", 40, -2, 2, 40, -2, 2, "met #Deltap_{z}/p_{z}", "met #Deltap_{T}/p_{T}");
@@ -1991,14 +1995,14 @@ void ttbar::ttanalysis(URStreamer& event)
             truth3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             truth3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             truth3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
-            truth3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            truth3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(6.5, weight);
         }else{
             chi2same3j1d["met_pz_truth"]->Fill(metsolver.Pz(), weight);
-            chi2same3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
+            chi2same3j2d["met_pt_pz_truth"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             chi2same3j1d["met_dpz_pz_truth"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             chi2same3j1d["met_dpt_pt_truth"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
-            chi2same3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            chi2same3j2d["met_dpt_dpz_truth"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(7.5, weight);
         }
 
@@ -2033,14 +2037,14 @@ void ttbar::ttanalysis(URStreamer& event)
             wrong3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             wrong3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             wrong3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
-            wrong3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            wrong3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(8.5, weight);
         }else{
             chi2same3j1d["met_pz_wrong"]->Fill(metsolver.Pz(), weight);
-            chi2same3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
+            chi2same3j2d["met_pt_pz_wrong"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             chi2same3j1d["met_dpz_pz_wrong"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             chi2same3j1d["met_dpt_pt_wrong"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
-            chi2same3j2d["met_dpz_dpt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            chi2same3j2d["met_dpt_dpz_wrong"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(9.5, weight);
         }
 
