@@ -287,6 +287,7 @@ void ttbar::begin()
         dir_3j_truth->cd();
         truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         truth3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
+        truth3j1d.AddHist("MET", 15, 0, 300, "MET p_{T}", "Events");
         truth3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         truth3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         truth3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
@@ -317,6 +318,7 @@ void ttbar::begin()
         dir_3j_wrong->cd();
         wrong3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
         wrong3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
+        wrong3j1d.AddHist("MET", 15, 0, 300, "MET p_{T}", "Events");
         wrong3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         wrong3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         wrong3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
@@ -1785,7 +1787,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 3){return;} // change for 3j test
+	if(cleanedjets.size() != 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
@@ -1839,7 +1841,7 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector metsolver;
 
         reco3j1d["counter_chi2"]->Fill(0.5, weight);
-        if(chi2candidate2<0 && chi2candidate1<0) {reco3j1d["counter_chi2"]->Fill(1.5, weight); return;}
+        if(chi2candidate2<0 && chi2candidate1<0) reco3j1d["counter_chi2"]->Fill(1.5, weight); return;
         
         reco3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         reco3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
@@ -1992,11 +1994,13 @@ void ttbar::ttanalysis(URStreamer& event)
         }
         if(Abs(diffchi2)> 5){
             truth3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+            truth3j1d["MET"]->Fill(met.Pt(), weight);
             truth3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             truth3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             truth3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
             truth3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(6.5, weight);
+            if(metsolver.Pt()<20) cout<<chi2candidate1<<", "<<chi2candidate2<<endl;
         }else{
             chi2same3j1d["met_pz_truth"]->Fill(metsolver.Pz(), weight);
             chi2same3j2d["met_pt_pz_truth"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
@@ -2034,6 +2038,7 @@ void ttbar::ttanalysis(URStreamer& event)
         }
         if(Abs(diffchi2)> 5){
             wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+            wrong3j1d["MET"]->Fill(met.Pt(), weight);
             wrong3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
             wrong3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             wrong3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
