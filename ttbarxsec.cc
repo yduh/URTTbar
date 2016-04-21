@@ -304,6 +304,8 @@ void ttbar::begin()
         truth3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
         truth3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
         truth3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+        truth3j1d.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
+        truth3j1d.AddHist("delY_resol", 40, -2, 2, "#Deltay(t#bar{t}) reco/gen", "Events");
        
         truth3j2d.AddHist("select_bchi2", 100, 0, 500, 100, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
         truth3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
@@ -746,7 +748,7 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-        TFile* fyuka_2d = TFile::Open("yukawa_reweighing3.0.root");
+        TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
@@ -1984,6 +1986,8 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        truth3j1d["Mtt_resol"]->Fill((tlep_3j + thad_3j).Mag()/(gentq + gentqbar).Mag(), weight);
+        truth3j1d["delY_resol"]->Fill((tlep_3j.Rapidity() - thad_3j.Rapidity())/(gentq.Rapidity() - gentqbar.Rapidity()), weight);
 
         if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
             truth3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
