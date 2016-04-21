@@ -229,8 +229,8 @@ void ttbar::begin()
         gen3j1d.AddHist("de_e", 40, 0, 2, "#DeltaE(t_{h})/E(t_{h})", "Events");
         gen3j1d.AddHist("dy_y", 80, -2, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
         gen3j1d.AddHist("dpt_pt", 80, -2, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
-        gen3j1d.AddHist("dmtt_mtt", 40, 0, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
-        gen3j1d.AddHist("ddely_dely", 80, -2, 2, "#Delta(#Deltay(t#bar{t}))/(#Deltay(t#bar{t}))", "Events");
+        gen3j1d.AddHist("dmtt_mtt", 40, -2, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
+        gen3j1d.AddHist("ddely_dely", 40, -2, 2, "#Delta(#Deltay(t#bar{t}))/(#Deltay(t#bar{t}))", "Events");
 
         TDirectory* dir_3j_reco = outFile_.mkdir("3j_RECO");
         dir_3j_reco->cd();
@@ -1986,8 +1986,11 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
-        truth3j1d["Mtt_resol"]->Fill((tlep_3j + thad_3j).Mag()/(gentq + gentqbar).Mag(), weight);
-        truth3j1d["delY_resol"]->Fill((tlep_3j.Rapidity() - thad_3j.Rapidity())/(gentq.Rapidity() - gentqbar.Rapidity()), weight);
+        truth3j1d["Mtt_resol"]->Fill((tlep_3j + thad_3j).Mag()/(gentqhad + gentqlep).Mag(), weight);
+        truth3j1d["delY_resol"]->Fill((tlep_3j.Rapidity() - thad_3j.Rapidity())/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
+
+        //gen3j1d["dmtt_mtt"]->Fill(((gentqhad+gentqlep).Mag() - (gentqhad_3j+gentqlep).Mag())/(gentqhad_3j+gentqlep).Mag(), weight);
+        //gen3j1d["ddely_dely"]->Fill(((gentqhad.Rapidity() - gentqlep.Rapidity()) - (gentqhad_3j.Rapidity() - gentqlep.Rapidity()))/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
 
         if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
             truth3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
