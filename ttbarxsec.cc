@@ -2460,8 +2460,10 @@ void ttbar::ttanalysis(URStreamer& event)
 		ttp_right.Fill(bestper, weight);
 		truth1d["counter"]->Fill(8.5, weight);
                 //for yukawa studies
-                yuka1d_reco_right["Mtt_resol"]->Fill((Mtt - (gentqhad_3j+gentqlep).Mag())/(gentqhad_3j+gentqlep).Mag(), weight);
-                yuka1d_reco_right["delY_resol"]->Fill((deltaY - (gentqhad_3j.Rapidity() - gentqlep.Rapidity()))/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
+                yuka1d_reco_right["Mtt_resol"]->Fill((Mtt - (gentqhad+gentqlep).Mag())/(gentqhad+gentqlep).Mag(), weight);
+                //yuka1d_reco_right["Mtt_resol"]->Fill(Mtt/(gentqhad_3j+gentqlep).Mag(), weight);
+                yuka1d_reco_right["delY_resol"]->Fill((deltaY - (gentqhad.Rapidity() - gentqlep.Rapidity()))/(gentqhad.Rapidity() - gentqlep.Rapidity()), weight);
+                //yuka1d_reco_right["delY_resol"]->Fill(deltaY/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
 		yuka1d_reco_right["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
 		yuka1d_reco_right["costheta"]->Fill(costheta_lep, weight);
