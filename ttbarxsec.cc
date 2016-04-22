@@ -2462,7 +2462,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 //for yukawa studies
                 yuka1d_reco_right["Mtt_resol"]->Fill((Mtt - (gentqhad+gentqlep).Mag())/(gentqhad+gentqlep).Mag(), weight);
                 //yuka1d_reco_right["Mtt_resol"]->Fill(Mtt/(gentqhad_3j+gentqlep).Mag(), weight);
-                yuka1d_reco_right["delY_resol"]->Fill((deltaY - (gentqhad.Rapidity() - gentqlep.Rapidity()))/(gentqhad.Rapidity() - gentqlep.Rapidity()), weight);
+                yuka1d_reco_right["delY_resol"]->Fill((deltaY - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
                 //yuka1d_reco_right["delY_resol"]->Fill(deltaY/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
 		yuka1d_reco_right["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
