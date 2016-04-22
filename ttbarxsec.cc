@@ -229,8 +229,8 @@ void ttbar::begin()
         gen3j1d.AddHist("de_e", 40, 0, 2, "#DeltaE(t_{h})/E(t_{h})", "Events");
         gen3j1d.AddHist("dy_y", 80, -2, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
         gen3j1d.AddHist("dpt_pt", 80, -2, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
-        gen3j1d.AddHist("dmtt_mtt", 40, 0, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
-        gen3j1d.AddHist("ddely_dely", 80, -2, 2, "#Delta(#Deltay(t#bar{t}))/(#Deltay(t#bar{t}))", "Events");
+        gen3j1d.AddHist("dmtt_mtt", 40, -2, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
+        gen3j1d.AddHist("ddely_dely", 40, -2, 2, "#Delta(#Deltay(t#bar{t}))/(#Deltay(t#bar{t}))", "Events");
 
         TDirectory* dir_3j_reco = outFile_.mkdir("3j_RECO");
         dir_3j_reco->cd();
@@ -238,10 +238,10 @@ void ttbar::begin()
         reco3j1d.AddHist("counter2", 10, 0, 10, "counter", "Events");
         reco3j1d.AddHist("counter_chi2", 10, 0, 10, "counter", "Events");
         reco3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
-        reco3j1d.AddHist("met_pz", 30, 0, 300, "met p_{z}", "Events");
-        reco3j1d.AddHist("met_pz_clean", 30, 0, 300, "met p_{z}", "Events");
-        reco3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
-        reco3j1d.AddHist("met_dpz_pz_clean", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
+        //reco3j1d.AddHist("met_pz", 30, 0, 300, "met p_{z}", "Events");
+        //reco3j1d.AddHist("met_pz_clean", 30, 0, 300, "met p_{z}", "Events");
+        //reco3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
+        //reco3j1d.AddHist("met_dpz_pz_clean", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         reco3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         reco3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         reco3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -272,27 +272,26 @@ void ttbar::begin()
 
         TDirectory* dir_3j_chi2same = outFile_.mkdir("3j_chi2same");
         dir_3j_chi2same->cd();
-        chi2same3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
-        chi2same3j2d.AddHist("blep_chi2_pt", 100, 0, 500, 250, 0, 500, "#chi^{2}(b_{l})", "p_{T}(b_{l})");
-        chi2same3j2d.AddHist("bhad_chi2_pt", 100, 0, 500, 250, 0, 500, "#chi^{2}(b_{h})", "p_{T}(b_{h})");
-        chi2same3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
-        chi2same3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
-        chi2same3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
-        chi2same3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
-        chi2same3j1d.AddHist("tlep_M", 500, 0, 1000, "M(t_{l})", "Events");
-        chi2same3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
-        chi2same3j1d.AddHist("thadwrong_M", 500, 0, 1000, "M(t_{h})", "Events");
-        chi2same3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
-        chi2same3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
-        chi2same3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-        chi2same3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
-        chi2same3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+        chi2same3j1d.AddHist("met_pz_truth", 30, -300, 300, "met p_{z}", "Events");
+        chi2same3j1d.AddHist("met_pz_wrong", 30, -300, 300, "met p_{z}", "Events");
+        chi2same3j2d.AddHist("met_pt_pz_truth", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
+        chi2same3j2d.AddHist("met_pt_pz_wrong", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
+        chi2same3j1d.AddHist("met_dpz_pz_truth", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
+        chi2same3j1d.AddHist("met_dpz_pz_wrong", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
+        chi2same3j1d.AddHist("met_dpt_pt_truth", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
+        chi2same3j1d.AddHist("met_dpt_pt_wrong", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
+        chi2same3j2d.AddHist("met_dpt_dpz_truth", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
+        chi2same3j2d.AddHist("met_dpt_dpz_wrong", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
 
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
         truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
-        truth3j1d.AddHist("met_pz", 30, 0, 300, "met p_{z}", "Events");
+        truth3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
+        truth3j1d.AddHist("MET", 15, 0, 300, "MET p_{T}", "Events");
+        truth3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         truth3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
+        truth3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
+        truth3j2d.AddHist("met_dpt_dpz", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
         truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         truth3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         truth3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -305,6 +304,8 @@ void ttbar::begin()
         truth3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
         truth3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
         truth3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+        truth3j1d.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
+        truth3j1d.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
        
         truth3j2d.AddHist("select_bchi2", 100, 0, 500, 100, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
         truth3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
@@ -318,8 +319,12 @@ void ttbar::begin()
         TDirectory* dir_3j_wrong = outFile_.mkdir("3j_WRONG");
         dir_3j_wrong->cd();
         wrong3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
-        wrong3j1d.AddHist("met_pz", 30, 0, 300, "met p_{z}", "Events");
+        wrong3j1d.AddHist("met_pz", 30, -300, 300, "met p_{z}", "Events");
+        wrong3j1d.AddHist("MET", 15, 0, 300, "MET p_{T}", "Events");
+        wrong3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         wrong3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
+        wrong3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
+        wrong3j2d.AddHist("met_dpt_dpz", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
         wrong3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         wrong3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         wrong3j1d.AddHist("tlep_y", 200, 0, 5, "|y(t_{l})|", "Events");
@@ -604,8 +609,6 @@ void ttbar::begin()
 	
         TDirectory* dir_yukawareco_right = outFile_.mkdir("YUKAWA_RECO_right");
 	dir_yukawareco_right->cd();
-        yuka1d_reco_right.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
-        yuka1d_reco_right.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
 	yuka1d_reco_right.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	yuka1d_reco_right.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco_right.AddHist("Y", 160, -4, 4,"y_t", "Events");
@@ -1153,9 +1156,9 @@ void ttbar::SelectGenParticles(URStreamer& event)
                     //cout << "Q " << gps[dindex].pdgId() << " " << gps[gps[dindex].firstDaughtIdx()].pdgId() << endl;
                     sgenparticles.push_back(gps[dindex]);
                     genwpartons.push_back(&(sgenparticles.back()));
-	            /*sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
+	            sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
                     genmiss = genwpartons[1];
-                    genmiss = genwpartons[0];*/
+                    genmiss = genwpartons[0];
                 }
                 else if(gp.momIdx().size() != 0 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
                 {
@@ -1226,9 +1229,9 @@ void ttbar::SelectGenParticles(URStreamer& event)
                 {
                     sgenparticles.push_back(gp);
                     genwpartons.push_back(&(sgenparticles.back()));
-	            /*sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
+	            sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
                     genmiss = genwpartons[1];
-                    genmisspartner = genwpartons[0];*/
+                    genmisspartner = genwpartons[0];
                 }
             }
 
@@ -1267,6 +1270,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
     SEMILEP = false;
     FULLLEP = false;
     SEMILEPACC = false;
+    //3JTRUTH = false;
     //cout << topcounter << " " << lepdecays << " " << genwpartons.size() << " " << genfincls.size() << endl;
     if(topcounter == 2 && genb != 0 && genbbar != 0)
     {
@@ -1300,18 +1304,18 @@ void ttbar::SelectGenParticles(URStreamer& event)
             genallper.Init(genwpartons[0], genwpartons[1], genb, genbbar, gencls[0], gencls[0]->pdgId(), gennls[0]);
             gentqlep = gentqbar;
             gentqhad = gentq;
-            /*gentqhad_3j = gentqhad - *genmiss;
+            gentqhad_3j = gentqhad - *genmiss;
             gentqhad_miss = *genmiss;
-            gentqhad_misspartner = *genmisspartner;*/
+            gentqhad_misspartner = *genmisspartner;
         }
         else
         {
             genallper.Init(genwpartons[0], genwpartons[1], genbbar, genb, gencls[0], gencls[0]->pdgId(), gennls[0]);
             gentqlep = gentq;
             gentqhad = gentqbar;
-            /*gentqhad_3j = gentqhad - *genmiss;
+            gentqhad_3j = gentqhad - *genmiss;
             gentqhad_miss = *genmiss;
-            gentqhad_misspartner = *genmisspartner;*/
+            gentqhad_misspartner = *genmisspartner;
         }
     }
 
@@ -1785,9 +1789,9 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() < 4){return;} // change for 3j test
+	if(cleanedjets.size() != 3){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
-	if(BTAGMODE && cleanedjets.size() < 4){return;}
+	if(BTAGMODE && cleanedjets.size() > 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(4.5, weight);
 	if(tightmuons.size() == 1)
@@ -1817,8 +1821,8 @@ void ttbar::ttanalysis(URStreamer& event)
 	reco1d["btag_low"]->Fill(reducedjets[1]->csvIncl(), weight);
 	if(!BTAGMODE)
 	{
-		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
-		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
+		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}
+		if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;} // add for 3j test
 		//if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}
 	}
 	reco1d["c_btag"]->Fill(event.run+0.5);
@@ -1826,7 +1830,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j test
-/*        const TLorentzVector * bleper;
+        const TLorentzVector * bleper;
         const TLorentzVector * bhadper;
         double chi2candidate1;
         double chi2candidate2;
@@ -1839,7 +1843,7 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector metsolver;
 
         reco3j1d["counter_chi2"]->Fill(0.5, weight);
-        if(chi2candidate2<0 && chi2candidate1<0) {reco3j1d["counter_chi2"]->Fill(1.5, weight); return;}
+        if(chi2candidate2<0 || chi2candidate1<0) {reco3j1d["counter_chi2"]->Fill(1.5, weight); return;}
         
         reco3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         reco3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
@@ -1861,7 +1865,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 chi2lep = chi2candidate2;
                 chi2had = chi2candidate1;
             }
-        }else if(chi2candidate1 >0 && chi2candidate2 <0){
+        }/*else if(chi2candidate1 >0 && chi2candidate2 <0){
             reco3j1d["counter_chi2"]->Fill(3.5, weight);
                 bleper = reducedjets[0];
                 bhadper = reducedjets[1];
@@ -1875,7 +1879,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 metsolver = meta;
                 chi2lep = chi2candidate1;
                 chi2had = chi2candidate2;
-        }
+        }*/
 
         TLorentzVector tlep_3j = *bleper + *lep + metsolver;
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
@@ -1895,13 +1899,6 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
-        if(Abs(chi2candidate1 - chi2candidate2)<5){
-        reco3j1d["counter_chi2"]->Fill(6.5, weight);
-        chi2same3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
-        chi2same3j2d["blep_chi2_pt"]->Fill(chi2lep, bleper->Pt());
-        chi2same3j2d["bhad_chi2_pt"]->Fill(chi2had, bhadper->Pt());
-        chi2same3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
-        }
 
         
     // counters
@@ -1941,15 +1938,16 @@ void ttbar::ttanalysis(URStreamer& event)
             if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(26.5, weight);
         }
 
-        reco3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
+        //reco3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
         if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
             reco3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
+            //if(Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate1<<", "<< chi2candidate2<< endl;
             //if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate1<<", "<< chi2candidate2<< endl;
             reco3j1d["counter"]->Fill(7.5, weight);
             if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(17.5, weight); 
             if(rightper.BLep() == bhadper) reco3j1d["counter"]->Fill(27.5, weight);
         }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
-            reco3j2d["chi2"]->Fill(chi2candidate2, chi2candidate2, weight);
+            reco3j2d["chi2"]->Fill(chi2candidate2, chi2candidate1, weight);
             //if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate2<<", "<< chi2candidate1<< endl;
             reco3j1d["counter"]->Fill(8.5, weight);
             if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(18.5, weight);
@@ -1967,7 +1965,9 @@ void ttbar::ttanalysis(URStreamer& event)
     else if(SEMILEP) reco3j1d["counter2"]->Fill(8.5, weight);
     else reco3j1d["counter2"]->Fill(9.5, weight);
 
+    
     //truth matching for 3j, right/wrong
+    double diffchi2;
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
@@ -1986,11 +1986,35 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         truth3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         truth3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        truth3j1d["Mtt_resol"]->Fill(((tlep_3j + thad_3j).Mag() - (gentqhad+gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
+        truth3j1d["delY_resol"]->Fill(((tlep_3j.Rapidity() - thad_3j.Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
 
-        truth3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-        truth3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
-        truth3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
-        if(Abs(chi2lep-chi2had)<5){  
+        //gen3j1d["dmtt_mtt"]->Fill(((gentqhad+gentqlep).Mag() - (gentqhad_3j+gentqlep).Mag())/(gentqhad_3j+gentqlep).Mag(), weight);
+        //gen3j1d["ddely_dely"]->Fill(((gentqhad.Rapidity() - gentqlep.Rapidity()) - (gentqhad_3j.Rapidity() - gentqlep.Rapidity()))/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
+
+        if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
+            truth3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
+            diffchi2 = chi2candidate1 - chi2candidate2;
+        }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
+            truth3j2d["chi2"]->Fill(chi2candidate2, chi2candidate1, weight); 
+            diffchi2 = chi2candidate2 - chi2candidate1;
+        }
+        if(Abs(diffchi2)> 5){
+            truth3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+            truth3j1d["MET"]->Fill(met.Pt(), weight);
+            truth3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
+            truth3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            truth3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            truth3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            reco3j1d["counter_chi2"]->Fill(6.5, weight);
+            if(metsolver.Pt()<10){ if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]) cout<<chi2candidate1<<", "<<chi2candidate2<<endl;
+                                   if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) cout<<chi2candidate2<<", "<<chi2candidate1<<endl;}
+        }else{
+            chi2same3j1d["met_pz_truth"]->Fill(metsolver.Pz(), weight);
+            chi2same3j2d["met_pt_pz_truth"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
+            chi2same3j1d["met_dpz_pz_truth"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            chi2same3j1d["met_dpt_pt_truth"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            chi2same3j2d["met_dpt_dpz_truth"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             reco3j1d["counter_chi2"]->Fill(7.5, weight);
         }
 
@@ -2012,23 +2036,32 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         wrong3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         wrong3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
-        
-        wrong3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-        wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
-        wrong3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
-        if(Abs(chi2lep-chi2had)<5){  
-            reco3j1d["counter_chi2"]->Fill(8.5, weight);
+
+        if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
+            wrong3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
+            diffchi2 = chi2candidate1 - chi2candidate2;
+        }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
+            wrong3j2d["chi2"]->Fill(chi2candidate2, chi2candidate1, weight); 
+            diffchi2 = chi2candidate2 - chi2candidate1;
         }
+        if(Abs(diffchi2)> 5){
+            wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
+            wrong3j1d["MET"]->Fill(met.Pt(), weight);
+            wrong3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
+            wrong3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            wrong3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            wrong3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            reco3j1d["counter_chi2"]->Fill(8.5, weight);
+        }else{
+            chi2same3j1d["met_pz_wrong"]->Fill(metsolver.Pz(), weight);
+            chi2same3j2d["met_pt_pz_wrong"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
+            chi2same3j1d["met_dpz_pz_wrong"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            chi2same3j1d["met_dpt_pt_wrong"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
+            chi2same3j2d["met_dpt_dpz_wrong"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            reco3j1d["counter_chi2"]->Fill(9.5, weight);
+        }
+
     }
-
-    reco3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
-    reco3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
-    //if(metsolver.Pz()<10) count<< 
-    if(Abs(chi2lep-chi2had)<5) {return;}
-    reco3j1d["met_pz_clean"]->Fill(metsolver.Pz(), weight);
-    reco3j1d["met_dpz_pz_clean"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
-*/
-
 
     /*else if(SEMILEP){
         semi3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
@@ -2115,7 +2148,7 @@ void ttbar::ttanalysis(URStreamer& event)
         }
 */
 
-	//if(cleanedjets.size() < 4){return;} // change for 3j test
+	if(cleanedjets.size() < 4){return;} // change for 3j test
 
         //check what we have reconstructed
 	if(SEMILEP)
@@ -2460,10 +2493,6 @@ void ttbar::ttanalysis(URStreamer& event)
 		ttp_right.Fill(bestper, weight);
 		truth1d["counter"]->Fill(8.5, weight);
                 //for yukawa studies
-                yuka1d_reco_right["Mtt_resol"]->Fill((Mtt - (gentqhad+gentqlep).Mag())/(gentqhad+gentqlep).Mag(), weight);
-                //yuka1d_reco_right["Mtt_resol"]->Fill(Mtt/(gentqhad_3j+gentqlep).Mag(), weight);
-                yuka1d_reco_right["delY_resol"]->Fill((deltaY - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
-                //yuka1d_reco_right["delY_resol"]->Fill(deltaY/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
 		yuka1d_reco_right["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
 		yuka1d_reco_right["costheta"]->Fill(costheta_lep, weight);
@@ -2725,7 +2754,7 @@ void ttbar::analyze()
 	//sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});
         //TLorentzVector tlep_3j = gentqlep;
         //TLorentzVector thad_3j_gen = gentqhad - genwpartons[1];
-/*
+
         gen3j1d["tlep_pt"]->Fill(gentqlep.Pt(), weight);
         gen3j1d["thad_pt"]->Fill(gentqhad_3j.Pt(), weight);
         gen3j1d["tlep_y"]->Fill(Abs(gentqlep.Rapidity()), weight);
@@ -2747,7 +2776,7 @@ void ttbar::analyze()
         gen3j1d["dpt_pt"]->Fill((gentqhad.Pt() - gentqhad_3j.Pt())/gentqhad_3j.Pt(), weight);
         gen3j1d["dmtt_mtt"]->Fill(((gentqhad+gentqlep).Mag() - (gentqhad_3j+gentqlep).Mag())/(gentqhad_3j+gentqlep).Mag(), weight);
         gen3j1d["ddely_dely"]->Fill(((gentqhad.Rapidity() - gentqlep.Rapidity()) - (gentqhad_3j.Rapidity() - gentqlep.Rapidity()))/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
-*/
+
         //}
 
                 //if(genallper.IsComplete()){
