@@ -1158,7 +1158,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
                     genwpartons.push_back(&(sgenparticles.back()));
 	            sort(genwpartons.begin(), genwpartons.end(), [](GenObject* A, GenObject* B){return(A->Pt() > B->Pt());});//for 3j
                     genmiss = genwpartons[1];
-                    genmiss = genwpartons[0];
+                    genmisspartner = genwpartons[0];
                 }
                 else if(gp.momIdx().size() != 0 && Abs(gps[gp.momIdx()[0]].pdgId()) == 24)
                 {
