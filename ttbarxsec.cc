@@ -21,6 +21,8 @@ ttbar::ttbar(const std::string output_filename):
         wrong3j1d("3j"),
         gen3j2d("3j"), 
         gen3j1d("3j"),
+        alpha3j1d("3j"), 
+        alpha3j2d("3j"),
         //fourjets("4j"), 
 	gen1d("gen"),
 	gen2d("gen"),
@@ -283,6 +285,11 @@ void ttbar::begin()
         chi2same3j2d.AddHist("met_dpt_dpz_truth", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
         chi2same3j2d.AddHist("met_dpt_dpz_wrong", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
 
+        TDirectory* dir_3j_alpha = outFile_.mkdir("3j_ALPHA");
+        dir_3j_alpha->cd();
+        alpha3j2d.AddHist("genmtt_recomtt", 1000, 0, 2000, 1000, 0, 2000, "gen M(t#bar{t})", "reco M(t+p)");
+        alpha3j2d.AddHist("mp_alphamp", 500, 0, 1000, 500, 0, 1000, "M(p)", "#alphaM(p)");
+        
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
         truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
@@ -1970,13 +1977,14 @@ void ttbar::ttanalysis(URStreamer& event)
     double diffchi2;
     double alphap, alpham;
     alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
-    alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
+    //alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
     alphap = alphap/(2*pow(thad_3j.Mag(),2));
-    alpham = alpham/(2*pow(thad_3j.Mag(),2));
+    //alpham = alpham/(2*pow(thad_3j.Mag(),2));
     //cout<< alphap <<", "<< alpham << endl;
+    alpha3j2d["genmtt_recomtt"]->Fill((gentqhad + gentqlep).Mag(), (tlep_3j + thad_3j).Mag(), weight);
+    alpha3j2d["mp_alphamp"]->Fill(thad_3j.Mag(), (alphap*thad_3j).Mag(), weight);
 
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
-        cout<< alphap <<", "<< alpham << endl;
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
