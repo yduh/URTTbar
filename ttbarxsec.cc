@@ -289,7 +289,7 @@ void ttbar::begin()
         dir_3j_alpha->cd();
         alpha3j2d.AddHist("genmtt_recomtt", 100, 0, 2000, 100, 0, 2000, "gen M(t#bar{t})", "reco M(t+p)");
         alpha3j2d.AddHist("mp_alphamp", 50, 0, 1000, 50, 0, 1000, "M(p)", "#alphaM(p)");
-        alpha3j2d.AddHist("mp_alpha", 50, 0, 1000, 30, 0, 3, "M(p)", "#alpha");
+        alpha3j2d.AddHist("mp_alpha", 50, 0, 1000, 50, 0, 5, "M(p)", "#alpha");
         
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
