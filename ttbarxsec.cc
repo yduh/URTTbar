@@ -1977,7 +1977,7 @@ void ttbar::ttanalysis(URStreamer& event)
     //truth matching for 3j, right/wrong
     double diffchi2;
     double alphap, alpham;
-    alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
+    alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow((gentqhad + gentqlep).Mag(), 2)));
     //alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
     alphap = alphap/(2*pow(thad_3j.Mag(),2));
     //alpham = alpham/(2*pow(thad_3j.Mag(),2));
