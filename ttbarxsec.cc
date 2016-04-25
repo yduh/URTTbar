@@ -1970,12 +1970,13 @@ void ttbar::ttanalysis(URStreamer& event)
     double diffchi2;
     double alphap, alpham;
     alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
-    alpham = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
+    alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
     alphap = alphap/(2*pow(thad_3j.Mag(),2));
     alpham = alpham/(2*pow(thad_3j.Mag(),2));
-    cout<< alphap <<", "<< alpham << endl;
+    //cout<< alphap <<", "<< alpham << endl;
 
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
+        cout<< alphap <<", "<< alpham << endl;
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
