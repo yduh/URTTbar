@@ -1983,7 +1983,7 @@ void ttbar::ttanalysis(URStreamer& event)
     //cout<< alphap <<", "<< alpham << endl;
     alpha3j2d["genmtt_recomtt"]->Fill((gentqhad + gentqlep).Mag(), (tlep_3j + thad_3j).Mag(), weight);
     alpha3j2d["mp_alphamp"]->Fill(thad_3j.Mag(), alphap*(thad_3j.Mag()), weight);
-    cout << thad_3j.Mag() <<", "<< alphap <<", "<< alphap*thad_3j.Mag() <<", "<< (alphap*thad_3j).Mag();
+    cout << thad_3j.Mag() <<", "<< alphap <<", "<< alphap*thad_3j.Mag() <<", "<< (alphap*thad_3j).Mag()<< endl;
 
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
