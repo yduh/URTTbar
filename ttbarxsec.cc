@@ -289,6 +289,7 @@ void ttbar::begin()
         dir_3j_alpha->cd();
         alpha3j2d.AddHist("genmtt_recomtt", 100, 0, 2000, 100, 0, 2000, "gen M(t#bar{t})", "reco M(t+p)");
         alpha3j2d.AddHist("mp_alphamp", 50, 0, 1000, 50, 0, 1000, "M(p)", "#alphaM(p)");
+        alpha3j2d.AddHist("mp_alpha", 50, 0, 1000, 30, 0, 3, "M(p)", "#alpha");
         
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
@@ -1983,6 +1984,7 @@ void ttbar::ttanalysis(URStreamer& event)
     //cout<< alphap <<", "<< alpham << endl;
     alpha3j2d["genmtt_recomtt"]->Fill((gentqhad + gentqlep).Mag(), (tlep_3j + thad_3j).Mag(), weight);
     alpha3j2d["mp_alphamp"]->Fill(thad_3j.Mag(), alphap*(thad_3j.Mag()), weight);
+    alpha3j2d["mp_alpha"]->Fill(thad_3j.Mag(), alphap, weight);
     //cout << thad_3j.Mag() <<", "<< alphap <<", "<< alphap*thad_3j.Mag() <<", "<< (alphap*thad_3j).Mag()<< endl;
 
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
