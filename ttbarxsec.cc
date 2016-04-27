@@ -1905,10 +1905,9 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector thadwrong_3j = *bleper + *reducedjets[2];
 
         if(rightper.WJa() != 0 && rightper.WJb() == 0){ cout<<" rightper WJa != 0 ";
-            //cout<<" rightper WJa == sub leading RECO W jets ";
-            cout<< genper->WJa()->Pt() << ", "<< genper->WJb()->Pt()<<endl;
+            cout<<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Eta() <<", "<< genper->WJb()->Eta()<<endl;
         }else if(rightper.WJb() != 0 && rightper.WJa() == 0){ cout<<" rightper WJb != 0";
-            cout<< genper->WJb()->Pt() <<", "<< genper->WJa()->Pt()<<endl;
+            cout<<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Eta() <<", "<< genper->WJa()->Eta()<<endl;
         }
 
         reco3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
