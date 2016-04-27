@@ -1907,14 +1907,18 @@ void ttbar::ttanalysis(URStreamer& event)
 
         if(rightper.WJa() != 0 && rightper.WJb() == 0){ //cout<<" rightper WJa != 0 ";
             //cout<<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Eta() <<", "<< genper->WJb()->Eta()<<endl;
-            gen3j1d["thadmiss_pt"]->Fill(genper->WJb()->Pt(), weight);
-            gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJb()->Eta()), weight);
+            //gen3j1d["thadmiss_pt"]->Fill(genper->WJb()->Pt(), weight);
+            gen3j1d["thadmiss_pt"]->Fill(genallper.WJb()->Pt(), weight);
+            //gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJb()->Eta()), weight);
+            gen3j1d["thadmiss_eta"]->Fill(Abs(genallper.WJb()->Eta()), weight);
             gen3j2d["thadmiss_pt_eta"]->Fill(genper->WJb()->Pt(), Abs(genper->WJb()->Eta()), weight);
             gen3j1d["thadmiss_DeltaR"]->Fill(genper->WJb()->DeltaR(*genper->WJa()), weight);
         }else if(rightper.WJb() != 0 && rightper.WJa() == 0){ //cout<<" rightper WJb != 0";
             //cout<<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Eta() <<", "<< genper->WJa()->Eta()<<endl;
-            gen3j1d["thadmiss_pt"]->Fill(genper->WJa()->Pt(), weight);
-            gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJa()->Eta()), weight);
+            //gen3j1d["thadmiss_pt"]->Fill(genper->WJa()->Pt(), weight);
+            gen3j1d["thadmiss_pt"]->Fill(genallper.WJa()->Pt(), weight);
+            //gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJa()->Eta()), weight);
+            gen3j1d["thadmiss_eta"]->Fill(Abs(genallper.WJa()->Eta()), weight);
             gen3j2d["thadmiss_pt_eta"]->Fill(genper->WJa()->Pt(), Abs(genper->WJa()->Eta()), weight);
             gen3j1d["thadmiss_DeltaR"]->Fill(genper->WJa()->DeltaR(*genper->WJb()), weight);
         }        
