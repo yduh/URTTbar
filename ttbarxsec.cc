@@ -302,6 +302,8 @@ void ttbar::begin()
         truth3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         truth3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
         truth3j2d.AddHist("met_dpt_dpz", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
+        truth3j1d.AddHist("missj_dpz_pz", 40, -2, 2, "missj #Deltap_{z}/p_{z}", "Events");
+        truth3j1d.AddHist("missj_dpt_pt", 40, -2, 2, "missj #Deltap_{T}/p_{T}", "Events");
         truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
         truth3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         truth3j1d.AddHist("thad_pt_correct", 400, 0, 800, "p_{T}(t_{h})", "Events");
@@ -326,6 +328,8 @@ void ttbar::begin()
         truth3j1d.AddHist("Mtt_resol_correct", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         truth3j1d.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
         truth3j1d.AddHist("delY_resol_correct", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
+        truth3j1d.AddHist("dmtt_mtt", 40, -2, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
+        truth3j1d.AddHist("ddely_dely", 40, -2, 2, "#Delta(#Deltay(t#bar{t}))/(#Deltay(t#bar{t}))", "Events");
        
         truth3j2d.AddHist("select_bchi2", 100, 0, 500, 100, 0, 500, "#chi^{2} b[0]", "#chi^{2} b[1]");
         truth3j2d.AddHist("select_bcsv", 24, 0.4, 1, 24, 0.4, 1, "CSV b[0]", "CSV b[1]");
@@ -1862,6 +1866,7 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector metb = NS_3jb.GetBest(met.X(), met.Y(), 1, 1, 0, chi2candidate2);
         TLorentzVector metsolver;
 
+
         reco3j1d["counter_chi2"]->Fill(0.5, weight);
         if(chi2candidate2<0 || chi2candidate1<0) {reco3j1d["counter_chi2"]->Fill(1.5, weight); return;}
         
@@ -1907,18 +1912,18 @@ void ttbar::ttanalysis(URStreamer& event)
 
         if(rightper.WJa() != 0 && rightper.WJb() == 0){ //cout<<" rightper WJa != 0 ";
             //cout<<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Eta() <<", "<< genper->WJb()->Eta()<<endl;
-            //gen3j1d["thadmiss_pt"]->Fill(genper->WJb()->Pt(), weight);
-            gen3j1d["thadmiss_pt"]->Fill(genallper.WJb()->Pt(), weight);
-            //gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJb()->Eta()), weight);
-            gen3j1d["thadmiss_eta"]->Fill(Abs(genallper.WJb()->Eta()), weight);
+            gen3j1d["thadmiss_pt"]->Fill(genper->WJb()->Pt(), weight);
+            //gen3j1d["thadmiss_pt"]->Fill(genallper.WJb()->Pt(), weight);
+            gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJb()->Eta()), weight);
+            //gen3j1d["thadmiss_eta"]->Fill(Abs(genallper.WJb()->Eta()), weight);
             gen3j2d["thadmiss_pt_eta"]->Fill(genper->WJb()->Pt(), Abs(genper->WJb()->Eta()), weight);
             gen3j1d["thadmiss_DeltaR"]->Fill(genper->WJb()->DeltaR(*genper->WJa()), weight);
         }else if(rightper.WJb() != 0 && rightper.WJa() == 0){ //cout<<" rightper WJb != 0";
             //cout<<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Eta() <<", "<< genper->WJa()->Eta()<<endl;
-            //gen3j1d["thadmiss_pt"]->Fill(genper->WJa()->Pt(), weight);
-            gen3j1d["thadmiss_pt"]->Fill(genallper.WJa()->Pt(), weight);
-            //gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJa()->Eta()), weight);
-            gen3j1d["thadmiss_eta"]->Fill(Abs(genallper.WJa()->Eta()), weight);
+            gen3j1d["thadmiss_pt"]->Fill(genper->WJa()->Pt(), weight);
+            //gen3j1d["thadmiss_pt"]->Fill(genallper.WJa()->Pt(), weight);
+            gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJa()->Eta()), weight);
+            //gen3j1d["thadmiss_eta"]->Fill(Abs(genallper.WJa()->Eta()), weight);
             gen3j2d["thadmiss_pt_eta"]->Fill(genper->WJa()->Pt(), Abs(genper->WJa()->Eta()), weight);
             gen3j1d["thadmiss_DeltaR"]->Fill(genper->WJa()->DeltaR(*genper->WJb()), weight);
         }        
@@ -1928,6 +1933,12 @@ void ttbar::ttanalysis(URStreamer& event)
         //gen3j1d["thadmiss_y"]->Fill(Abs(gentqhad_miss.Rapidity()), weight);
         //gen3j1d["thadmiss_DeltaR"]->Fill(gentqhad_miss.DeltaR(gentqhad_misspartner), weight);
         //cout << "j2 gen info - Pt, eta" << gentqhad_miss.Pt() <<", "<<gentqhad_miss.Eta()<<endl;
+
+        double chi2missj;
+        NeutrinoSolver NS_missj = NeutrinoSolver(bhadper, reducedjets[2], 80., 173.);
+        TLorentzVector missj = NS_missj.GetBest(0, 0, 1, 1, 0, chi2missj);
+
+        TLorentzVector thadsolver = *bhadper + *reducedjets[2] + missj;
 
 
         reco3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
@@ -2074,6 +2085,14 @@ void ttbar::ttanalysis(URStreamer& event)
             truth3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             truth3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
             truth3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            if(rightper.WJa() != 0){
+            truth3j1d["missj_dpz_pz"]->Fill((missj.Pz()-genper->WJa()->Pz())/genper->WJa()->Pz(), weight);
+            truth3j1d["missj_dpt_pt"]->Fill((missj.Pt()-genper->WJa()->Pt())/genper->WJa()->Pt(), weight);}
+            else if(rightper.WJb() != 0){
+            truth3j1d["missj_dpz_pz"]->Fill((missj.Pz()-genper->WJb()->Pz())/genper->WJb()->Pz(), weight);
+            truth3j1d["missj_dpt_pt"]->Fill((missj.Pt()-genper->WJb()->Pt())/genper->WJb()->Pt(), weight);}
+            truth3j1d["dmtt_mtt"]->Fill(((thadsolver + tlep_3j).Mag() - (gentqhad + gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
+            truth3j1d["ddely_dely"]->Fill(((tlep_3j.Rapidity() - thadsolver.Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
             reco3j1d["counter_chi2"]->Fill(6.5, weight);
             if(metsolver.Pt()<10){ if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]) cout<<chi2candidate1<<", "<<chi2candidate2<<endl;
                                    if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) cout<<chi2candidate2<<", "<<chi2candidate1<<endl;}
