@@ -1904,11 +1904,22 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
         TLorentzVector thadwrong_3j = *bleper + *reducedjets[2];
 
-        if(rightper.WJa() != 0 && rightper.WJb() == 0){ cout<<" rightper WJa != 0 ";
-            cout<<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Eta() <<", "<< genper->WJb()->Eta()<<endl;
-        }else if(rightper.WJb() != 0 && rightper.WJa() == 0){ cout<<" rightper WJb != 0";
-            cout<<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Eta() <<", "<< genper->WJa()->Eta()<<endl;
-        }
+        if(rightper.WJa() != 0 && rightper.WJb() == 0){ //cout<<" rightper WJa != 0 ";
+            //cout<<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Eta() <<", "<< genper->WJb()->Eta()<<endl;
+            gen3j1d["thadmiss_pt"]->Fill(genper->WJb()->Pt(), weight);
+            gen3j1d["thadmiss_eta"]->Fill(genper->WJb()->Eta(), weight);
+        }else if(rightper.WJb() != 0 && rightper.WJa() == 0){ //cout<<" rightper WJb != 0";
+            //cout<<", "<< genper->WJb()->Pt() <<", "<< genper->WJa()->Pt() <<", "<< genper->WJb()->Eta() <<", "<< genper->WJa()->Eta()<<endl;
+            gen3j1d["thadmiss_pt"]->Fill(genper->WJa()->Pt(), weight);
+            gen3j1d["thadmiss_eta"]->Fill(genper->WJa()->Eta(), weight);
+        }        
+        //gen3j1d["thadmiss_e"]->Fill(gentqhad_miss.E(), weight);
+        //gen3j1d["thadmiss_pt"]->Fill(gentqhad_miss.Pt(), weight);
+        //gen3j1d["thadmiss_eta"]->Fill(Abs(gentqhad_miss.Eta()), weight);
+        //gen3j1d["thadmiss_y"]->Fill(Abs(gentqhad_miss.Rapidity()), weight);
+        //gen3j1d["thadmiss_DeltaR"]->Fill(gentqhad_miss.DeltaR(gentqhad_misspartner), weight);
+        //cout << "j2 gen info - Pt, eta" << gentqhad_miss.Pt() <<", "<<gentqhad_miss.Eta()<<endl;
+
 
         reco3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         reco3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
@@ -2005,12 +2016,6 @@ void ttbar::ttanalysis(URStreamer& event)
     //cout << thad_3j.Mag() <<", "<< alphap <<", "<< alphap*thad_3j.Mag() <<", "<< (alphap*thad_3j).Mag()<< endl;
 
 
-        gen3j1d["thadmiss_e"]->Fill(gentqhad_miss.E(), weight);
-        gen3j1d["thadmiss_pt"]->Fill(gentqhad_miss.Pt(), weight);
-        gen3j1d["thadmiss_eta"]->Fill(Abs(gentqhad_miss.Eta()), weight);
-        gen3j1d["thadmiss_y"]->Fill(Abs(gentqhad_miss.Rapidity()), weight);
-        gen3j1d["thadmiss_DeltaR"]->Fill(gentqhad_miss.DeltaR(gentqhad_misspartner), weight);
-        //cout << "j2 gen info - Pt, eta" << gentqhad_miss.Pt() <<", "<<gentqhad_miss.Eta()<<endl;
         
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
