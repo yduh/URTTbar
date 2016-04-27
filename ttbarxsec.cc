@@ -1998,6 +1998,9 @@ void ttbar::ttanalysis(URStreamer& event)
     //cout << thad_3j.Mag() <<", "<< alphap <<", "<< alphap*thad_3j.Mag() <<", "<< (alphap*thad_3j).Mag()<< endl;
 
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
+        //gen3j1d["thadmiss_pt"]->Fill(gentqhad_miss.Pt(), weight);
+        cout << "j2 gen info - Pt, eta" << gentqhad_miss.Pt() <<", "<<gentqhad_miss.Eta()<<endl;
+        
         truth3j2d["select_bchi2"]->Fill(chi2candidate1, chi2candidate2, weight);
         truth3j2d["select_bcsv"]->Fill(reducedjets[0]->csvIncl(), reducedjets[1]->csvIncl(), weight);
         truth3j2d["select_bpt"]->Fill(reducedjets[0]->Pt(), reducedjets[1]->Pt(), weight);
