@@ -302,6 +302,9 @@ void ttbar::begin()
         truth3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         truth3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
         truth3j2d.AddHist("met_dpt_dpz", 40, -2, 2, 40, -2, 2, "met #Deltap_{T}/p_{T}", "met #Deltap_{z}/p_{z}");
+        truth3j1d.AddHist("missj_pz", 30, -300, 300, "missj p_{z}", "Events");
+        truth3j1d.AddHist("missj_pt", 15, 0, 300, "missj p_{T}", "Events");
+        truth3j1d.AddHist("missj_eta", 100, 0, 5, "missj #eta", "Events");
         truth3j1d.AddHist("missj_dpz_pz", 40, -2, 2, "missj #Deltap_{z}/p_{z}", "Events");
         truth3j1d.AddHist("missj_dpt_pt", 40, -2, 2, "missj #Deltap_{T}/p_{T}", "Events");
         truth3j1d.AddHist("tlep_pt", 400, 0, 800, "p_{T}(t_{l})", "Events");
@@ -2085,6 +2088,9 @@ void ttbar::ttanalysis(URStreamer& event)
             truth3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
             truth3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
             truth3j2d["met_dpt_dpz"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), (metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
+            truth3j1d["missj_pz"]->Fill(missj.Pz(), weight);
+            truth3j1d["missj_pt"]->Fill(missj.Pt(), weight);
+            truth3j1d["missj_eta"]->Fill(missj.Eta(), weight);
             if(rightper.WJa() != 0){
             truth3j1d["missj_dpz_pz"]->Fill((missj.Pz()-genper->WJa()->Pz())/genper->WJa()->Pz(), weight);
             truth3j1d["missj_dpt_pt"]->Fill((missj.Pt()-genper->WJa()->Pt())/genper->WJa()->Pt(), weight);}
