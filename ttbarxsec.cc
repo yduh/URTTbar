@@ -1904,6 +1904,13 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector thad_3j = *bhadper + *reducedjets[2];
         TLorentzVector thadwrong_3j = *bleper + *reducedjets[2];
 
+        if(rightper.WJa() != 0 && rightper.WJb() == 0){ cout<<" rightper WJa != 0 ";
+            //cout<<" rightper WJa == sub leading RECO W jets ";
+            cout<< genper->WJa()->Pt() << ", "<< genper->WJb()->Pt()<<endl;
+        }else if(rightper.WJb() != 0 && rightper.WJa() == 0){ cout<<" rightper WJb != 0";
+            cout<< genper->WJb()->Pt() <<", "<< genper->WJa()->Pt()<<endl;
+        }
+
         reco3j2d["blep_bhad_pt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
         reco3j1d["tlep_pt"]->Fill(tlep_3j.Pt(), weight);
         reco3j1d["thad_pt"]->Fill(thad_3j.Pt(), weight);
@@ -1997,6 +2004,7 @@ void ttbar::ttanalysis(URStreamer& event)
     alpha3j2d["mp_alphamp"]->Fill(thad_3j.Mag(), alphap*(thad_3j.Mag()), weight);
     alpha3j2d["mp_alpha"]->Fill(thad_3j.Mag(), alphap, weight);
     //cout << thad_3j.Mag() <<", "<< alphap <<", "<< alphap*thad_3j.Mag() <<", "<< (alphap*thad_3j).Mag()<< endl;
+
 
         gen3j1d["thadmiss_e"]->Fill(gentqhad_miss.E(), weight);
         gen3j1d["thadmiss_pt"]->Fill(gentqhad_miss.Pt(), weight);
