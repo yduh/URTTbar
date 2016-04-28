@@ -292,6 +292,7 @@ void ttbar::begin()
         missj1d.AddHist("missj_dpt_pt", 40, -2, 2, "missj #Deltap_{T}/p_{T}", "Events");
         missj1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         missj1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
+        missj1d.AddHist("whad_M", 250, 0, 500, "M(W_{h})", "Events");
         missj1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
         missj2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
         missj1d.AddHist("Mtt_resol", 40, -2, 2, "#DeltaM(t#bar{t})/M(t#bar{t})", "Events");
@@ -1906,7 +1907,7 @@ void ttbar::ttanalysis(URStreamer& event)
         double chi2missj;
         NeutrinoSolver NS_missj = NeutrinoSolver(reducedjets[2], bhadper, 80., 173.);
         TLorentzVector missj;
-        cout<<met.X()<<", "<<met.Y()<<endl;
+        //cout<<met.X()<<", "<<met.Y()<<endl;
         missj = NS_missj.GetBest(30, 30, 1, 1, 0, chi2missj);
         //if(rightper.WJa() != 0 && rightper.WJb() == 0) missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
         //else if(rightper.WJb() != 0 && rightper.WJa() == 0) missj = NS_missj.GetBest(genper->WJa()->Px(), genper->WJa()->Py(), 1, 1, 0, chi2missj);
@@ -1930,6 +1931,7 @@ void ttbar::ttanalysis(URStreamer& event)
         missj1d["thad_pt"]->Fill((*bhadper+*reducedjets[2]+missj).Pt(), weight);
         missj1d["thad_y"]->Fill((*bhadper+*reducedjets[2]+missj).Rapidity(), weight);
         //missj1d["thad_M"]->Fill(tlep_3j.Mag(), weight);
+        missj1d["whad_M"]->Fill((*reducedjets[2]+missj).Mag(), weight);
         missj1d["thad_M"]->Fill((*bhadper+*reducedjets[2]+missj).Mag(), weight);
         missj2d["Mtt_delY"]->Fill((*bhadper+*reducedjets[2]+missj + tlep_3j).Mag(), tlep_3j.Rapidity() - (*bhadper+*reducedjets[2]+missj).Rapidity(), weight);
         missj1d["Mtt_resol"]->Fill(((*bhadper+*reducedjets[2]+missj + tlep_3j).Mag() - (gentqhad + gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
