@@ -1908,7 +1908,7 @@ void ttbar::ttanalysis(URStreamer& event)
         NeutrinoSolver NS_missj = NeutrinoSolver(reducedjets[2], bhadper, 80., 173.);
         TLorentzVector missj;
         //cout<<met.X()<<", "<<met.Y()<<endl;
-        missj = NS_missj.GetBest(30, 30, 1, 1, 0, chi2missj);
+        missj = NS_missj.GetBest(met.X(), met.Y(), 1, 1, 0, chi2missj);
         //if(rightper.WJa() != 0 && rightper.WJb() == 0) missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
         //else if(rightper.WJb() != 0 && rightper.WJa() == 0) missj = NS_missj.GetBest(genper->WJa()->Px(), genper->WJa()->Py(), 1, 1, 0, chi2missj);
         //missj = NS_missj.GetBest(, 1, 1, 0, chi2missj);
