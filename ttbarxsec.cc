@@ -1914,8 +1914,9 @@ void ttbar::ttanalysis(URStreamer& event)
         double chi2missj;
         NeutrinoSolver NS_missj = NeutrinoSolver(bhadper, reducedjets[2], 80., 173.);
         TLorentzVector missj;
-        if(rightper.WJa() != 0 && rightper.WJb() == 0) missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
-        else if(rightper.WJb() != 0 && rightper.WJa() == 0) missj = NS_missj.GetBest(genper->WJa()->Px(), genper->WJa()->Py(), 1, 1, 0, chi2missj);
+        missj = NS_missj.GetBest(0, 0, 1, 1, 0, chi2missj);
+        //if(rightper.WJa() != 0 && rightper.WJb() == 0) missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
+        //else if(rightper.WJb() != 0 && rightper.WJa() == 0) missj = NS_missj.GetBest(genper->WJa()->Px(), genper->WJa()->Py(), 1, 1, 0, chi2missj);
         //TLorentzVector thadsolver = *bhadper + *reducedjets[2] + missj;
         
         //some properities for the reconstructed missj
@@ -1959,7 +1960,6 @@ void ttbar::ttanalysis(URStreamer& event)
 
 
         //method 2: scale factor alpha on TLorentzVector 2j
-        double diffchi2;
         double alphap, alpham;
         alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow((gentqhad + gentqlep).Mag(), 2)));
         alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
@@ -2022,7 +2022,6 @@ void ttbar::ttanalysis(URStreamer& event)
         //reco3j2d["chi2"]->Fill(chi2lep, chi2had, weight);
         if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
             reco3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight);
-            //if(Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate1<<", "<< chi2candidate2<< endl;
             //if(chi2candidate1 >0 && chi2candidate2 > 0 && Abs(chi2candidate1 - chi2candidate2)<5) cout<< chi2candidate1<<", "<< chi2candidate2<< endl;
             reco3j1d["counter"]->Fill(7.5, weight);
             if(rightper.BLep() == bleper) reco3j1d["counter"]->Fill(17.5, weight); 
@@ -2071,13 +2070,9 @@ void ttbar::ttanalysis(URStreamer& event)
         truth3j1d["Mtt_resol"]->Fill(((tlep_3j + thad_3j).Mag() - (gentqhad+gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
         truth3j1d["delY_resol"]->Fill(((tlep_3j.Rapidity() - thad_3j.Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
 
-        if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
-            truth3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
-            diffchi2 = chi2candidate1 - chi2candidate2;
-        }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
-            truth3j2d["chi2"]->Fill(chi2candidate2, chi2candidate1, weight); 
-            diffchi2 = chi2candidate2 - chi2candidate1;
-        }
+        if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1])  truth3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
+        else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) truth3j2d["chi2"]->Fill(chi2candidate2, chi2candidate1, weight); 
+        
             truth3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
             truth3j1d["MET"]->Fill(met.Pt(), weight);
             truth3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
@@ -2108,13 +2103,9 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         wrong3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
-        if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]){ 
-            wrong3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
-            diffchi2 = chi2candidate1 - chi2candidate2;
-        }else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]){ 
-            wrong3j2d["chi2"]->Fill(chi2candidate2, chi2candidate1, weight); 
-            diffchi2 = chi2candidate2 - chi2candidate1;
-        }
+        if(rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1])  wrong3j2d["chi2"]->Fill(chi2candidate1, chi2candidate2, weight); 
+        else if(rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) wrong3j2d["chi2"]->Fill(chi2candidate2, chi2candidate1, weight); 
+        
             wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
             wrong3j1d["MET"]->Fill(met.Pt(), weight);
             wrong3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
