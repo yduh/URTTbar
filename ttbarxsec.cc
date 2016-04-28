@@ -1918,7 +1918,8 @@ void ttbar::ttanalysis(URStreamer& event)
         //if(rightper.WJa() != 0 && rightper.WJb() == 0) missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
         //else if(rightper.WJb() != 0 && rightper.WJa() == 0) missj = NS_missj.GetBest(genper->WJa()->Px(), genper->WJa()->Py(), 1, 1, 0, chi2missj);
         //TLorentzVector thadsolver = *bhadper + *reducedjets[2] + missj;
-        
+        if(chi2missj <0) {reco3j1d["counter_chi2"]->Fill(3.5, weight); return;}
+
         //some properities for the reconstructed missj
         missj1d["missj_pz"]->Fill(missj.Pz(), weight);
         missj1d["missj_pt"]->Fill(missj.Pt(), weight);
