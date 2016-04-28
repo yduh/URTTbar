@@ -1908,7 +1908,7 @@ void ttbar::ttanalysis(URStreamer& event)
         TLorentzVector *wj1 = reducedjets[2];
         wj1->SetPx(reducedjets[2]->Px());
         wj1->SetPy(reducedjets[2]->Py());
-        //wj1.SetPz(reducedjets[2]->Pz());
+        wj1->SetPz(reducedjets[2]->Pz());
         wj1->SetE(Sqrt(reducedjets[2]->Px()*reducedjets[2]->Px() + reducedjets[2]->Py()*reducedjets[2]->Py() + reducedjets[2]->Pz()*reducedjets[2]->Pz()));
         NeutrinoSolver NS_missj = NeutrinoSolver(wj1, bhadper, 80., 173.);
         TLorentzVector missj;
@@ -1938,14 +1938,14 @@ void ttbar::ttanalysis(URStreamer& event)
             missj1d["missj_dpz_pz"]->Fill((missj.Pz()-genper->WJb()->Pz())/genper->WJb()->Pz(), weight);
             missj1d["missj_dpt_pt"]->Fill((missj.Pt()-genper->WJb()->Pt())/genper->WJb()->Pt(), weight);
         }
-        missj1d["thad_pt"]->Fill((*bhadper+*reducedjets[2]+missj).Pt(), weight);
-        missj1d["thad_y"]->Fill((*bhadper+*reducedjets[2]+missj).Rapidity(), weight);
+        missj1d["thad_pt"]->Fill((*bhadper+*wj1+missj).Pt(), weight);
+        missj1d["thad_y"]->Fill((*bhadper+*wj1+missj).Rapidity(), weight);
         //missj1d["thad_M"]->Fill(tlep_3j.Mag(), weight);
-        missj1d["whad_M"]->Fill((*reducedjets[2]+missj).Mag(), weight);
-        missj1d["thad_M"]->Fill((*bhadper+*reducedjets[2]+missj).Mag(), weight);
-        missj2d["Mtt_delY"]->Fill((*bhadper+*reducedjets[2]+missj + tlep_3j).Mag(), tlep_3j.Rapidity() - (*bhadper+*reducedjets[2]+missj).Rapidity(), weight);
-        missj1d["Mtt_resol"]->Fill(((*bhadper+*reducedjets[2]+missj + tlep_3j).Mag() - (gentqhad + gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
-        missj1d["delY_resol"]->Fill(((tlep_3j.Rapidity() - (*bhadper+*reducedjets[2]+missj).Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
+        missj1d["whad_M"]->Fill((*wj1+missj).Mag(), weight);
+        missj1d["thad_M"]->Fill((*bhadper+*wj1+missj).Mag(), weight);
+        missj2d["Mtt_delY"]->Fill((*bhadper+*wj1+missj + tlep_3j).Mag(), tlep_3j.Rapidity() - (*bhadper+*wj1+missj).Rapidity(), weight);
+        missj1d["Mtt_resol"]->Fill(((*bhadper+*wj1+missj + tlep_3j).Mag() - (gentqhad + gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
+        missj1d["delY_resol"]->Fill(((tlep_3j.Rapidity() - (*bhadper+*wj1+missj).Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
 
         //some GEN properities of the missj
         if(rightper.WJa() != 0 && rightper.WJb() == 0){
