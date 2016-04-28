@@ -1913,14 +1913,14 @@ void ttbar::ttanalysis(URStreamer& event)
         NeutrinoSolver NS_missj = NeutrinoSolver(wj1, bhadper, 80., 173.);
         TLorentzVector missj;
         //cout<<met.X()<<", "<<met.Y()<<endl;
-        missj = NS_missj.GetBest(0, 0, 1, 1, 0, chi2missj);
-        cout<<wj1->Px()<<", "<<wj1->Py()<<", "<<wj1->Pz()<<", "<<wj1->E()<<", "<<wj1->Mag()<<endl;
+        //missj = NS_missj.GetBest(0, 0, 1, 1, 0, chi2missj);
+        /*cout<<wj1->Px()<<", "<<wj1->Py()<<", "<<wj1->Pz()<<", "<<wj1->E()<<", "<<wj1->Mag()<<endl;
         cout<<reducedjets[2]->Px()<<", "<<reducedjets[2]->Py()<<", "<<reducedjets[2]->Pz()<<", "<<reducedjets[2]->E()<<", "<<reducedjets[2]->Mag()<<endl;
         cout<<bhadper->Px()<<", "<<bhadper->Py()<<", "<<bhadper->Pz()<<", "<<bhadper->E()<<", "<<bhadper->Mag()<<endl;
         cout<<missj.Px()<<", "<<missj.Py()<<", "<<missj.Pz()<<", "<<missj.E()<<", "<<missj.Mag()<<endl;
-        cout<<chi2missj<<", "<<(missj + *reducedjets[2]).Mag()<<endl<<endl;
-        //if(rightper.WJa() != 0 && rightper.WJb() == 0) missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
-        //else if(rightper.WJb() != 0 && rightper.WJa() == 0) missj = NS_missj.GetBest(genper->WJa()->Px(), genper->WJa()->Py(), 1, 1, 0, chi2missj);
+        cout<<chi2missj<<", "<<(missj + *reducedjets[2]).Mag()<<endl<<endl;*/
+        if(rightper.WJa() != 0 && rightper.WJb() == 0) missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
+        else if(rightper.WJb() != 0 && rightper.WJa() == 0) missj = NS_missj.GetBest(genper->WJa()->Px(), genper->WJa()->Py(), 1, 1, 0, chi2missj);
         //missj = NS_missj.GetBest(, 1, 1, 0, chi2missj);
 
         //TLorentzVector thadsolver = *bhadper + *reducedjets[2] + missj;
