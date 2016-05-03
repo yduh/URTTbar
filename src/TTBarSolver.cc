@@ -134,7 +134,7 @@ double TTBarSolver::Test(double* par)
 	j2hadT_ = TLorentzVector(j2had_->Px()*par[4], j2had_->Py()*par[4], j2had_->Pz()*par[4], j2had_->E()*par[4]);
 	blepT_ = TLorentzVector(blep_->Px()*par[5], blep_->Py()*par[5], blep_->Pz()*par[5], blep_->E()*par[5]);
 	llepT_ = TLorentzVector(llep_->Px()*par[6], llep_->Py()*par[6], llep_->Pz()*par[6], llep_->E()*par[6]);
-	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0]);
+	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0], 0);
 	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
 	//cout << nschi << " NS " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
 	if(nschi > 0. && nschi < 150.*150.)
