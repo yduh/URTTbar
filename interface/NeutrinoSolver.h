@@ -28,12 +28,12 @@ class NeutrinoSolver
 
 		void Solve(double t);
 		TMatrixD GetPtSolution(double t);
-		TLorentzVector GetSolution(double t);
 		double Chi2(double t);
 		pair<double, double> Extrem(double t, bool MIN = true);
 	public:
 		NeutrinoSolver(const TLorentzVector* lep, const TLorentzVector* bjet, double MW = 80, double MT = 173, double Mn = 0.);
 		TLorentzVector GetBest(double metx, double mety, double metxerr, double metyerr, double metxyrho, double& test, bool INFO = false);
+		TLorentzVector GetSolution(double t);
 
 };
 
