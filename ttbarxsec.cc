@@ -271,8 +271,8 @@ void ttbar::begin()
         TDirectory* dir_3j_alpha = outFile_.mkdir("3j_ALPHA");
         dir_3j_alpha->cd();
         alpha3j2d.AddHist("genmtt_recomtt", 100, 0, 2000, 100, 0, 2000, "gen M(t#bar{t})", "reco M(t+p)");
-        alpha3j2d.AddHist("mp_alphamp", 50, 0, 1000, 50, 0, 1000, "M(p)", "#alphaM(p)");
-        alpha3j2d.AddHist("mp_alpha", 50, 0, 1000, 50, 0, 5, "M(p)", "#alpha");
+        alpha3j2d.AddHist("mp_alphamp", 250, 0, 1000, 250, 0, 1000, "M(p)", "#alphaM(p)");
+        alpha3j2d.AddHist("mp_alpha", 250, 0, 1000, 100, 0, 10, "M(p)", "#alpha");
         alpha3j1d.AddHist("thad_pt", 400, 0, 800, "p_{T}(t_{h})", "Events");
         alpha3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         alpha3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
@@ -1902,9 +1902,35 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
 
+        
+        //method 1: scale factor alpha on TLorentzVector 2j
+    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
+        double alphap;
+        double mttpeak = (gentqlep + gentqhad).Mag()*0.947628 - 22.3221;//mttpeak-> y, y(x) = -22.3221 + 0.947628x (know gen info, get reco peak info, it's mttpaek, solve alpha)
+        alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow(mttpeak, 2)));
+        //alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow(mttpeak, 2)));
+        alphap = alphap/(2*pow(thad_3j.Mag(),2));
+        //alpham = alpham/(2*pow(thad_3j.Mag(),2));
+        //cout << alphap <<", "<< alpham << endl;
+        alpha3j2d["genmtt_recomtt"]->Fill((gentqhad + gentqlep).Mag(), (tlep_3j + thad_3j).Mag(), weight);
+        alpha3j2d["mp_alphamp"]->Fill(thad_3j.Mag(), alphap*(thad_3j.Mag()), weight);
+        alpha3j2d["mp_alpha"]->Fill(thad_3j.Mag(), alphap, weight);
 
-        //cout<<reducedjets[2]->Px()<<", "<<reducedjets[2]->Py()<<", "<<reducedjets[2]->Pz()<<", "<<reducedjets[2]->E()<<", "<<reducedjets[2]->Mag()<<endl;
-        //method 1: NS applies on missj 
+        alpha3j1d["thad_pt"]->Fill((alphap*thad_3j).Pt(), weight);
+        alpha3j1d["thad_y"]->Fill(Abs((alphap*thad_3j).Rapidity()), weight);
+        alpha3j1d["thad_M"]->Fill((alphap*thad_3j).Mag(), weight);
+        alpha3j1d["tt_pt"]->Fill((tlep_3j + (alphap*thad_3j)).Pt(), weight);
+        alpha3j1d["tt_y"]->Fill(Abs((tlep_3j + (alphap*thad_3j)).Rapidity()), weight);
+        alpha3j1d["Mtt"]->Fill((tlep_3j + (alphap*thad_3j)).Mag(), weight);
+        alpha3j1d["delY"]->Fill(tlep_3j.Rapidity()-(alphap*thad_3j).Rapidity(), weight);
+        alpha3j2d["Mtt_delY"]->Fill((tlep_3j + (alphap*thad_3j)).Mag(), tlep_3j.Rapidity()-(alphap*thad_3j).Rapidity(), weight);
+        alpha3j1d["Mtt_resol"]->Fill(((tlep_3j + alphap*thad_3j).Mag() - (gentqhad + gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
+        alpha3j1d["delY_resol"]->Fill(((tlep_3j.Rapidity() - alphap*thad_3j.Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
+    }
+
+
+
+        //method 2: NS applies on missj 
         //(after allocate the permutation b, reconstruct TLorentzVector nu and assign the TLorentzVector for b)  
         double chi2missj;
         TLorentzVector missj;
@@ -1998,30 +2024,6 @@ void ttbar::ttanalysis(URStreamer& event)
         //gen3j1d["thadmiss_y"]->Fill(Abs(gentqhad_miss.Rapidity()), weight);
 
 
-
-        //method 2: scale factor alpha on TLorentzVector 2j
-    if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
-        double alphap, alpham;
-        double mttpeak = (gentqlep + gentqhad).Mag()*0.947628 - 22.3221;//mttpeak-> y, y(x) = -22.3221 + 0.947628x (know gen info, get reco peak info, it's mttpaek, solve alpha)
-        alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow(mttpeak, 2)));
-        alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-393*393));
-        alphap = alphap/(2*pow(thad_3j.Mag(),2));
-        alpham = alpham/(2*pow(thad_3j.Mag(),2));
-        alpha3j2d["genmtt_recomtt"]->Fill((gentqhad + gentqlep).Mag(), (tlep_3j + thad_3j).Mag(), weight);
-        alpha3j2d["mp_alphamp"]->Fill(thad_3j.Mag(), alphap*(thad_3j.Mag()), weight);
-        alpha3j2d["mp_alpha"]->Fill(thad_3j.Mag(), alphap, weight);
-
-        alpha3j1d["thad_pt"]->Fill((alphap*thad_3j).Pt(), weight);
-        alpha3j1d["thad_y"]->Fill(Abs((alphap*thad_3j).Rapidity()), weight);
-        alpha3j1d["thad_M"]->Fill((alphap*thad_3j).Mag(), weight);
-        alpha3j1d["tt_pt"]->Fill((tlep_3j + (alphap*thad_3j)).Pt(), weight);
-        alpha3j1d["tt_y"]->Fill(Abs((tlep_3j + (alphap*thad_3j)).Rapidity()), weight);
-        alpha3j1d["Mtt"]->Fill((tlep_3j + (alphap*thad_3j)).Mag(), weight);
-        alpha3j1d["delY"]->Fill(tlep_3j.Rapidity()-(alphap*thad_3j).Rapidity(), weight);
-        alpha3j2d["Mtt_delY"]->Fill((tlep_3j + (alphap*thad_3j)).Mag(), tlep_3j.Rapidity()-(alphap*thad_3j).Rapidity(), weight);
-        alpha3j1d["Mtt_resol"]->Fill(((tlep_3j + alphap*thad_3j).Mag() - (gentqhad + gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
-        alpha3j1d["delY_resol"]->Fill(((tlep_3j.Rapidity() - alphap*thad_3j.Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
-    }
 
 
         
