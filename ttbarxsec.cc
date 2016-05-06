@@ -1906,11 +1906,14 @@ void ttbar::ttanalysis(URStreamer& event)
         
         //method 1: scale factor alpha on TLorentzVector 2j
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
-        double alphap;
-        double mttpeak = ((tlep_3j + thad_3j).Mag() + 22.3221)/947628;
+        double alphap, alpham;
+        double mttpeak = ((tlep_3j + thad_3j).Mag() + 22.3221)/0.947628;
         //double mttpeak = (gentqlep + gentqhad).Mag()*0.947628 - 22.3221;//mttpeak-> y, y(x) = -22.3221 + 0.947628x (know gen info, get reco peak info, it's mttpaek, solve alpha)
         alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow(mttpeak, 2)));
+        alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow(mttpeak, 2)));
         alphap = alphap/(2*pow(thad_3j.Mag(),2));
+        alpham = alpham/(2*pow(thad_3j.Mag(),2));
+        //cout <<alphap <<", "<<alpham <<endl;
         alpha3j2d["genmtt_recomtt"]->Fill((gentqhad + gentqlep).Mag(), (tlep_3j + thad_3j).Mag(), weight);
         alpha3j2d["mp_alphamp"]->Fill(thad_3j.Mag(), alphap*(thad_3j.Mag()), weight);
         alpha3j2d["mp_alpha"]->Fill(thad_3j.Mag(), alphap, weight);
