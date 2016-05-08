@@ -1907,8 +1907,8 @@ void ttbar::ttanalysis(URStreamer& event)
         //method 1: scale factor alpha on TLorentzVector 2j
     if(rightper.BLep() == bleper && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
         double alphap, alpham;
-        double mttpeak = ((tlep_3j + thad_3j).Mag() + 22.3221)/0.947628;
-        //double mttpeak = (gentqlep + gentqhad).Mag()*0.947628 - 22.3221;//mttpeak-> y, y(x) = -22.3221 + 0.947628x (know gen info, get reco peak info, it's mttpaek, solve alpha)
+        //double mttpeak = ((tlep_3j + thad_3j).Mag() + 22.3221)/0.947628;
+        double mttpeak = (gentqlep + gentqhad).Mag()*0.947628 - 22.3221;//mttpeak-> y, y(x) = -22.3221 + 0.947628x (know gen info, get reco peak info, it's mttpaek, solve alpha)
         alphap = -2*(tlep_3j*thad_3j) + Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow(mttpeak, 2)));
         alpham = -2*(tlep_3j*thad_3j) - Sqrt(4*pow(tlep_3j*thad_3j,2)-4*pow(thad_3j.Mag(),2)*(pow(tlep_3j.Mag(),2)-pow(mttpeak, 2)));
         alphap = alphap/(2*pow(thad_3j.Mag(),2));
@@ -1919,7 +1919,9 @@ void ttbar::ttanalysis(URStreamer& event)
         alpha3j2d["mp_alpha"]->Fill(thad_3j.Mag(), alphap, weight);
 
         //y = 125.846 + (x-139.401)* exp(-0.0115772x)
-        double alpha = (125.846 + (thad_3j.Mag() - 139.401)* exp(-0.0115772*thad_3j.Mag()))/thad_3j.Mag();
+        //y = -118.127 -1.43278x +37.7185*sqrt(x)
+        //double alpha = (125.846 + (thad_3j.Mag() - 139.401)* exp(-0.0115772*thad_3j.Mag()))/thad_3j.Mag();
+        double alpha = (-118.127 -1.43278*thad_3j.Mag() + 37.7185*Sqrt(thad_3j.Mag()))/thad_3j.Mag();
         //cout << thad_3j.Mag() <<", "<< alpha <<" = "<< alpha*thad_3j.Mag()<< endl;
         alpha3j1d["thad_pt"]->Fill((alpha*thad_3j).Pt(), weight);
         alpha3j1d["thad_y"]->Fill(Abs((alpha*thad_3j).Rapidity()), weight);
