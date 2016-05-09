@@ -13,8 +13,8 @@ ttbar::ttbar(const std::string output_filename):
 	AnalyzerBase("ttbar", output_filename),
         reco3j2d("3j"),
         reco3j1d("3j"),
-        chi2same3j2d("3j"),
-        chi2same3j1d("3j"),
+        //chi2same3j2d("3j"),
+        //chi2same3j1d("3j"),
         truth3j2d("3j"),
         truth3j1d("3j"),
         wrong3j2d("3j"),
@@ -269,7 +269,7 @@ void ttbar::begin()
         //reco3j1d.AddHist("thadmiss_DeltaR", 100, 0, 5, "W-jets #DeltaR", "Events");
         //reco3j1d.AddHist("delpt_pt", 20, 0, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
         //reco3j1d.AddHist("dely_y", 20, 0, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
-
+/*
         TDirectory* dir_3j_chi2same = outFile_.mkdir("3j_chi2same");
         dir_3j_chi2same->cd();
         chi2same3j2d.AddHist("blep_bhad_pt", 250, 0, 500, 250, 0, 500, "p_{T}(b_{l})", "p_{T}(b_{h})");
@@ -287,7 +287,7 @@ void ttbar::begin()
         chi2same3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
         chi2same3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
         chi2same3j2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
-
+*/
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
         dir_3j_truth->cd();
         truth3j2d.AddHist("chi2", 100, 0, 500, 100, 0, 500, "chi2 blep", "chi2 bhad");
@@ -391,6 +391,7 @@ void ttbar::begin()
 	truth2d.AddHist("dPtbJet_right", 50, 0., 250., 200, -2., 2., "p_{T} [GeV]", "#Deltap_{T}/p_{T}");
 	truth1d.AddHist("dRNu_right", 200, 0., 10., "#DeltaR(#nu_{gen}, #nu_{rec})", "Events");
 	truth1d.AddHist("dPtNu_right", 200, -2., 2., "#Deltap_{T}/p_{T}", "Events");
+        truth2d.AddHist("met_dpt_pxpy", 40, -2, 2, 40, -2, 2, "NS px - MET px", "NS py - MET py");
 	truth1d.AddHist("dPzNu_right", 200, -2., 2., "#Deltap_{z}/p_{z}", "Events");
 	truth2d.AddHist("dPzNu_dPhi_right", 200, -2., 2., 100, 0., 3.15, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
 	truth2d.AddHist("dPzNu_chi2_right", 200, -2., 2., 100, 0., 100, "#Deltap_{z}/p_{z}", "#Delta#Phi(#nu, met)");
@@ -2498,7 +2499,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
 		truth1d["dRNu_right"]->Fill(bestper.Nu().DeltaR(genper->Nu()), weight);
 		truth1d["dPtNu_right"]->Fill((bestper.Nu().Pt() - genper->Nu().Pt())/genper->Nu().Pt(), weight);
-                truth1d["met_dpt_pxpy"]->Fill((bestper.Nu.Px()-met.Px())/met.Px(), (bestper.Nu().Py()-met.Py())/met.Py(), weight);
+                truth2d["met_dpt_pxpy"]->Fill((bestper.Nu().Px()-met.Px())/met.Px(), (bestper.Nu().Py()-met.Py())/met.Py(), weight);
 		truth1d["dPzNu_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), weight);
 		truth2d["dPzNu_dPhi_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Abs(bestper.Nu().DeltaPhi(met)), weight);
 		truth2d["dPzNu_chi2_right"]->Fill((bestper.Nu().Pz() - genper->Nu().Pz())/genper->Nu().Pz(), Sqrt(bestper.NuChisq()), weight);
