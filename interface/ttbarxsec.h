@@ -100,10 +100,10 @@ class ttbar : public AnalyzerBase
                 TH1DCollection wrong3j1d;
                 TH2DCollection gen3j2d;
                 TH1DCollection gen3j1d;
-                /*TH1DCollection alpha3j1d;
+                TH1DCollection alpha3j1d;
                 TH2DCollection alpha3j2d;
                 TH1DCollection missj1d;
-                TH2DCollection missj2d;*/
+                TH2DCollection missj2d;
                 //TH1DCollection fourjets;
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
