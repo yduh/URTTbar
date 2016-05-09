@@ -299,6 +299,7 @@ void ttbar::begin()
         missj1d.AddHist("whad_M", 250, 0, 500, "M(W_{h})", "Events");
         missj1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
         missj2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay(t#bar{t})");
+        missj1d.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         missj1d.AddHist("delY_resol", 40, -2, 2, "#Delta(#Deltay(t#bar{t}))/(#Deltay(t#bar{t}))", "Events");
         
         TDirectory* dir_3j_truth = outFile_.mkdir("3j_TRUTH");
