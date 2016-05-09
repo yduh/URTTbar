@@ -1953,8 +1953,8 @@ void ttbar::ttanalysis(URStreamer& event)
         //if(rightper.WJa() ==0 && rightper.WJb() !=0){
             //NeutrinoSolver NS_missj = NeutrinoSolver(reducedjets[2], bhadper, 80., 173., genper->WJa()->Mag()); 
             NeutrinoSolver NS_missj(wj1, bhadper, 80., 173., 0.); 
-            //missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
-            missj = NS_missj.GetBest((NS_missj.GetSolution(0.).Px() + NS_missj.GetSolution(3.1415927).Px())/2, (NS_missj.GetSolution(0.).Py() + NS_missj.GetSolution(3.1415927).Py())/2, 1, 1, 0, chi2missj);
+            missj = NS_missj.GetBest(genper->WJb()->Px(), genper->WJb()->Py(), 1, 1, 0, chi2missj);
+            //missj = NS_missj.GetBest((NS_missj.GetSolution(0.).Px() + NS_missj.GetSolution(3.1415927).Px())/2, (NS_missj.GetSolution(0.).Py() + NS_missj.GetSolution(3.1415927).Py())/2, 1, 1, 0, chi2missj);
             //cout<<(NS_missj.GetSolution(0.).Px() + NS_missj.GetSolution(3.1415927).Px())/2<<", "<<(NS_missj.GetSolution(0.).Py() + NS_missj.GetSolution(3.1415927).Py())/2<<endl;
         //}
         //else if(rightper.WJb() ==0 && rightper.WJa() !=0){
