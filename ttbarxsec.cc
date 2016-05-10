@@ -233,6 +233,8 @@ void ttbar::begin()
         gen3j2d.AddHist("thadmiss_pt_eta", 250, 0, 500, 100, 0, 5, "miss-jet p_{T}", "miss-jet #eta");
         //gen3j1d.AddHist("thadmiss_y", 200, 0, 5, "miss-jet |y|", "Events");
         gen3j1d.AddHist("thadmiss_DeltaR", 100, 0, 5, "W-jets #DeltaR", "Events");
+        gen3j1d.AddHist("thadmiss_DeltaR2", 100, 0, 5, "W-jet2 b_{h} #DeltaR", "Events");
+        gen3j1d.AddHist("thadmiss_DeltaR3", 100, 0, 5, "W-jet2 b_{l} #DeltaR", "Events");
         //gen3j1d.AddHist("de_e", 40, 0, 2, "#DeltaE(t_{h})/E(t_{h})", "Events");
         //gen3j1d.AddHist("dy_y", 80, -2, 2, "#Deltay(t_{h})/y(t_{h})", "Events");
         //gen3j1d.AddHist("dpt_pt", 80, -2, 2, "#Deltap_{T}(t_{h})/p_{T}(t_{h})", "Events");
@@ -2023,6 +2025,8 @@ void ttbar::ttanalysis(URStreamer& event)
             gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJb()->Eta()), weight);
             gen3j2d["thadmiss_pt_eta"]->Fill(genper->WJb()->Pt(), Abs(genper->WJb()->Eta()), weight);
             gen3j1d["thadmiss_DeltaR"]->Fill(genper->WJb()->DeltaR(*genper->WJa()), weight);
+            gen3j1d["thadmiss_DeltaR2"]->Fill(genper->WJb()->DeltaR(*genper->BHad()), weight);
+            gen3j1d["thadmiss_DeltaR3"]->Fill(genper->WJb()->DeltaR(*genper->BLep()), weight);
         }else if(rightper.WJb() != 0 && rightper.WJa() == 0){ 
             gen3j1d["thadmiss_pz"]->Fill(genper->WJa()->Pz(), weight);
             gen3j1d["thadmiss_pt"]->Fill(genper->WJa()->Pt(), weight);
@@ -2030,6 +2034,8 @@ void ttbar::ttanalysis(URStreamer& event)
             gen3j1d["thadmiss_eta"]->Fill(Abs(genper->WJa()->Eta()), weight);
             gen3j2d["thadmiss_pt_eta"]->Fill(genper->WJa()->Pt(), Abs(genper->WJa()->Eta()), weight);
             gen3j1d["thadmiss_DeltaR"]->Fill(genper->WJa()->DeltaR(*genper->WJb()), weight);
+            gen3j1d["thadmiss_DeltaR2"]->Fill(genper->WJa()->DeltaR(*genper->BHad()), weight);
+            gen3j1d["thadmiss_DeltaR3"]->Fill(genper->WJa()->DeltaR(*genper->BLep()), weight);
         }        
         //gen3j1d["thadmiss_e"]->Fill(gentqhad_miss.E(), weight);
         //gen3j1d["thadmiss_y"]->Fill(Abs(gentqhad_miss.Rapidity()), weight);
