@@ -98,6 +98,10 @@ class ttbar : public AnalyzerBase
                 TH1DCollection truth3j1d;
                 TH2DCollection wrong3j2d;
                 TH1DCollection wrong3j1d;
+                TH2DCollection semi3j2d;
+                TH1DCollection semi3j1d;
+                TH2DCollection other3j2d;
+                TH1DCollection other3j1d;
                 TH2DCollection gen3j2d;
                 TH1DCollection gen3j1d;
                 TH1DCollection alpha3j1d;
