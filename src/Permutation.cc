@@ -55,7 +55,7 @@ double Permutation::Solve(TTBarSolver& ttsolver, bool kinfit)
 	nu_discriminant_   = ttsolver.NSRes();
 	btag_discriminant_ = ttsolver.BTagRes();
 	mass_discriminant_ = ttsolver.MassRes();
-	mt_discriminant_ = ttsolver.MTRes();
+	//mt_discriminant_ = ttsolver.MTRes();
 
 	if(kinfit_)
 	{

@@ -31,6 +31,7 @@ class TTBarSolver
 		//TH2D* WTmass_wrong;
 		TH1D* BTag_wrong; 
 		//TH1D* N_wrong; 
+		double masscutoff;
 
 		IDJet* bhad_;
 		IDJet* j1had_;
@@ -59,26 +60,33 @@ class TTBarSolver
 		double btagtest;
 		double nstest;
 		double masstest;
-		double mttest;
 		double res;
 
 		bool USEBTAG;
 		bool USENS;
 		bool USEMASS;
+		bool kinfit_;
+		double c_mt;
+		double c_mw;
+		double c_rt;
+		double c_rw;
+		double c_rwt;
+		double norm;
+		double masstestmax;
+
 	public:
 		double Test(double* par);
 		static TTBarSolver* TTBS; 
 		TTBarSolver();
 		~TTBarSolver();
-		void Init(string filename, bool usebtag = true, bool usens = true, bool usemass = true);//provide root file with probability distribution, switches if btag and neutrino solver information should be used for final discriminant Res()
-		void Solve(TLorentzVector* bhad, TLorentzVector* j1had, TLorentzVector* j2had, TLorentzVector* blep, TLorentzVector* llep, IDMet* met);
+		void Init(bool pseudo, string filename, bool usebtag = true, bool usens = true, bool usemass = true);//provide root file with probability distribution, switches if btag and neutrino solver information should be used for final discriminant Res()
+		void Solve(TLorentzVector* bhad, TLorentzVector* j1had, TLorentzVector* j2had, TLorentzVector* blep, TLorentzVector* llep, IDMet* met, bool kinfit = false);
 
 		//extrem unlikely hypothesis will return a value >= 1E10
 		double Res() const {return res;}//final discriminant
 		double NSRes() const {return nstest;}//-log(l) of neutriosolver 
 		double BTagRes() const {return btagtest;} //-log(l) of btagging
 		double MassRes() const {return masstest;} //-log(l) of 2d-mass test
-		double MTRes() const {return mttest;} //-log(l) of 2d-mass test
 
 		double NSChi2() const {return nschi;}//chi2 of neutrinosolver
 

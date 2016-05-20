@@ -809,15 +809,15 @@ void ttbar::begin()
 	if(BTAGMODE)
 	{
 		cnbtag = 1;
-		ttsolver.Init(probfilename, false, true, true);//for btag
+		ttsolver.Init(PSEUDOTOP, probfilename, false, true, true);//for btag
 	}
 	if(JETSCALEMODE)
 	{
-		ttsolver.Init(probfilename, true, true, false);//don't use mass info
+		ttsolver.Init(PSEUDOTOP, probfilename, true, true, false);//don't use mass info
 	}
 	else
 	{
-		ttsolver.Init(probfilename, false, true, true);
+		ttsolver.Init(PSEUDOTOP, probfilename, false, true, true);
 		//ttsolver.Init(probfilename, false, true);
 	}
 	btagweight.Init(this, "btaggingeff.root", cbtagunc, cltagunc);
