@@ -92,22 +92,20 @@ class ttbar : public AnalyzerBase
 		//hists
                 TH2DCollection reco3j2d;
                 TH1DCollection reco3j1d;
-                //TH1DCollection chi2same3j1d;
-                //TH2DCollection chi2same3j2d;
                 TH2DCollection truth3j2d;
                 TH1DCollection truth3j1d;
                 TH2DCollection wrong3j2d;
                 TH1DCollection wrong3j1d;
-                TH2DCollection semi3j2d;
+                /*TH2DCollection semi3j2d;
                 TH1DCollection semi3j1d;
                 TH2DCollection other3j2d;
-                TH1DCollection other3j1d;
+                TH1DCollection other3j1d;*/
                 TH2DCollection gen3j2d;
                 TH1DCollection gen3j1d;
-                TH1DCollection alpha3j1d;
+                /*TH1DCollection alpha3j1d;
                 TH2DCollection alpha3j2d;
                 TH1DCollection missj1d;
-                TH2DCollection missj2d;
+                TH2DCollection missj2d;*/
                 //TH1DCollection fourjets;
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
