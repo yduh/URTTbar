@@ -25,6 +25,7 @@ void TTBarSolver::Init(bool pseudo, string filename, bool usebtag, bool usens, b
 	USEBTAG = usebtag;
 	USENS = usens;
 	USEMASS = usemass;
+        //USE3JBTAG = usemass;
 	TDirectory* dir = gDirectory;
 	probfile = new TFile(filename.c_str(), "READ");
 	WTmass_right = dynamic_cast<TH2D*>(probfile->Get("TRUTH/truth_Wmasshad_tmasshad_right"));
@@ -212,6 +213,7 @@ double TTBarSolver::Test(double* par)
 	if(USEMASS) {res += masstest;}
 	if(USENS) {res += nstest;}
 	if(USEBTAG) {res += btagtest;}
+        //if(USE3JBTAG) {res += 3jbtagtest;}
 	//cout << res << " " << par[2]-1 << " " << par[3]-1 <<endl;
 	return(res);
 }
