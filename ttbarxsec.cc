@@ -744,7 +744,7 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-        TFile* fyuka_2d = TFile::Open("yukawa_reweighing3.0_175.5.root");
+        TFile* fyuka_2d = TFile::Open("yukawa_reweighing2.0_175.5.root");
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
