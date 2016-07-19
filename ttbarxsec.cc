@@ -744,7 +744,7 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 	
-        TFile* fyuka_2d = TFile::Open("yukawa_reweighing0_175.5.root");
+        TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 
 
@@ -1784,7 +1784,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//cut on number of jets
 	reco1d["jetmulti"]->Fill(cleanedjets.size(), weight);
 //cout << "NC: " << cleanedjets.size() << endl;
-	if(cleanedjets.size() != 4){return;} // change for 3j test
+	if(cleanedjets.size() <5){return;} // change for 3j test
 	reco1d["c_jets"]->Fill(event.run+0.5);
 	if(BTAGMODE && cleanedjets.size() < 4){return;}
 	reco1d["counter"]->Fill(2.5, weight);
