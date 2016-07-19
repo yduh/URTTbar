@@ -18,7 +18,7 @@
 #include "TTBarResponse2D.h"
 #include "Permutation.h"
 #include "BtagEff.h"
-#include "JetScale.h"
+//#include "JetScale.h"
 #include "JetScaler.h"
 #include "BTagWeight.h"
 //#include "NeutrinoSolver.h"
@@ -32,6 +32,7 @@ class ttbar : public AnalyzerBase
     friend class TTBarPlots;
     friend class TTBarResponse;
     friend class BTagWeight;
+    friend class JetScaler;
     //friend class NeutrinoSolver;
 
 	private:
@@ -207,7 +208,10 @@ class ttbar : public AnalyzerBase
 		int cpileup;
 		bool HERWIGPP;
 		bool PYTHIA6;
-                //const char yukawatxt;
+                bool SCALEUP;
+                bool SCALEDOWN;
+                string cjecuncertainty;
+                string yukawasf;
 		//
 		double jetptmin;
 	

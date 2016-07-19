@@ -5,57 +5,45 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <fstream>
+#include <cmath>
+#include <algorithm>
 
-#include <TH1D.h>
-#include <TDirectory.h>
-
-#include "IDJet.h"
-
+#include "helper.h"
 
 using namespace std;
+
+class ttbar;
+class TH1D;
+class TGraph;
+class TFile;
+
 
 class JetScaler
 {
 	private:
-		TH1D* Heta;
+		ttbar* AN = nullptr;
+		TH1D* Heta = nullptr;
 		vector<TH1D*> HptsP;
 		vector<TH1D*> HptsM;
+		TFile* tf = nullptr;
+		TGraph* hlE =nullptr;
+		TGraph* hlB =nullptr;
+		TGraph* hbE =nullptr;
+		TGraph* hbB =nullptr;
 
+		map< Bin, map<Bin, vector<double> > > resinfo;
+		map< Bin, vector<double> > ressf;
 
 	public:
-		static URStreamer* streamer;
-		JetScaler(const string filename)
-		{
-			TDirectory* olddir = gDirectory;
-			TFile* f = new TFile(filename.c_str());
-			Heta = dynamic_cast<TH1D*>(f->Get("eta"));
-			for(int i = 0 ; i < Heta->GetNbinsX() ; ++i)
-			{
-				stringstream hn;
-				hn << "down_" << i;
-				HptsP.push_back(dynamic_cast<TH1D*>(f->Get(hn.str().c_str())));
-			}	
-			for(int i = 0 ; i < Heta->GetNbinsX() ; ++i)
-			{
-				stringstream hn;
-				hn << "up_" << i;
-				HptsM.push_back(dynamic_cast<TH1D*>(f->Get(hn.str().c_str())));
-			}	
+		void InitMCrescale(ttbar* an, const string rescalefilename);
 
-			olddir->cd();
-		}
-		double GetUncP(const IDJet& jet)
-		{
-			int etabin = Heta->FindFixBin(jet.Eta()) -1;
-			int ptbin = HptsP[etabin]->FindFixBin(jet.Pt());
-			return(HptsP[etabin]->GetBinContent(ptbin));
-		}
-		double GetUncM(const IDJet& jet)
-		{
-			int etabin = Heta->FindFixBin(jet.Eta()) -1;
-			int ptbin = HptsM[etabin]->FindFixBin(jet.Pt());
-			return(HptsM[etabin]->GetBinContent(ptbin));
-		}
+		void InitResolution(const string& resolutionfile, const string& sffile);
+
+		void Init(const string& filename, const string& type);
+
+		double GetScale(const IDJet& jet, double rho, double sigmascale = 0., double sigmares = 0);
 };
+
 
 #endif

@@ -76,6 +76,7 @@ double IDElectron::PFIsoDb() const {
 
 bool IDElectron::ID(IDS idtyp)
 {
+	if(Abs(Eta()) > 2.4) return(false);
 	double sceta = Abs(TVector3(x(), y(), z()).Eta());
 	if(sceta > 2.5) return(false);
 	if(sceta < 1.566 && sceta > 1.4442) return(false);

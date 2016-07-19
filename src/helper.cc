@@ -35,6 +35,41 @@ double SigmaToProb(double sigma)
 	return(TMath::Erf(sigma/TMath::Sqrt(2.)));
 }
 
+vector<string> string_split(const string& in, const vector<string> splits)
+{
+	vector<pair<size_t, size_t> > positions;
+	positions.push_back(pair<size_t, size_t>(0, 0));
+	for(size_t s = 0 ; s < splits.size() ; ++s)
+	{
+		size_t lastpos = 0;
+		while(lastpos < in.size())
+		{
+			lastpos = in.find(splits[s], lastpos);
+			if(lastpos == string::npos)
+			{
+				break;
+			}
+			else
+			{
+				positions.push_back(pair<size_t, size_t>(lastpos, splits[s].size()));
+				//lastpos += splits[s].size()+1;
+				lastpos += splits[s].size();
+			}
+		}
+
+	}
+	positions.push_back(pair<size_t, size_t>(in.size(), 0));
+	sort(positions.begin(), positions.end(), [](const pair<size_t, size_t>& A, const pair<size_t, size_t>& B){return A.first < B.first;});
+	vector<string> result;
+	for(size_t p = 0 ; p < positions.size()-1 ; ++p)
+	{
+		size_t begin = positions[p].first + positions[p].second;
+		size_t end = positions[p+1].first; 
+		if(end != begin)result.push_back(in.substr(begin, end-begin));
+	}
+	return result;
+}
+
 TH1DCollection::TH1DCollection(string _prefix) : prefix(_prefix)
 {
 	if(prefix.size() != 0) {prefix += "_";}
@@ -166,3 +201,17 @@ bool ptlvsorteta(const TLorentzVector* JA, const TLorentzVector* JB)
         return(false);
 }
 
+
+//BINNER
+bool operator<(const Bin& A, const Bin& B)
+{
+	if(B.min() == B.max() && (A.min() <= B.min() && A.max() > B.min()))
+	{
+		return(false);
+	}
+	else if(A.min() == A.max() && (B.min() <= A.min() && B.max() > A.min()))
+	{
+		return(false);
+	}
+	return A.min() < B.min();
+}

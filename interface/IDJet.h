@@ -9,6 +9,7 @@
 class IDJet : public Jet, public MCMatchable
 {
 public:
+	double genpt = 0.;
 	IDJet(const Jet el):
 		Jet(el),
     MCMatchable()

@@ -1,8 +1,14 @@
 #ifndef HELPER_H
 #define HELPER_H
 #include <string>
+#include <sstream>
 #include <map>
 #include <vector>
+
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
 
 #include "TH1D.h"
 #include "TH2D.h"
@@ -16,6 +22,34 @@ string FNbody(string filename);
 string FNfilename(string filename);
 string FNpath(string filename);
 string FNnoext(string filename);
+
+vector<string> string_split(const string& in, const vector<string> splits = {" "});
+
+template<typename T> T stringtotype(string s)
+{
+	T i;
+	istringstream(s) >> i;
+	return(i);	
+}
+
+// trim from start
+static inline std::string &ltrim(std::string &s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+				std::not1(std::ptr_fun<int, int>(std::isspace))));
+	return s;
+}
+
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+	s.erase(std::find_if(s.rbegin(), s.rend(),
+				std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+	return s;
+}
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+	return ltrim(rtrim(s));
+}
 
 //Stat
 double ProbToSigma(double prob);
@@ -62,5 +96,23 @@ bool tlvsortetaabs(const TLorentzVector& JA, const TLorentzVector& JB);
 bool ptlvsortpt(const TLorentzVector* JA, const TLorentzVector* JB);
 bool ptlvsortetaabs(const TLorentzVector* JA, const TLorentzVector* JB);
 bool ptlvsorteta(const TLorentzVector* JA, const TLorentzVector* JB);
+
+
+//BINNER
+class Bin
+{
+	private:
+		double min_;
+		double max_;
+	public:
+		Bin(double min, double max) : min_(min), max_(max) {}
+		Bin(double val) : min_(val), max_(val) {}
+
+		double min() const {return min_;}
+		double max() const {return max_;}
+
+};
+
+bool operator<(const Bin& A, const Bin& B);
 
 #endif
