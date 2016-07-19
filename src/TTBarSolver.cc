@@ -62,7 +62,7 @@ void TTBarSolver::Init(bool pseudo, string filename, bool usebtag, bool usens, b
 		c_rwt = -2.1583E-3;
 	}
 	norm = -1.* Log(Sqrt(c_rw*c_rt - c_rwt*c_rwt)/Pi()); 
-	masstestmax = norm + c_mw*c_mw*c_rw + 2.*c_mw*c_mt*c_rwt + c_mt*c_mt*c_rt;
+	//masstestmax = norm + c_mw*c_mw*c_rw + 2.*c_mw*c_mt*c_rwt + c_mt*c_mt*c_rt;
 	dir->cd();
 }
 
@@ -181,7 +181,8 @@ double TTBarSolver::Test(double* par)
 	double mwhad = (j1hadT_ + j2hadT_).M();
 	double mthad = (j1hadT_ + j2hadT_ + bhadT_).M();
 	//cout << mwhad << " M " << mthad << endl; 
-	
+/*	
+<<<<<<< HEAD
 
 	if(false)
 	{
@@ -196,6 +197,25 @@ double TTBarSolver::Test(double* par)
 			if(massdisval > masscutoff) {masstest = -1.*Log(massdisval);}
 		}
 	}
+=======
+*/
+	//double massdisval = norm * Exp(-1.*((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt));
+	masstest = norm  + ((mwhad-c_mw)*(mwhad-c_mw)*c_rw + 2.*(mwhad-c_mw)*(mthad-c_mt)*c_rwt + (mthad-c_mt)*(mthad-c_mt)*c_rt);
+	//cout << massdisval << endl;
+//	if(mthad < 500. && mwhad < 500.)
+//	{
+//		double massdisval = WTmass_right->Interpolate(mthad, mwhad);
+//		if(massdisval > 1.0E-10) {masstest = -1.*Log(massdisval);}
+//		//masstest = -1.*Log(WTmass_right->Interpolate(mthad, mwhad)/Max(1., WTmass_wrong->Interpolate(mthad, mwhad)));
+//	}
+
+	//double mtwlep = Sqrt(Power(met_->Pt() + llep_->Pt(),2) - Power(met_->Px() + llep_->Px(),2) - Power(met_->Py() + llep_->Py(),2));
+	//double mttlep = Sqrt(Power(met_->Pt() + llep_->Pt() + Sqrt(blep_->M()*blep_->M() + blep_->Pt()*blep_->Pt()),2) - Power(met_->Px() + llep_->Px() + blep_->Px(),2) - Power(met_->Py() + llep_->Py() + blep_->Py(),2));
+	//if(mtwlep < 500. && mttlep < 500.)
+	//{
+	//	double mtdisval = WTmt_right->Interpolate(mttlep, mtwlep);
+	//	if(mtdisval > 1.0E-10) {mttest = -1.*Log(mtdisval);}
+	//}
 
 	res = 0.;
 	if(kinfit_)

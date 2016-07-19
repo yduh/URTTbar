@@ -72,7 +72,7 @@ class TTBarSolver
 		double c_rw;
 		double c_rwt;
 		double norm;
-		double masstestmax;
+		//double masstestmax;
 
 	public:
 		double Test(double* par);
@@ -81,6 +81,7 @@ class TTBarSolver
 		~TTBarSolver();
 		void Init(bool pseudo, string filename, bool usebtag = true, bool usens = true, bool usemass = true);//provide root file with probability distribution, switches if btag and neutrino solver information should be used for final discriminant Res()
 		void Solve(TLorentzVector* bhad, TLorentzVector* j1had, TLorentzVector* j2had, TLorentzVector* blep, TLorentzVector* llep, IDMet* met, bool kinfit = false);
+		//void Solve(TLorentzVector* bhad, TLorentzVector* j1had, TLorentzVector* j2had, TLorentzVector* blep, TLorentzVector* llep, IDMet* met);
 
 		//extrem unlikely hypothesis will return a value >= 1E10
 		double Res() const {return res;}//final discriminant

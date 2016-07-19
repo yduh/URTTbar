@@ -46,12 +46,12 @@ transferfiles.append(execonfig)
 transferfiles_config = ', '.join(transferfiles)
 
 for sf in samplefiles:
-	if 'tt_' in sf:
-		filesperjob = 8
+	if 'QCD' in sf:
+		filesperjob = 12
 	elif 'DATA_' in sf:
-		filesperjob = 8
-	else:
 		filesperjob = 10
+	else:
+		filesperjob = 12
 	#infile = os.path.join(inputdir, sf)
 	jobpath = os.path.join(jobdir, sf.split('.txt')[0])
 	os.mkdir(jobpath)
