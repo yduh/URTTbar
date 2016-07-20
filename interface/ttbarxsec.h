@@ -36,7 +36,7 @@ class ttbar : public AnalyzerBase
     //friend class NeutrinoSolver;
 
 	private:
-		bool isMC = false;
+		bool isDA = false;
 		map<int, set<int> >  runinfo;
 		PDFuncertainty* pdfunc;
 		//Collections
@@ -208,6 +208,7 @@ class ttbar : public AnalyzerBase
 		int cpileup;
 		bool HERWIGPP;
 		bool PYTHIA6;
+                bool TTMC;
                 bool SCALEUP;
                 bool SCALEDOWN;
                 string cjecuncertainty;
