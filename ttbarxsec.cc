@@ -103,6 +103,10 @@ ttbar::ttbar(const std::string output_filename):
 	cltagunc(0),
 	cpileup(0),
         TTMC(false),
+        FULLHAD(false),
+        SEMILEP(false),
+        FULLLEP(false),
+        SEMILEPACC(false),
 	HERWIGPP(false),
 	PYTHIA6(false),
         SCALEUP(false), 
@@ -166,13 +170,13 @@ ttbar::ttbar(const std::string output_filename):
 
 	jetptmin = min(cwjetptsoft, cbjetptsoft);
 	
-	topptbins = {0.0, 45.0, 65.0, 85.0, 100.0, 120.0, 140.0, 160.0, 180.0, 210.0, 250.0, 350.0, 600.0};
-	topybins = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.2, 1.5, 2.0, 2.5};
-	ttmbins = {300., 360.0, 400.0, 430.0, 455.0, 480.0, 510.0, 545.0, 585.0, 640.0, 720.0, 870.0, 1800.0};
-	ttybins = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9, 1.1, 1.4, 2.5};
-	ttptbins = {0.0, 15.0, 25.0, 35.0, 45.0, 55., 70.0, 90.0, 110.0, 150.0, 350.0, 500.0};
+	topptbins = {0.0, 45.0, 90.0, 135.0, 180.0, 225.0, 270.0, 315.0, 400.0, 800.0};
+	topybins = {0.0, 0.2, 0.4, 0.7, 1.0, 1.3, 1.6, 2.5};
+	ttmbins = {300.0, 375.0, 450.0, 530.0, 625.0, 740.0, 850.0, 1100.0, 2000.0};
+	ttybins = {0.0, 0.2, 0.4, 0.6, 0.9, 1.3, 2.3};
+	ttptbins = {0.0, 35.0, 80.0, 140.0, 200.0, 500.0};
 	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
-	jetbins = {-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5};
+	jetbins = {-0.5, 0.5, 1.5, 2.5, 3.5, 4.5};
 	dybins = {-2.0, -1.5, -1., -0.5, 0., 0.5, 1.0, 1.5, 2.0};
 	nobins = {0., 13000.};
 
@@ -927,10 +931,6 @@ void ttbar::SelectGenParticles(URStreamer& event)
         }
     }
     //cout << gentq.Pt() << " " << gentqbar.Pt() << endl;
-    FULLHAD = false;
-    SEMILEP = false;
-    FULLLEP = false;
-    SEMILEPACC = false;
     //cout << topcounter << " " << lepdecays << " " << genwpartons.size() << " " << genfincls.size() << endl;
     if(topcounter == 2 && genb != 0 && genbbar != 0)
     {
@@ -1367,7 +1367,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	double nvtx = event.vertexs().size();
 	reco1d["NumVertices"]->Fill(nvtx , mcweight);
 
-	if(isDA = 0)
+	if(isDA == 0)
 	{
 		if(tightmuons.size() == 1)
 		{
@@ -1431,7 +1431,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	sort(reducedjets.begin(), reducedjets.end(), [](IDJet* A, IDJet* B){return(A->csvIncl() > B->csvIncl());});
 	int nbjets = count_if(reducedjets.begin(), reducedjets.end(), [&](IDJet* A){return(A->csvIncl() > B_MEDIUM);});
 	reco1d["bjetmulti"]->Fill(nbjets, weight);
-	if(isDA = 0 && !BTAGMODE)
+	if(isDA == 0 && !BTAGMODE)
 	{
 		double btw = btagweight.SF(reducedjets);
 //cout << weight << " " << btw << endl;
@@ -2269,11 +2269,36 @@ void ttbar::analyze()
                         if(TTMC)
                         {
 		    	    const vector<Mcweight>& ws =  event.MCWeights();
-                            //these lines below are frac. and ren. scale reweighnig, for sys uncertainties 
+                            //frac. and ren. scale reweighnig, sys uncertainties 
 			    if(cfacscale == -1) mcweight = ws[2].weights()/Abs(ws[0].weights());
 			    else if(cfacscale == 1) mcweight = ws[1].weights()/Abs(ws[0].weights());
 			    if(crenscale == -1) mcweight = ws[6].weights()/Abs(ws[0].weights());
 			    else if(crenscale == 1) mcweight = ws[3].weights()/Abs(ws[0].weights());
+
+                        }
+			truth1d["counter"]->Fill(18.5, mcweight);
+			weight *= mcweight;
+			double npu = event.PUInfos()[0].nInteractions();
+			//cout << event.PUInfos()[0].nInteractions() << " " << event.PUInfos()[1].nInteractions() << endl;
+			truth1d["Mu"]->Fill(npu, weight);
+			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
+			//cout << weight << " " << npu << endl;
+			truth1d["MuWeighted"]->Fill(npu, weight);
+			truth1d["counter"]->Fill(17.5, weight);
+		}
+		else
+		{
+			runinfo[event.run].insert(event.lumi);
+		}
+
+                if(TTMC)
+                {
+                    SelectGenParticles(event);
+                    gen1d["tpt"]->Fill(gentq.Pt(), weight);
+                    gen1d["ty"]->Fill(Abs(gentq.Rapidity()), weight);
+                    gen1d["ttpt"]->Fill((gentq+gentqbar).Pt(), weight);
+                    gen1d["tty"]->Fill(Abs((gentq+gentqbar).Rapidity()), weight);
+                    SelectPseudoTop(event);
 
                                 TLorentzVector CMttbar = gentq + gentqbar; //genallper.THad() + genallper.TLep(); //gentoplep + gentophad;
 				TLorentzVector CMhadt = gentqhad; //genallper.THad(); //gentophad;
@@ -2300,13 +2325,11 @@ void ttbar::analyze()
 				//int weight_bin_dely = int( (deltaY + 5.69)/0.01 + 0.5);
 				//weight *= yukahist_2d->GetBinContent(weight_bin_mtt+1, weight_bin_dely+1) + 1
                                 //
-                               
                                 
                                 if(Mtt>= 2*173*cosh(deltaY/2))
                                 weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 else
                                 weight *= 1;
-                                
 
 				//CASE3: deltaBate
 				double deltaBeta = gentqlep.P()/gentqlep.E() - gentqhad.P()/gentqhad.E(); //genallper.TLep().P()/genallper.TLep().E() - genallper.THad().P()/genallper.THad().E(); //gentoplep.P()/gentoplep.E() - gentophad.P()/gentophad.E();
@@ -2319,7 +2342,6 @@ void ttbar::analyze()
 
 
 				//weight = weight_mtt* weight_dely* weight_beta;
-				//cout<< "weight_mtt = " << weight_mtt <<", "<< "weight_dely = " << weight_dely <<", "<< "weight_beta = " << weight_beta <<", "<< "weight = " << weight << endl;
 				yuka1d_gen["Mtt"]->Fill(Mtt, weight);
 				yuka1d_gen["costheta"]->Fill(costheta_lep, weight);
 				yuka1d_gen["costheta"]->Fill(costheta_had, weight);
@@ -2338,33 +2360,8 @@ void ttbar::analyze()
                                 yuka1d_gen["tlepy"]->Fill(tlepy, weight);
                                 yuka2d_gen["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
                                 yuka2d_gen["delY_tlepy"]->Fill(deltaY, tlepy, weight);
-				//cout<<"yukawa sample weight = "<<weight<<endl;
 				//the end of the twice yukawa const test.
 
-                        }
-			truth1d["counter"]->Fill(18.5, mcweight);
-			weight *= mcweight;
-			double npu = event.PUInfos()[0].nInteractions();
-			//cout << event.PUInfos()[0].nInteractions() << " " << event.PUInfos()[1].nInteractions() << endl;
-			truth1d["Mu"]->Fill(npu, weight);
-			weight *= puhist->GetBinContent(puhist->FindFixBin(npu));
-			//cout << weight << " " << npu << endl;
-			truth1d["MuWeighted"]->Fill(npu, weight);
-			truth1d["counter"]->Fill(17.5, weight);
-		}
-		else
-		{
-			runinfo[event.run].insert(event.lumi);
-		}
-
-                if(TTMC)
-                {
-                    SelectGenParticles(event);
-                    gen1d["tpt"]->Fill(gentq.Pt(), weight);
-                    gen1d["ty"]->Fill(Abs(gentq.Rapidity()), weight);
-                    gen1d["ttpt"]->Fill((gentq+gentqbar).Pt(), weight);
-                    gen1d["tty"]->Fill(Abs((gentq+gentqbar).Rapidity()), weight);
-                    SelectPseudoTop(event);
                     
                 }
 
