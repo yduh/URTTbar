@@ -188,6 +188,10 @@ ttbar::ttbar(const std::string output_filename):
 
 	runbins = {254231., 254232., 254790., 254852., 254879., 254906., 254907., 254914., 256630., 256673., 256674., 256675., 256676., 256677., 256801., 256842., 256843., 256866., 256867., 256868., 256869., 256926., 256941., 257461., 257531., 257599., 257613., 257614., 257645., 257682., 257722., 257723., 257735., 257751., 257804., 257805., 257816., 257819., 257968., 257969., 258129., 258136., 258157., 258158., 258159., 258177., 258211., 258213., 258214., 258215., 258287., 258403., 258425., 258426., 258427., 258428., 258432., 258434., 258440., 258444., 258445., 258446., 258448., 258655., 258656., 258694., 258702., 258703., 258705., 258706., 258712., 258713., 258714., 258741., 258742., 258745., 258749., 258750., 259626., 259637., 259681., 259683., 259685., 259686., 259721., 259809., 259810., 259811., 259813., 259817., 259818., 259820., 259821., 259822., 259861., 259862., 259884., 259890., 259891., 260373., 260424., 260425., 260426., 260427., 260431., 260532., 260533., 260534., 260536., 260538., 260541., 260575., 260576., 260577., 260593., 260627., 260628.};
 
+
+
+
+
 }
 
 void ttbar::begin()
@@ -630,7 +634,8 @@ void ttbar::begin()
         yuka2d_reco_other.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 
 
-        jetscaler.Init("Spring16_25nsV6_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
+        jetscaler.Init("Fall15_25nsV2_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
+        //jetscaler.Init("Spring16_25nsV6_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
         jetscaler.InitResolution("jetresolution.txt", "jetresolutionsf.txt");
         jetscaler.InitMCrescale(this, "jetrescale.root");
 
@@ -682,7 +687,7 @@ void ttbar::begin()
 
 ttbar::~ttbar()
 {
-	
+
 	int lscounter = 0;
 	for(map<int, set<int> >::const_iterator ita = runinfo.begin() ; ita != runinfo.end() ; ++ita)
 	{
@@ -2229,12 +2234,9 @@ void ttbar::analyze()
 	IDElectron::streamer = &event;
 	IDMuon::streamer = &event;
 	PDFuncertainty::streamer = &event;
-        cout<< "hello 1"<< endl;
 	while(event.next())
 	{
-        cout<< "hello in"<< endl;
 		nevent++;
-                cout << "nevent = "<< nevent << endl;
 		if(nevent % 10000 == 0)cout << "Event:" << nevent << " " << event.run << endl;
 		sgenparticles.clear();
 		genfincls.clear();
@@ -2294,7 +2296,6 @@ void ttbar::analyze()
 			runinfo[event.run].insert(event.lumi);
 		}
 
-        cout<< "hello 2"<< endl;
                 if(TTMC)
                 {
                     SelectGenParticles(event);
@@ -2369,8 +2370,10 @@ void ttbar::analyze()
                     
                 }
 
-		SelectGenParticles(event);
-		SelectPseudoTop(event);
+                //cout << "before SelectGenParticles" <<endl;
+		//SelectGenParticles(event);
+                //cout << "before SelectPseudoTop" <<endl;
+		//SelectPseudoTop(event);
 		// Reweighting stuffs for yukawa study (should do it before next if statement, doesn't matter before or after the SelectPseudoTop(event) but keep after the SelecGenParticles())
         
         if(SEMILEP){
@@ -2507,6 +2510,8 @@ void ttbar::analyze()
 			ttp_genacc.Fill(*genper, weight);
 			truth1d["counter"]->Fill(2.5, weight);
 		}
+
+
 		//cout << event.filter().Flag_goodVertices() << " " <<  event.filter().Flag_CSCTightHaloFilter() << " " << event.filter().Flag_HBHENoiseFilter() << " " << event.filter().HBHEnew() << endl;
 		//event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 &&
 		if(isDA && Abs(event.trigger().HLT_IsoMu20()) != 1) {cout << "TRIGGER UNDEFUNED IsoMu20:" << event.trigger().HLT_IsoMu20() <<endl;}
