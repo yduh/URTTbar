@@ -340,6 +340,10 @@ void ttbar::begin()
 	gen1d.AddHist("TYP", 4, 0., 4., "Decay TYP", "Events");
 	gen1d.AddHist("DRW", 600, 0., 6., "DR", "Events");
 	gen1d.AddHist("DRB", 600, 0., 6., "DR", "Events");
+        gen1d.AddHist("tpt", 500, 0, 1000, "p_{T}(t) [GeV]", "Events");
+        gen1d.AddHist("ty", 500, 0, 10, "y(t)", "Events");
+        gen1d.AddHist("ttpt", 500, 0, 1000, "p_{T}(t#bar{t}) [GeV]", "Events");
+        gen1d.AddHist("tty", 500, 0, 10, "y(t#bar{t})", "Events");
 	//gen2d.AddHist("wjets_eta", 100, 0., 5., 100, 0, 5, "W-jet #eta_{min}", "W-jet #eta_{max}");
 	//gen2d.AddHist("bjets_eta", 100, 0., 5., 100, 0, 5, "b-jet #eta_{min}", "b-jet #eta_{max}");
 	//gen2d.AddHist("wjets_pt", 200, 0, 400, 200, 0., 400, "W-jet p_{T,min} [GeV]", "W-jet p_{T,max} [GeV]");
