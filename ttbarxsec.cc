@@ -2229,9 +2229,12 @@ void ttbar::analyze()
 	IDElectron::streamer = &event;
 	IDMuon::streamer = &event;
 	PDFuncertainty::streamer = &event;
+        cout<< "hello 1"<< endl;
 	while(event.next())
 	{
+        cout<< "hello in"<< endl;
 		nevent++;
+                cout << "nevent = "<< nevent << endl;
 		if(nevent % 10000 == 0)cout << "Event:" << nevent << " " << event.run << endl;
 		sgenparticles.clear();
 		genfincls.clear();
@@ -2291,6 +2294,7 @@ void ttbar::analyze()
 			runinfo[event.run].insert(event.lumi);
 		}
 
+        cout<< "hello 2"<< endl;
                 if(TTMC)
                 {
                     SelectGenParticles(event);
