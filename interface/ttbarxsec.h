@@ -201,6 +201,7 @@ class ttbar : public AnalyzerBase
 		double csigmamet;
 		double ctopptweight;
 		double cttptweight;
+		double ctoprapweight;
 		int cfacscale;
 		int crenscale;
 		int cbtagunc;

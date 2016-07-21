@@ -97,6 +97,7 @@ ttbar::ttbar(const std::string output_filename):
 	csigmamet(0.),
 	ctopptweight(0.),
 	cttptweight(0.),
+        ctoprapweight(0.),
 	crenscale(0),
 	cfacscale(0),
 	cbtagunc(0),
@@ -146,6 +147,7 @@ ttbar::ttbar(const std::string output_filename):
 	csigmamet = CP.Get<double>("sigmamet");
 	ctopptweight = CP.Get<double>("topptweight");
 	cttptweight = CP.Get<double>("ttptweight");
+	ctoprapweight = CP.Get<double>("toprapweight");
 	if(output_filename.find("tt_PowhegP8") != string::npos)
 	{
 		cfacscale = CP.Get<int>("facscale");
@@ -936,10 +938,16 @@ void ttbar::SelectGenParticles(URStreamer& event)
         }
     }
     //cout << gentq.Pt() << " " << gentqbar.Pt() << endl;
+    FULLHAD = false;
+    SEMILEP = false;
+    FULLLEP = false;
+    SEMILEPACC = false;
     //cout << topcounter << " " << lepdecays << " " << genwpartons.size() << " " << genfincls.size() << endl;
     if(topcounter == 2 && genb != 0 && genbbar != 0)
     {
         weight *= 1.+cttptweight*((gentq + gentqbar).Pt()-100.)/500.;
+        weight *= 1.+ctopptweight*(gentq.Pt()-200.)/1000.;
+        weight *= 1.+ctoprapweight*(0.2-0.2*Abs(gentq.Rapidity()));
         //weight *= 1.+ Gaus((gentq + gentqbar).M(), 600, 30)*0.2;
         if(lepdecays == 2 && genwpartons.size() == 0)
         {
