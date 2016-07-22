@@ -2348,10 +2348,9 @@ void ttbar::analyze()
                                 
                                 if(Mtt>= 2*173*cosh(deltaY/2))
                                     weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                else{
-                                    yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
+                                else
                                     weight *= 1;
-                                }
+                                
 
 				//CASE3: deltaBate
 				double deltaBeta = gentqlep.P()/gentqlep.E() - gentqhad.P()/gentqhad.E(); //genallper.TLep().P()/genallper.TLep().E() - genallper.THad().P()/genallper.THad().E(); //gentoplep.P()/gentoplep.E() - gentophad.P()/gentophad.E();
@@ -2376,6 +2375,7 @@ void ttbar::analyze()
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 				yuka2d_gen["Mtt_delY"]->Fill(Mtt, deltaY, weight);
+                                if(Mtt>= 2*173*cosh(deltaY/2))  yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
 				yuka2d_gen["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
 				yuka2d_gen["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 				
