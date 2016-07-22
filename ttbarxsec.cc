@@ -2025,7 +2025,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
                 yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 		yuka2d_reco["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-		if(Mtt< 2*173*cosh(deltaY/2))  yuka2d_reco["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
+		if(Mtt< 2*172.5*cosh(deltaY/2))  yuka2d_reco["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
 		yuka2d_reco["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
 		yuka2d_reco["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 	
@@ -2376,7 +2376,7 @@ void ttbar::analyze()
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 				yuka2d_gen["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-                                if(Mtt< 2*173*cosh(deltaY/2))  yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
+                                if(Mtt< 2*172.5*cosh(deltaY/2))  yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
 				yuka2d_gen["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
 				yuka2d_gen["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 				
