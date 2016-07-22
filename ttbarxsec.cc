@@ -545,6 +545,7 @@ void ttbar::begin()
         yuka2d_gen.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
         yuka2d_gen.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_gen.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_gen.AddHist("Mtt_delY_offshell", 1000, 0, 2000, 1200, -6, 6, "offshell M(t#bar{t})", "offshell #Deltay_{t#bar{t}}");
 	yuka2d_gen.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
 	yuka2d_gen.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");	
 	
@@ -562,6 +563,7 @@ void ttbar::begin()
         yuka2d_reco.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
         yuka2d_reco.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_reco.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	yuka2d_reco.AddHist("Mtt_delY_offshell", 1000, 0, 2000, 1200, -6, 6, "offshell M(t#bar{t})", "offshell #Deltay_{t#bar{t}}");
 	yuka2d_reco.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
 	yuka2d_reco.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
@@ -2023,6 +2025,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
                 yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 		yuka2d_reco["Mtt_delY"]->Fill(Mtt, deltaY, weight);
+		if(Mtt< 2*173*cosh(deltaY/2))  yuka2d_reco["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
 		yuka2d_reco["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
 		yuka2d_reco["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 	
@@ -2344,9 +2347,10 @@ void ttbar::analyze()
                                 //
                                 
                                 if(Mtt>= 2*173*cosh(deltaY/2))
-                                weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                else
-                                weight *= 1;
+                                    weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                else{
+                                    yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
+                                    weight *= 1;}
 
 				//CASE3: deltaBate
 				double deltaBeta = gentqlep.P()/gentqlep.E() - gentqhad.P()/gentqhad.E(); //genallper.TLep().P()/genallper.TLep().E() - genallper.THad().P()/genallper.THad().E(); //gentoplep.P()/gentoplep.E() - gentophad.P()/gentophad.E();
