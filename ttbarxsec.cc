@@ -2350,7 +2350,8 @@ void ttbar::analyze()
                                     weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 else{
                                     yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
-                                    weight *= 1;}
+                                    weight *= 1;
+                                }
 
 				//CASE3: deltaBate
 				double deltaBeta = gentqlep.P()/gentqlep.E() - gentqhad.P()/gentqhad.E(); //genallper.TLep().P()/genallper.TLep().E() - genallper.THad().P()/genallper.THad().E(); //gentoplep.P()/gentoplep.E() - gentophad.P()/gentophad.E();
