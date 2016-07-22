@@ -2362,6 +2362,7 @@ void ttbar::analyze()
                                 double tlepy = Abs(gentqlep.Rapidity());
 
 
+                                if(SEMILEP){
 				//weight = weight_mtt* weight_dely* weight_beta;
 				yuka1d_gen["Mtt"]->Fill(Mtt, weight);
 				yuka1d_gen["costheta"]->Fill(costheta_lep, weight);
@@ -2375,13 +2376,14 @@ void ttbar::analyze()
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 				yuka2d_gen["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-                                if(Mtt>= 2*173*cosh(deltaY/2))  yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
+                                if(Mtt< 2*173*cosh(deltaY/2))  yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
 				yuka2d_gen["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
 				yuka2d_gen["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 				
                                 yuka1d_gen["tlepy"]->Fill(tlepy, weight);
                                 yuka2d_gen["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
                                 yuka2d_gen["delY_tlepy"]->Fill(deltaY, tlepy, weight);
+                                }
 				//the end of the twice yukawa const test.
 
                     
