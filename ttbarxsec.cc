@@ -553,6 +553,14 @@ void ttbar::begin()
         yuka2d_gen.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
         yuka2d_gen.AddHist("delY_tlepy", 1200, -6, 6, 200, 0, 5, "#Deltay_{t#bar{t}}", "|y(t_{l}|");
 
+        yuka1d_gen.AddHist("Mt_offshell", 500, 0, 1000, "offshell M(t)", "Events");
+        yuka1d_gen.AddHist("Mtcheck_offshell", 500, 0, 1000, "offshell M(t) check", "Events");
+        yuka1d_gen.AddHist("p_offshell", 500, 0, 1000, "offshell p(t)", "Events");
+        yuka1d_gen.AddHist("pt_offshell", 500, 0, 1000, "offshell pt(t)", "Events");
+        yuka1d_gen.AddHist("pz_offshell", 500, 0, 1000, "offshell pz(t)", "Events");
+        yuka1d_gen.AddHist("weight_offshell", 50, 0, 5, "weight", "Events");
+	yuka2d_gen.AddHist("newMtt_delY_offshell", 1000, 0, 2000, 1200, -6, 6, "new offshell M(t#bar{t})", "offshell #Deltay_{t#bar{t}}");
+
 	TDirectory* dir_yukawareco = outFile_.mkdir("YUKAWA_RECO");
 	dir_yukawareco->cd();
 	yuka1d_reco.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -2376,7 +2384,24 @@ void ttbar::analyze()
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
                                 yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 				yuka2d_gen["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-                                if(Mtt< 2*172.5*cosh(deltaY/2))  yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
+                                if(Mtt< 2*172.5*cosh(deltaY/2))  {
+                                    yuka2d_gen["Mtt_delY_offshell"]->Fill(Mtt, deltaY, weight);
+                                    double Mt = Mtt/2 * (1/cosh(deltaY/2)); 
+                                    cout << Mt <<", "<< gentq.M() <<", "<< gentqbar.M() <<endl;
+                                    yuka1d_gen["Mt_offshell"]->Fill(Mt, weight);
+                                    yuka1d_gen["Mtcheck_offshell"]->Fill(gentq.M(), weight);
+                                    yuka1d_gen["Mtcheck_offshell"]->Fill(gentqbar.M(), weight);
+                                    TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
+                                    TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
+                                    yuka1d_gen["p_offshell"]->Fill(v1.P(), weight);
+                                    yuka1d_gen["p_offshell"]->Fill(v2.P(), weight);
+                                    yuka1d_gen["pt_offshell"]->Fill(v1.Pt(), weight);
+                                    yuka1d_gen["pt_offshell"]->Fill(v2.Pt(), weight);
+                                    yuka1d_gen["pz_offshell"]->Fill(v1.Pz(), weight);
+                                    yuka1d_gen["pz_offshell"]->Fill(v2.Pz(), weight);
+                                    yuka2d_gen["newMtt_delY_offshell"]->Fill((v1+v2).M(), deltaY, weight);
+                                    yuka1d_gen["weight_offshell"]->Fill(yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1, weight);
+                                    }
 				yuka2d_gen["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
 				yuka2d_gen["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 				
