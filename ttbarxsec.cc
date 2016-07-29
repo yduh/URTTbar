@@ -539,6 +539,7 @@ void ttbar::begin()
 
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
 	dir_yukawagen->cd();
+        yuka1d_gen.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
 	yuka1d_gen.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	yuka1d_gen.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_gen.AddHist("Y", 160, -4, 4,"y_t", "Events");
@@ -563,6 +564,7 @@ void ttbar::begin()
 
 	TDirectory* dir_yukawareco = outFile_.mkdir("YUKAWA_RECO");
 	dir_yukawareco->cd();
+        yuka1d_reco.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
 	yuka1d_reco.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	yuka1d_reco.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco.AddHist("Y", 160, -4, 4,"y_t", "Events");
@@ -2021,6 +2023,10 @@ void ttbar::ttanalysis(URStreamer& event)
 		double deltaBeta = bestper.TLep().P()/bestper.TLep().E() - bestper.THad().P()/bestper.THad().E();
 		double deltaBeta_boost = CMlept.P()/CMlept.E() + CMhadt.P()/CMhadt.E();
                 double tlepy = Abs(bestper.TLep().Rapidity());
+                                    
+                
+                for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
+                    if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_reco["parametrize"]->Fill(runmt, weight);}
 
 		yuka1d_reco["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco["costheta"]->Fill(costheta_had, weight);
@@ -2393,6 +2399,8 @@ void ttbar::analyze()
 
 
                                 if(SEMILEP){
+                                    for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
+                                    if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_gen["parametrize"]->Fill(runmt, weight);}
 				//weight = weight_mtt* weight_dely* weight_beta;
 				yuka1d_gen["Mtt"]->Fill(Mtt, weight);
 				yuka1d_gen["costheta"]->Fill(costheta_lep, weight);
