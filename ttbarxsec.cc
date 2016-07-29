@@ -560,7 +560,7 @@ void ttbar::begin()
         yuka1d_offshell.AddHist("pt", 250, 0, 500, "offshell pt(t)", "Events");
         yuka1d_offshell.AddHist("pz", 500, 0, 1000, "offshell pz(t)", "Events");
         yuka2d_offshell.AddHist("diffweight", 1000, 0, 2000, 1200, -6, 6, "weight", "Events");
-	yuka2d_offshell.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "new offshell M(t#bar{t})", "offshell #Deltay_{t#bar{t}}");
+	yuka2d_offshell.AddHist("newMtt_delY", 1000, 0, 2000, 1200, -6, 6, "new offshell M(t#bar{t})", "offshell #Deltay_{t#bar{t}}");
 
 	TDirectory* dir_yukawareco = outFile_.mkdir("YUKAWA_RECO");
 	dir_yukawareco->cd();
