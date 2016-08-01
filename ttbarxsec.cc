@@ -540,7 +540,7 @@ void ttbar::begin()
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
 	dir_yukawagen->cd();
         yuka1d_gen.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
-        yuka2d_gen.AddHist("Mtt_coshy2", 1000, 0, 2000, 10, 1, 10, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_gen.AddHist("Mtt_coshy2", 1000, 0, 2000, 100, 0, 10, "M(t#bar{t})", "cosh(#Deltay/2)");
 	yuka1d_gen.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	yuka1d_gen.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_gen.AddHist("Y", 160, -4, 4,"y_t", "Events");
@@ -566,7 +566,7 @@ void ttbar::begin()
 	TDirectory* dir_yukawareco = outFile_.mkdir("YUKAWA_RECO");
 	dir_yukawareco->cd();
         yuka1d_reco.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
-        yuka2d_reco.AddHist("Mtt_coshy2", 1000, 0, 2000, 10, 1, 10, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_reco.AddHist("Mtt_coshy2", 1000, 0, 2000, 100, 0, 10, "M(t#bar{t})", "cosh(#Deltay/2)");
 	yuka1d_reco.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	yuka1d_reco.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco.AddHist("Y", 160, -4, 4,"y_t", "Events");
