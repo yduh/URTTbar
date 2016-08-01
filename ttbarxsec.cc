@@ -2399,8 +2399,14 @@ void ttbar::analyze()
 
 
                                 if(SEMILEP){
-                                    for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
-                                    if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_gen["parametrize"]->Fill(runmt, weight);}
+                                    /*for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
+                                        if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_gen["parametrize"]->Fill(runmt, weight);
+                                    }
+                                    yuka1d_gen["ht"]->Fill(gentqhad.P());
+                                    double ht = gentqhad.P();
+                                    for(int ht = 0; ht <= 2000; ht = ht + 200){
+                                        if(ht > 200 && ht <= ht+200) yuka2d_gen["ht"]->Fill(Mtt, deltaY, weight);
+                                    }*/
 				//weight = weight_mtt* weight_dely* weight_beta;
 				yuka1d_gen["Mtt"]->Fill(Mtt, weight);
 				yuka1d_gen["costheta"]->Fill(costheta_lep, weight);
