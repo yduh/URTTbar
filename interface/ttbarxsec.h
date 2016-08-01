@@ -220,6 +220,7 @@ class ttbar : public AnalyzerBase
 		double jetptmin;
 	
 		double weight;
+                double weight2;
 		double mcweight;
 
 		//binning vectors
