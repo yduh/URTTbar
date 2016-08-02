@@ -540,7 +540,11 @@ void ttbar::begin()
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
 	dir_yukawagen->cd();
         yuka1d_gen.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
-        yuka2d_gen.AddHist("Mtt_coshy2", 1000, 0, 2000, 100, 0, 10, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_gen.AddHist("Mtt_2coshy2", 1000, 0, 2000, 500, 0, 5, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_gen.AddHist("reweight_Mt", 500, 0, 1000, 400, -0.2, 0.2, "M(t)", "EW/LO");
+        yuka2d_gen.AddHist("reweight_Mtt", 1000, 0, 2000, 400, -0.2, 0.2, "M(t#bar{t})", "EW/LO");
+        yuka2d_gen.AddHist("reweight_delY", 1200, -6, 6, 400, -0.2, 0.2, "#Deltay(t#bar{t})", "EW/LO");
+        yuka2d_gen.AddHist("reweight_coshy2", 500, 0, 5, 400, -0.2, 0.2, "cosh(#Deltay/2)", "EW/LO");
 	yuka1d_gen.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	yuka1d_gen.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_gen.AddHist("Y", 160, -4, 4,"y_t", "Events");
@@ -566,7 +570,11 @@ void ttbar::begin()
 	TDirectory* dir_yukawareco = outFile_.mkdir("YUKAWA_RECO");
 	dir_yukawareco->cd();
         yuka1d_reco.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
-        yuka2d_reco.AddHist("Mtt_coshy2", 1000, 0, 2000, 100, 0, 10, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_reco.AddHist("Mtt_2coshy2", 1000, 0, 2000, 500, 0, 5, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_reco.AddHist("reweight_Mt", 500, 0, 1000, 400, -0.2, 0.2, "M(t)", "EW/LO");
+        yuka2d_reco.AddHist("reweight_Mtt", 1000, 0, 2000, 400, -0.2, 0.2, "M(t#bar{t})", "EW/LO");
+        yuka2d_reco.AddHist("reweight_delY", 1200, -6, 6, 400, -0.2, 0.2, "#Deltay(t#bar{t})", "EW/LO");
+        yuka2d_reco.AddHist("reweight_coshy2", 500, 0, 5, 400, -0.2, 0.2, "cosh(#Deltay/2)", "EW/LO");
 	yuka1d_reco.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	yuka1d_reco.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco.AddHist("Y", 160, -4, 4,"y_t", "Events");
@@ -2030,7 +2038,11 @@ void ttbar::ttanalysis(URStreamer& event)
                 
                 for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
                     if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_reco["parametrize"]->Fill(runmt, weight);}
-                yuka2d_reco["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weight);
+                yuka2d_reco["Mtt_2coshy2"]->Fill(Mtt, 2*cosh(deltaY/2), weight);
+                yuka2d_reco["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2))*weight, weight, 1);
+                yuka2d_reco["reweight_Mtt"]->Fill(Mtt*weight, weight, 1);
+                yuka2d_reco["reweight_delY"]->Fill(deltaY*weight, weight, 1);
+                yuka2d_reco["reweight_coshy2"]->Fill(cosh(deltaY/2)*weight, weight, 1);
 
 		yuka1d_reco["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco["costheta"]->Fill(costheta_had, weight);
@@ -2412,7 +2424,12 @@ void ttbar::analyze()
                                             yuka1d_gen["parametrize"]->Fill(runmt, weight);
                                         }
                                     }
-                                    yuka2d_gen["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weight);
+                                    yuka2d_gen["Mtt_2coshy2"]->Fill(Mtt, 2*cosh(deltaY/2), weight);
+                                    yuka2d_gen["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2))*weight, weight, 1);
+                                    yuka2d_gen["reweight_Mtt"]->Fill(Mtt*weight, weight, 1);
+                                    yuka2d_gen["reweight_delY"]->Fill(deltaY*weight, weight, 1);
+                                    yuka2d_gen["reweight_coshy2"]->Fill(cosh(deltaY/2)*weight, weight, 1);
+
                                     /*
                                     yuka1d_gen["ht"]->Fill(gentqhad.P());
                                     double ht = gentqhad.P();
