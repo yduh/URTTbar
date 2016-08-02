@@ -2038,11 +2038,11 @@ void ttbar::ttanalysis(URStreamer& event)
                 
                 for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
                     if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_reco["parametrize"]->Fill(runmt, weight);}
-                yuka2d_reco["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weight);
-                yuka2d_reco["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weight-1, 1);
-                yuka2d_reco["reweight_Mtt"]->Fill(Mtt, weight-1, 1);
-                yuka2d_reco["reweight_delY"]->Fill(deltaY, weight-1, 1);
-                yuka2d_reco["reweight_coshy2"]->Fill(cosh(deltaY/2), weight-1, 1);
+                yuka2d_reco["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weightest);
+                yuka2d_reco["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weightest-1, weightest);
+                yuka2d_reco["reweight_Mtt"]->Fill(Mtt, weightest-1, weightest);
+                yuka2d_reco["reweight_delY"]->Fill(deltaY, weightest-1, weightest);
+                yuka2d_reco["reweight_coshy2"]->Fill(cosh(deltaY/2), weightest-1, weightest);
 
 		yuka1d_reco["Mtt"]->Fill(Mtt, weight);
 		yuka1d_reco["costheta"]->Fill(costheta_had, weight);
@@ -2311,6 +2311,7 @@ void ttbar::analyze()
 		truth1d["counter"]->Fill(0.5);
 		weight = 1.;	
                 weight2 = 1.;
+                weightest = 1.;
 		mcweight = 1.;	
 		if(event.PUInfos().size() > 0)
 		{
@@ -2425,11 +2426,11 @@ void ttbar::analyze()
                                             yuka1d_gen["parametrize"]->Fill(runmt, weight);
                                         }
                                     }
-                                    yuka2d_gen["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weight);
-                                    yuka2d_gen["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weight-1, 1);
-                                    yuka2d_gen["reweight_Mtt"]->Fill(Mtt, weight-1, weightest);
-                                    yuka2d_gen["reweight_delY"]->Fill(deltaY, weight-1, 1);
-                                    yuka2d_gen["reweight_coshy2"]->Fill(cosh(deltaY/2), weight-1, 1);
+                                    yuka2d_gen["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weightest);
+                                    yuka2d_gen["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weightest-1, weightest);
+                                    yuka2d_gen["reweight_Mtt"]->Fill(Mtt, weightest-1, weightest);
+                                    yuka2d_gen["reweight_delY"]->Fill(deltaY, weightest-1, weightest);
+                                    yuka2d_gen["reweight_coshy2"]->Fill(cosh(deltaY/2), weightest-1, weightest);
 
                                     /*
                                     yuka1d_gen["ht"]->Fill(gentqhad.P());
