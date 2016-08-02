@@ -2328,7 +2328,7 @@ void ttbar::analyze()
 
                         }
 			truth1d["counter"]->Fill(18.5, mcweight);
-			weight *= mcweight;
+			weight *= mcweight; 
 			double npu = event.PUInfos()[0].nInteractions();
 			//cout << event.PUInfos()[0].nInteractions() << " " << event.PUInfos()[1].nInteractions() << endl;
 			truth1d["Mu"]->Fill(npu, weight);
@@ -2395,14 +2395,15 @@ void ttbar::analyze()
 
                                     }*/
 
-                                //TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
-                                //TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
+                                TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
+                                TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
                                 //weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                weightest *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
 
-                                if(Mtt>= 2*172.5*cosh(deltaY/2))
-                                    weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                else
-                                    weight *= 1;
+                                //if(Mtt>= 2*172.5*cosh(deltaY/2))
+                                //    weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                //else
+                                //    weight *= 1;
                                 
 
 
@@ -2426,7 +2427,7 @@ void ttbar::analyze()
                                     }
                                     yuka2d_gen["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weight);
                                     yuka2d_gen["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weight-1, 1);
-                                    yuka2d_gen["reweight_Mtt"]->Fill(Mtt, weight-1, 1);
+                                    yuka2d_gen["reweight_Mtt"]->Fill(Mtt, weight-1, weightest);
                                     yuka2d_gen["reweight_delY"]->Fill(deltaY, weight-1, 1);
                                     yuka2d_gen["reweight_coshy2"]->Fill(cosh(deltaY/2), weight-1, 1);
 
