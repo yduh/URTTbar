@@ -6,7 +6,6 @@ GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y'
 RUNMAINUNC=true
 RUNOUNC=false
 
-mkdir -p $GT
 
 for gt in $GT
 do
@@ -23,6 +22,7 @@ done
 
 
 if $RUNMAINUNC; then
+    mkdir -p ${TYP}/$GT
     for gt in $GT
     do
         echo "Submit jobs for theoretical uncertainties YUKAWA = ${gt} ..."
@@ -49,6 +49,7 @@ fi
 
 
 if $RUNOUNC; then
+    mkdir -p ${TYP}/$GT
 for gt in $GT
 do
 
