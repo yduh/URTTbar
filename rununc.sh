@@ -60,89 +60,89 @@ if $RUNOUNC; then
         mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
 
-    #PDF uncertainty is estimated with all MCs
-    #============================================================#
-    rm inputs/$JOBDIR/*txt
-    cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-    #PDF: total < 1 %
-    ./updateconfig.py PDFTEST 1
-    ./jobsub ${TYP}/${gt}/pdf ttbarxsec.exe ttbarxsec.cfg
+        #PDF uncertainty is estimated with all MCs
+        #============================================================#
+        rm inputs/$JOBDIR/*txt
+        cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
+        #PDF: total < 1 %
+        ./updateconfig.py PDFTEST 1
+        ./jobsub ${TYP}/${gt}/pdf ttbarxsec.exe ttbarxsec.cfg
 
-    
-    #lepton uncertainties are estimated with all MC except some sparated theoretical signal ones 
-    #============================================================#
-    rm inputs/$JOBDIR/*txt
-    cp inputs/$JOBDIR/backupsmall/*txt inputs/$JOBDIR
-    #leptons: varies up/down scale factor gotten by tag and probe method; total ~3 %
-    ./updateconfig.py ELECTRONS 0
-    ./jobsub ${TYP}/${gt}/mu ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py MUONS 0
-    ./jobsub ${TYP}/${gt}/el ttbarxsec.exe ttbarxsec.cfg
+        
+        #lepton uncertainties are estimated with all MC except some sparated theoretical signal ones 
+        #============================================================#
+        rm inputs/$JOBDIR/*txt
+        cp inputs/$JOBDIR/backupsmall/*txt inputs/$JOBDIR
+        #leptons: varies up/down scale factor gotten by tag and probe method; total ~3 %
+        ./updateconfig.py ELECTRONS 0
+        ./jobsub ${TYP}/${gt}/mu ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py MUONS 0
+        ./jobsub ${TYP}/${gt}/el ttbarxsec.exe ttbarxsec.cfg
 
 
-    #uncertainties are estimated only with signal MC
-    #============================================================#
-    rm inputs/$JOBDIR/*txt
-    cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
+        #uncertainties are estimated only with signal MC
+        #============================================================#
+        rm inputs/$JOBDIR/*txt
+        cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
 
-    #jer/jes: jer < 1 % + jes ~5-7 % 
-    ./updateconfig.py sigmajet -1
-    ./jobsub ${TYP}/${gt}/jetm1sig ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py sigmajet 1
-    ./jobsub ${TYP}/${gt}/jetp1sig ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py jetres -1
-    ./jobsub ${TYP}/${gt}/jetresm ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py jetres 1
-    ./jobsub ${TYP}/${gt}/jetresp ttbarxsec.exe ttbarxsec.cfg
+        #jer/jes: jer < 1 % + jes ~5-7 % 
+        ./updateconfig.py sigmajet -1
+        ./jobsub ${TYP}/${gt}/jetm1sig ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py sigmajet 1
+        ./jobsub ${TYP}/${gt}/jetp1sig ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py jetres -1
+        ./jobsub ${TYP}/${gt}/jetresm ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py jetres 1
+        ./jobsub ${TYP}/${gt}/jetresp ttbarxsec.exe ttbarxsec.cfg
 
-    #MET: < 1 %
-    ./updateconfig.py sigmamet -1
-    ./jobsub ${TYP}/${gt}/metm1sig ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py sigmamet 1
-    ./jobsub ${TYP}/${gt}/metp1sig ttbarxsec.exe ttbarxsec.cfg
+        #MET: < 1 %
+        ./updateconfig.py sigmamet -1
+        ./jobsub ${TYP}/${gt}/metm1sig ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py sigmamet 1
+        ./jobsub ${TYP}/${gt}/metp1sig ttbarxsec.exe ttbarxsec.cfg
 
-    #bunch of reweight factors: seems like you don't need those later, but remember to report your 2d YUKAWA reweighting uncertainties
-    #./updateconfig.py topptweight -1
-    #./jobsub ${TYP}_topdown_${VER} ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py topptweight 1
-    #./jobsub ${TYP}_topup_${VER} ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py toprapweight -1
-    #./jobsub ${TYP}_trapdown_${VER} ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py toprapweight 1
-    #./jobsub ${TYP}_trapup_${VER} ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py ttptweight -1
-    #./jobsub ${TYP}_ttptdown_${VER} ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py ttptweight 1
-    #./jobsub ${TYP}_ttptup_${VER} ttbarxsec.exe ttbarxsec.cfg
+        #bunch of reweight factors: seems like you don't need those later, but remember to report your 2d YUKAWA reweighting uncertainties
+        #./updateconfig.py topptweight -1
+        #./jobsub ${TYP}_topdown_${VER} ttbarxsec.exe ttbarxsec.cfg
+        #./updateconfig.py topptweight 1
+        #./jobsub ${TYP}_topup_${VER} ttbarxsec.exe ttbarxsec.cfg
+        #./updateconfig.py toprapweight -1
+        #./jobsub ${TYP}_trapdown_${VER} ttbarxsec.exe ttbarxsec.cfg
+        #./updateconfig.py toprapweight 1
+        #./jobsub ${TYP}_trapup_${VER} ttbarxsec.exe ttbarxsec.cfg
+        #./updateconfig.py ttptweight -1
+        #./jobsub ${TYP}_ttptdown_${VER} ttbarxsec.exe ttbarxsec.cfg
+        #./updateconfig.py ttptweight 1
+        #./jobsub ${TYP}_ttptup_${VER} ttbarxsec.exe ttbarxsec.cfg
 
-    #factorization and renormalization: total < 1 %
-    ./updateconfig.py renscale -1
-    ./jobsub ${TYP}/${gt}/rsdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py renscale 1
-    ./jobsub ${TYP}/${gt}/rsup ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py facscale -1
-    ./jobsub ${TYP}/${gt}/fsdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py facscale 1
-    ./jobsub ${TYP}/${gt}/fsup ttbarxsec.exe ttbarxsec.cfg
+        #factorization and renormalization: total < 1 %
+        ./updateconfig.py renscale -1
+        ./jobsub ${TYP}/${gt}/rsdown ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py renscale 1
+        ./jobsub ${TYP}/${gt}/rsup ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py facscale -1
+        ./jobsub ${TYP}/${gt}/fsdown ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py facscale 1
+        ./jobsub ${TYP}/${gt}/fsup ttbarxsec.exe ttbarxsec.cfg
 
-    #btag: includes b and light jets tags, vary scale factor up/down; total ~2-3 % depends on the pT and b jets
-    ./updateconfig.py btagunc -1
-    ./jobsub ${TYP}/${gt}/btagdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py btagunc 1
-    ./jobsub ${TYP}/${gt}/btagup ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py ltagunc -1
-    ./jobsub ${TYP}/${gt}/ltagdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py ltagunc 1
-    ./jobsub ${TYP}/${gt}/ltagup ttbarxsec.exe ttbarxsec.cfg
+        #btag: includes b and light jets tags, vary scale factor up/down; total ~2-3 % depends on the pT and b jets
+        ./updateconfig.py btagunc -1
+        ./jobsub ${TYP}/${gt}/btagdown ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py btagunc 1
+        ./jobsub ${TYP}/${gt}/btagup ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py ltagunc -1
+        ./jobsub ${TYP}/${gt}/ltagdown ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py ltagunc 1
+        ./jobsub ${TYP}/${gt}/ltagup ttbarxsec.exe ttbarxsec.cfg
 
-    #pileup: varies the minimum bias cross section by 5%, reweighting the MC; < 1 % 
-    ./updateconfig.py pileupunc -1
-    ./jobsub ${TYP}/${gt}/pileupdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py pileupunc 1
-    ./jobsub ${TYP}/${gt}/pileupup ttbarxsec.exe ttbarxsec.cfg
-    
-    mv ttbarxsec.tmp ttbarxsec.cfg
-done
+        #pileup: varies the minimum bias cross section by 5%, reweighting the MC; < 1 % 
+        ./updateconfig.py pileupunc -1
+        ./jobsub ${TYP}/${gt}/pileupdown ttbarxsec.exe ttbarxsec.cfg
+        ./updateconfig.py pileupunc 1
+        ./jobsub ${TYP}/${gt}/pileupup ttbarxsec.exe ttbarxsec.cfg
+        
+        mv ttbarxsec.tmp ttbarxsec.cfg
+    done
 fi
 
 #./updateconfig.py sigmamet -1
