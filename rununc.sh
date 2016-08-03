@@ -13,7 +13,7 @@ if $RUN; then
     for gt in $GT
     do
         echo "Submit jobs for YUKAWA = ${gt} ..."
-        mkdir -p ${TYP}/${gt}
+        mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
     
         rm inputs/$JOBDIR/*txt
@@ -30,7 +30,7 @@ if $RUNMAINUNC; then
     for gt in $GT
     do
         echo "Submit jobs for theoretical uncertainties YUKAWA = ${gt} ..."
-        mkdir -p ${TYP}/${gt}
+        mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
         
         rm inputs/$JOBDIR/*txt
@@ -57,7 +57,7 @@ if $RUNOUNC; then
     for gt in $GT
     do
         echo "Submit jobs for other uncertainties YUKAWA = ${gt} ..."
-        mkdir -p ${TYP}/${gt}
+        mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
 
     #PDF uncertainty is estimated with all MCs
