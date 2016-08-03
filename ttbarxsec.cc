@@ -539,22 +539,26 @@ void ttbar::begin()
 
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
 	dir_yukawagen->cd();
-        yuka1d_gen.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
+        //yuka1d_gen.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
         yuka2d_gen.AddHist("Mtt_coshy2", 1000, 0, 2000, 500, 0, 5, "M(t#bar{t})", "cosh(#Deltay/2)");
-        yuka2d_gen.AddHist("reweight_Mt", 500, 0, 1000, 400, -0.2, 0.2, "M(t)", "EW/LO");
+        yuka2d_gen.AddHist("reweight_Mt", 500, 0, 1000, 400, -0.2, 0.2, "factor v", "EW/LO");
         yuka2d_gen.AddHist("reweight_Mtt", 1000, 0, 2000, 400, -0.2, 0.2, "M(t#bar{t})", "EW/LO");
         yuka2d_gen.AddHist("reweight_delY", 1200, -6, 6, 400, -0.2, 0.2, "#Deltay(t#bar{t})", "EW/LO");
-        yuka2d_gen.AddHist("reweight_coshy2", 500, 0, 5, 400, -0.2, 0.2, "cosh(#Deltay/2)", "EW/LO");
+        yuka2d_gen.AddHist("Mtt_coshy2_origin", 1000, 0, 2000, 500, 0, 5, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_gen.AddHist("reweight_Mt_origin", 500, 0, 1000, 400, -0.2, 0.2, "factor v", "EW/LO");
+        yuka2d_gen.AddHist("reweight_Mtt_origin", 1000, 0, 2000, 400, -0.2, 0.2, "M(t#bar{t})", "EW/LO");
+        yuka2d_gen.AddHist("reweight_delY_origin", 1200, -6, 6, 400, -0.2, 0.2, "#Deltay(t#bar{t})", "EW/LO");
+
 	yuka1d_gen.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	yuka1d_gen.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	//yuka1d_gen.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_gen.AddHist("Y", 160, -4, 4,"y_t", "Events");
 	yuka1d_gen.AddHist("delY", 1200, -6, 6, "#Deltay_{t#bar{t}}", "Events");
-	yuka1d_gen.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
-        yuka2d_gen.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
-        yuka2d_gen.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
+	//yuka1d_gen.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        //yuka2d_gen.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+        //yuka2d_gen.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_gen.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
-	yuka2d_gen.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
-	yuka2d_gen.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");	
+	//yuka2d_gen.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_gen.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");	
 	
         yuka1d_gen.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_gen.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
@@ -569,23 +573,27 @@ void ttbar::begin()
 
 	TDirectory* dir_yukawareco = outFile_.mkdir("YUKAWA_RECO");
 	dir_yukawareco->cd();
-        yuka1d_reco.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
+        //yuka1d_reco.AddHist("parametrize", 65, 150, 800, "running M(t)", "Events");
         yuka2d_reco.AddHist("Mtt_coshy2", 1000, 0, 2000, 500, 0, 5, "M(t#bar{t})", "cosh(#Deltay/2)");
-        yuka2d_reco.AddHist("reweight_Mt", 500, 0, 1000, 400, -0.2, 0.2, "M(t)", "EW/LO");
+        yuka2d_reco.AddHist("reweight_Mt", 500, 0, 1000, 400, -0.2, 0.2, "factor v", "EW/LO");
         yuka2d_reco.AddHist("reweight_Mtt", 1000, 0, 2000, 400, -0.2, 0.2, "M(t#bar{t})", "EW/LO");
         yuka2d_reco.AddHist("reweight_delY", 1200, -6, 6, 400, -0.2, 0.2, "#Deltay(t#bar{t})", "EW/LO");
-        yuka2d_reco.AddHist("reweight_coshy2", 500, 0, 5, 400, -0.2, 0.2, "cosh(#Deltay/2)", "EW/LO");
-	yuka1d_reco.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	yuka1d_reco.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+        yuka2d_reco.AddHist("Mtt_coshy2_origin", 1000, 0, 2000, 500, 0, 5, "M(t#bar{t})", "cosh(#Deltay/2)");
+        yuka2d_reco.AddHist("reweight_Mt_origin", 500, 0, 1000, 400, -0.2, 0.2, "factor v", "EW/LO");
+        yuka2d_reco.AddHist("reweight_Mtt_origin", 1000, 0, 2000, 400, -0.2, 0.2, "M(t#bar{t})", "EW/LO");
+        yuka2d_reco.AddHist("reweight_delY_origin", 1200, -6, 6, 400, -0.2, 0.2, "#Deltay(t#bar{t})", "EW/LO");
+
+        yuka1d_reco.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	//yuka1d_reco.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco.AddHist("Y", 160, -4, 4,"y_t", "Events");
 	yuka1d_reco.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
-	yuka1d_reco.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
-        yuka2d_reco.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
-        yuka2d_reco.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
+	//yuka1d_reco.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        //yuka2d_reco.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+        //yuka2d_reco.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_reco.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
 	//yuka2d_reco.AddHist("newMtt_delY", 1000, 0, 2000, 1200, -6, 6, "new offshell M(t#bar{t})", "offshell #Deltay_{t#bar{t}}");
-	yuka2d_reco.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
-	yuka2d_reco.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
         yuka1d_reco.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
@@ -596,15 +604,15 @@ void ttbar::begin()
         yuka1d_reco_right.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         yuka1d_reco_right.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
 	yuka1d_reco_right.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	yuka1d_reco_right.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	//yuka1d_reco_right.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco_right.AddHist("Y", 160, -4, 4,"y_t", "Events");
 	yuka1d_reco_right.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
-	yuka1d_reco_right.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
-        yuka2d_reco_right.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
-        yuka2d_reco_right.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
+	//yuka1d_reco_right.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        //yuka2d_reco_right.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+        //yuka2d_reco_right.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_reco_right.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
-	yuka2d_reco_right.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
-	yuka2d_reco_right.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_right.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_right.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
         yuka1d_reco_right.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_right.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
@@ -613,15 +621,15 @@ void ttbar::begin()
 	TDirectory* dir_yukawareco_wrong = outFile_.mkdir("YUKAWA_RECO_wrong");
 	dir_yukawareco_wrong->cd();
 	yuka1d_reco_wrong.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	yuka1d_reco_wrong.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	//yuka1d_reco_wrong.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco_wrong.AddHist("Y", 160, -4, 4,"y_t", "Events");
 	yuka1d_reco_wrong.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
-	yuka1d_reco_wrong.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
-        yuka2d_reco_wrong.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
-        yuka2d_reco_wrong.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
+	//yuka1d_reco_wrong.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        //yuka2d_reco_wrong.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+        //yuka2d_reco_wrong.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_reco_wrong.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
-	yuka2d_reco_wrong.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
-	yuka2d_reco_wrong.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_wrong.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_wrong.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
         yuka1d_reco_wrong.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_wrong.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
@@ -630,15 +638,15 @@ void ttbar::begin()
 	TDirectory* dir_yukawareco_semi = outFile_.mkdir("YUKAWA_RECO_semi");
 	dir_yukawareco_semi->cd();
 	yuka1d_reco_semi.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	yuka1d_reco_semi.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	//yuka1d_reco_semi.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco_semi.AddHist("Y", 160, -4, 4,"y_t", "Events");
 	yuka1d_reco_semi.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
-	yuka1d_reco_semi.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
-        yuka2d_reco_semi.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
-        yuka2d_reco_semi.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
+	//yuka1d_reco_semi.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        //yuka2d_reco_semi.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+        //yuka2d_reco_semi.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_reco_semi.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
-	yuka2d_reco_semi.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
-	yuka2d_reco_semi.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_semi.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_semi.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
         yuka1d_reco_semi.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_semi.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
@@ -647,15 +655,15 @@ void ttbar::begin()
 	TDirectory* dir_yukawareco_other = outFile_.mkdir("YUKAWA_RECO_other");
 	dir_yukawareco_other->cd();
 	yuka1d_reco_other.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	yuka1d_reco_other.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
+	//yuka1d_reco_other.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
 	yuka1d_reco_other.AddHist("Y", 160, -4, 4,"y_t", "Events");
 	yuka1d_reco_other.AddHist("delY", 1200, -6, 6,"#Deltay_{t#bar{t}}", "Events");
-	yuka1d_reco_other.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
-        yuka2d_reco_other.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
-        yuka2d_reco_other.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
+	//yuka1d_reco_other.AddHist("delBeta", 200, 0, 2, "#Delta#beta_{t#bar{t}}", "Events");
+        //yuka2d_reco_other.AddHist("Mtt_costheta", 1000, 0, 2000, 40, -1, 1, "M(t#bar{t})", "cos#theta");
+        //yuka2d_reco_other.AddHist("delY_costheta", 1200, -6, 6, 40, -1, 1, "#Deltay(t#bar{t})", "cos#theta");
 	yuka2d_reco_other.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
-	yuka2d_reco_other.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
-	yuka2d_reco_other.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_other.AddHist("Mtt_delBeta", 1000, 0, 2000, 200, 0, 2, "M(t#bar{t})", "#Delta#beta_{t#bar{t}}");
+	//yuka2d_reco_other.AddHist("delY_delBeta", 1200, -6, 6, 200, 0, 2, "#Deltay_{t#bar{t}}", "#Delta#beta_{t#bar{t}}");
 
         yuka1d_reco_other.AddHist("tlepy", 200, 0, 5, "|y(t_{l}|", "Events");
         yuka2d_reco_other.AddHist("Mtt_tlepy", 1000, 0, 2000, 200, 0, 5, "M(t#bar{t})", "|y(t_{l}|");
@@ -2036,28 +2044,32 @@ void ttbar::ttanalysis(URStreamer& event)
                 double tlepy = Abs(bestper.TLep().Rapidity());
                                     
                 
-                for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
-                    if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_reco["parametrize"]->Fill(runmt, weight);}
-                yuka2d_reco["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weightest);
-                yuka2d_reco["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weightest-1, weightest);
-                yuka2d_reco["reweight_Mtt"]->Fill(Mtt, weightest-1, weightest);
-                yuka2d_reco["reweight_delY"]->Fill(deltaY, weightest-1, weightest);
-                yuka2d_reco["reweight_coshy2"]->Fill(cosh(deltaY/2), weightest-1, weightest);
+                //for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
+                //    if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)) yuka1d_reco["parametrize"]->Fill(runmt, weight);}
+                yuka2d_reco["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weightparametrize);
+                yuka2d_reco["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weightparametrize-1, weightparametrize);
+                yuka2d_reco["reweight_Mtt"]->Fill(Mtt, weightparametrize-1, weightparametrize);
+                yuka2d_reco["reweight_delY"]->Fill(deltaY, weightparametrize-1, weightparametrize);
+                yuka2d_reco["Mtt_coshy2_origin"]->Fill(Mtt, cosh(deltaY/2), weightparametrize_origin);
+                yuka2d_reco["reweight_Mt_origin"]->Fill(Mtt/(2*cosh(deltaY/2)), weightparametrize_origin-1, weightparametrize_origin);
+                yuka2d_reco["reweight_Mtt_origin"]->Fill(Mtt, weightparametrize_origin-1, weightparametrize_origin);
+                yuka2d_reco["reweight_delY_origin"]->Fill(deltaY, weightparametrize_origin-1, weightparametrize_origin);
+
 
 		yuka1d_reco["Mtt"]->Fill(Mtt, weight);
-		yuka1d_reco["costheta"]->Fill(costheta_had, weight);
-		yuka1d_reco["costheta"]->Fill(costheta_lep, weight);
+		//yuka1d_reco["costheta"]->Fill(costheta_had, weight);
+		//yuka1d_reco["costheta"]->Fill(costheta_lep, weight);
 		yuka1d_reco["delY"]->Fill(deltaY, weight);
 		yuka1d_reco["Y"]->Fill(bestper.TLep().Rapidity(), weight);
 		yuka1d_reco["Y"]->Fill(bestper.THad().Rapidity(), weight);
-		yuka1d_reco["delBeta"]->Fill(deltaBeta, weight);
-                yuka2d_reco["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
-                yuka2d_reco["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
-                yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
-                yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_had, weight);
+		//yuka1d_reco["delBeta"]->Fill(deltaBeta, weight);
+                //yuka2d_reco["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                //yuka2d_reco["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+                //yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
+                //yuka2d_reco["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 		yuka2d_reco["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-		yuka2d_reco["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
-		yuka2d_reco["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+		//yuka2d_reco["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		//yuka2d_reco["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 	
                 yuka1d_reco["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
@@ -2131,19 +2143,19 @@ void ttbar::ttanalysis(URStreamer& event)
                 yuka1d_reco_right["delY_resol"]->Fill((deltaY - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
                 //yuka1d_reco_right["delY_resol"]->Fill(deltaY/(gentqhad_3j.Rapidity() - gentqlep.Rapidity()), weight);
 		yuka1d_reco_right["Mtt"]->Fill(Mtt, weight);
-		yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
-		yuka1d_reco_right["costheta"]->Fill(costheta_lep, weight);
+		//yuka1d_reco_right["costheta"]->Fill(costheta_had, weight);
+		//yuka1d_reco_right["costheta"]->Fill(costheta_lep, weight);
 		yuka1d_reco_right["delY"]->Fill(deltaY, weight);
 		yuka1d_reco_right["Y"]->Fill(bestper.TLep().Rapidity(), weight);
 		yuka1d_reco_right["Y"]->Fill(bestper.THad().Rapidity(), weight);
-		yuka1d_reco_right["delBeta"]->Fill(deltaBeta, weight);
-                yuka2d_reco_right["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
-                yuka2d_reco_right["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
-                yuka2d_reco_right["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
-                yuka2d_reco_right["delY_costheta"]->Fill(deltaY, costheta_had, weight);
+		//yuka1d_reco_right["delBeta"]->Fill(deltaBeta, weight);
+                //yuka2d_reco_right["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                //yuka2d_reco_right["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+                //yuka2d_reco_right["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
+                //yuka2d_reco_right["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 		yuka2d_reco_right["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-		yuka2d_reco_right["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
-		yuka2d_reco_right["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+		//yuka2d_reco_right["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		//yuka2d_reco_right["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 	
                 yuka1d_reco_right["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_right["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
@@ -2170,19 +2182,19 @@ void ttbar::ttanalysis(URStreamer& event)
 		truth1d["counter"]->Fill(9.5, weight);
                 //for yukawa studies
 		yuka1d_reco_wrong["Mtt"]->Fill(Mtt, weight);
-		yuka1d_reco_wrong["costheta"]->Fill(costheta_had, weight);
-		yuka1d_reco_wrong["costheta"]->Fill(costheta_lep, weight);
+		//yuka1d_reco_wrong["costheta"]->Fill(costheta_had, weight);
+		//yuka1d_reco_wrong["costheta"]->Fill(costheta_lep, weight);
 		yuka1d_reco_wrong["delY"]->Fill(deltaY, weight);
 		yuka1d_reco_wrong["Y"]->Fill(bestper.TLep().Rapidity(), weight);
 		yuka1d_reco_wrong["Y"]->Fill(bestper.THad().Rapidity(), weight);
-		yuka1d_reco_wrong["delBeta"]->Fill(deltaBeta, weight);
-                yuka2d_reco_wrong["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
-                yuka2d_reco_wrong["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
-                yuka2d_reco_wrong["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
-                yuka2d_reco_wrong["delY_costheta"]->Fill(deltaY, costheta_had, weight);
+		//yuka1d_reco_wrong["delBeta"]->Fill(deltaBeta, weight);
+                //yuka2d_reco_wrong["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                //yuka2d_reco_wrong["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+                //yuka2d_reco_wrong["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
+                //yuka2d_reco_wrong["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 		yuka2d_reco_wrong["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-		yuka2d_reco_wrong["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
-		yuka2d_reco_wrong["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+		//yuka2d_reco_wrong["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		//yuka2d_reco_wrong["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 	
                 yuka1d_reco_wrong["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_wrong["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
@@ -2196,19 +2208,19 @@ void ttbar::ttanalysis(URStreamer& event)
 		ttp_semi.Fill(bestper, weight);
                 //for yukawa studies
 		yuka1d_reco_semi["Mtt"]->Fill(Mtt, weight);
-		yuka1d_reco_semi["costheta"]->Fill(costheta_had, weight);
-		yuka1d_reco_semi["costheta"]->Fill(costheta_lep, weight);
+		//yuka1d_reco_semi["costheta"]->Fill(costheta_had, weight);
+		//yuka1d_reco_semi["costheta"]->Fill(costheta_lep, weight);
 		yuka1d_reco_semi["delY"]->Fill(deltaY, weight);
 		yuka1d_reco_semi["Y"]->Fill(bestper.TLep().Rapidity(), weight);
 		yuka1d_reco_semi["Y"]->Fill(bestper.THad().Rapidity(), weight);
-		yuka1d_reco_semi["delBeta"]->Fill(deltaBeta, weight);
-                yuka2d_reco_semi["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
-                yuka2d_reco_semi["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
-                yuka2d_reco_semi["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
-                yuka2d_reco_semi["delY_costheta"]->Fill(deltaY, costheta_had, weight);
+		//yuka1d_reco_semi["delBeta"]->Fill(deltaBeta, weight);
+                //yuka2d_reco_semi["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                //yuka2d_reco_semi["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+                //yuka2d_reco_semi["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
+                //yuka2d_reco_semi["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 		yuka2d_reco_semi["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-		yuka2d_reco_semi["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
-		yuka2d_reco_semi["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+		//yuka2d_reco_semi["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		//yuka2d_reco_semi["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 	
                 yuka1d_reco_semi["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_semi["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
@@ -2222,19 +2234,19 @@ void ttbar::ttanalysis(URStreamer& event)
 		ttp_other.Fill(bestper, weight);
                 //for yukawa studies
 		yuka1d_reco_other["Mtt"]->Fill(Mtt, weight);
-		yuka1d_reco_other["costheta"]->Fill(costheta_had, weight);
-		yuka1d_reco_other["costheta"]->Fill(costheta_lep, weight);
+		//yuka1d_reco_other["costheta"]->Fill(costheta_had, weight);
+		//yuka1d_reco_other["costheta"]->Fill(costheta_lep, weight);
 		yuka1d_reco_other["delY"]->Fill(deltaY, weight);
 		yuka1d_reco_other["Y"]->Fill(bestper.TLep().Rapidity(), weight);
 		yuka1d_reco_other["Y"]->Fill(bestper.THad().Rapidity(), weight);
-		yuka1d_reco_other["delBeta"]->Fill(deltaBeta, weight);
-                yuka2d_reco_other["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
-                yuka2d_reco_other["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
-                yuka2d_reco_other["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
-                yuka2d_reco_other["delY_costheta"]->Fill(deltaY, costheta_had, weight);
+		//yuka1d_reco_other["delBeta"]->Fill(deltaBeta, weight);
+                //yuka2d_reco_other["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                //yuka2d_reco_other["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+                //yuka2d_reco_other["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
+                //yuka2d_reco_other["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 		yuka2d_reco_other["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-		yuka2d_reco_other["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
-		yuka2d_reco_other["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+		//yuka2d_reco_other["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+		//yuka2d_reco_other["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 	
                 yuka1d_reco_other["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_other["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
@@ -2310,8 +2322,8 @@ void ttbar::analyze()
 
 		truth1d["counter"]->Fill(0.5);
 		weight = 1.;	
-                weight2 = 1.;
-                weightest = 1.;
+                weightparametrize = 1.;
+                weightparametrize_origin = 1.;
 		mcweight = 1.;	
 		if(event.PUInfos().size() > 0)
 		{
@@ -2398,8 +2410,9 @@ void ttbar::analyze()
 
                                 TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
                                 TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
-                                //weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                weightest *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                weightparametrize *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                weightparametrize_origin *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
 
                                 //if(Mtt>= 2*172.5*cosh(deltaY/2))
                                 //    weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
@@ -2421,16 +2434,19 @@ void ttbar::analyze()
 
 
                                 if(SEMILEP){
-                                    for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
+                                    /*for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
                                         if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)){ 
                                             yuka1d_gen["parametrize"]->Fill(runmt, weight);
                                         }
-                                    }
-                                    yuka2d_gen["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weightest);
-                                    yuka2d_gen["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weightest-1, weightest);
-                                    yuka2d_gen["reweight_Mtt"]->Fill(Mtt, weightest-1, weightest);
-                                    yuka2d_gen["reweight_delY"]->Fill(deltaY, weightest-1, weightest);
-                                    yuka2d_gen["reweight_coshy2"]->Fill(cosh(deltaY/2), weightest-1, weightest);
+                                    }*/
+                                    yuka2d_gen["Mtt_coshy2"]->Fill(Mtt, cosh(deltaY/2), weightparametrize);
+                                    yuka2d_gen["reweight_Mt"]->Fill(Mtt/(2*cosh(deltaY/2)), weightparametrize-1, weightparametrize);
+                                    yuka2d_gen["reweight_Mtt"]->Fill(Mtt, weightparametrize-1, weightparametrize);
+                                    yuka2d_gen["reweight_delY"]->Fill(deltaY, weightparametrize-1, weightparametrize);
+                                    yuka2d_gen["Mtt_coshy2_origin"]->Fill(Mtt, cosh(deltaY/2), weightparametrize_origin);
+                                    yuka2d_gen["reweight_Mt_origin"]->Fill(Mtt/(2*cosh(deltaY/2)), weightparametrize_origin-1, weightparametrize_origin);
+                                    yuka2d_gen["reweight_Mtt_origin"]->Fill(Mtt, weightparametrize_origin-1, weightparametrize_origin);
+                                    yuka2d_gen["reweight_delY_origin"]->Fill(deltaY, weightparametrize_origin-1, weightparametrize_origin);
 
                                     /*
                                     yuka1d_gen["ht"]->Fill(gentqhad.P());
@@ -2440,19 +2456,19 @@ void ttbar::analyze()
                                     }*/
 				//weight = weight_mtt* weight_dely* weight_beta;
 				yuka1d_gen["Mtt"]->Fill(Mtt, weight);
-				yuka1d_gen["costheta"]->Fill(costheta_lep, weight);
-				yuka1d_gen["costheta"]->Fill(costheta_had, weight);
+				//yuka1d_gen["costheta"]->Fill(costheta_lep, weight);
+				//yuka1d_gen["costheta"]->Fill(costheta_had, weight);
 				yuka1d_gen["delY"]->Fill(deltaY, weight);
 				yuka1d_gen["Y"]->Fill(gentq.Rapidity(), weight); //Fill(genallper.TLep().Rapidity(), weight);
 				yuka1d_gen["Y"]->Fill(gentqbar.Rapidity(), weight); //Fill(genallper.THad().Rapidity(), weight);
-				yuka1d_gen["delBeta"]->Fill(deltaBeta, weight);
-                                yuka2d_gen["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
-                                yuka2d_gen["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
-                                yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
-                                yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_had, weight);
+				//yuka1d_gen["delBeta"]->Fill(deltaBeta, weight);
+                                //yuka2d_gen["Mtt_costheta"]->Fill(Mtt, costheta_lep, weight);
+                                //yuka2d_gen["Mtt_costheta"]->Fill(Mtt, costheta_had, weight);
+                                //yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_lep, weight);
+                                //yuka2d_gen["delY_costheta"]->Fill(deltaY, costheta_had, weight);
 				yuka2d_gen["Mtt_delY"]->Fill(Mtt, deltaY, weight);
-				yuka2d_gen["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
-				yuka2d_gen["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
+				//yuka2d_gen["Mtt_delBeta"]->Fill(Mtt, deltaBeta, weight);
+				//yuka2d_gen["delY_delBeta"]->Fill(deltaY, deltaBeta, weight);
 				
                                 yuka1d_gen["tlepy"]->Fill(tlepy, weight);
                                 yuka2d_gen["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);

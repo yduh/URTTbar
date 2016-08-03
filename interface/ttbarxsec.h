@@ -220,8 +220,8 @@ class ttbar : public AnalyzerBase
 		double jetptmin;
 	
 		double weight;
-                double weight2;
-                double weightest;
+                double weightparametrize;
+                double weightparametrize_origin;
 		double mcweight;
 
 		//binning vectors
