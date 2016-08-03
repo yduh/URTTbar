@@ -1,31 +1,36 @@
 #!/bin/bash
 
-TYP=yukawa_rootfiles/4j
+TYP=yukawa_rootfiles/5j
 JOBDIR=JOB11
 GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y'
+
+RUN=true
 RUNMAINUNC=true
 RUNOUNC=false
 
 
-for gt in $GT
-do
-    echo "Submit jobs for YUKAWA = ${gt} ..."
-    cp ttbarxsec.cfg ttbarxsec.tmp
+if $RUN; then
+    for gt in $GT
+    do
+        echo "Submit jobs for YUKAWA = ${gt} ..."
+        mkdir -p ${TYP}/${gt}
+        cp ttbarxsec.cfg ttbarxsec.tmp
     
-    rm inputs/$JOBDIR/*txt
-    cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-    ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-    ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+        rm inputs/$JOBDIR/*txt
+        cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
+        ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+        ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
     
-    mv ttbarxsec.tmp ttbarxsec.cfg
-done
+        mv ttbarxsec.tmp ttbarxsec.cfg
+    done
+fi
 
 
 if $RUNMAINUNC; then
-    mkdir -p ${TYP}/$GT
     for gt in $GT
     do
         echo "Submit jobs for theoretical uncertainties YUKAWA = ${gt} ..."
+        mkdir -p ${TYP}/${gt}
         cp ttbarxsec.cfg ttbarxsec.tmp
         
         rm inputs/$JOBDIR/*txt
@@ -49,12 +54,11 @@ fi
 
 
 if $RUNOUNC; then
-    mkdir -p ${TYP}/$GT
-for gt in $GT
-do
-
-    echo "Submit jobs for other uncertainties YUKAWA = ${gt} ..."
-    cp ttbarxsec.cfg ttbarxsec.tmp
+    for gt in $GT
+    do
+        echo "Submit jobs for other uncertainties YUKAWA = ${gt} ..."
+        mkdir -p ${TYP}/${gt}
+        cp ttbarxsec.cfg ttbarxsec.tmp
 
     #PDF uncertainty is estimated with all MCs
     #============================================================#
