@@ -8,45 +8,52 @@ RUNOUNC=false
 
 mkdir -p $GT
 
-cp ttbarxsec.cfg ttbarxsec.tmp
 for gt in $GT
 do
+    echo "Submit jobs for YUKAWA = ${gt} ..."
+    cp ttbarxsec.cfg ttbarxsec.tmp
+    
     rm inputs/$JOBDIR/*txt
     cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-    echo "Submit jobs for YUKAWA = ${gt} ..."
     ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
     ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+    
     mv ttbarxsec.tmp ttbarxsec.cfg
 done
 
 
 if $RUNMAINUNC; then
-    cp ttbarxsec.cfg ttbarxsec.tmp
     for gt in $GT
     do
+        echo "Submit jobs for theoretical uncertainties YUKAWA = ${gt} ..."
+        cp ttbarxsec.cfg ttbarxsec.tmp
+        
         rm inputs/$JOBDIR/*txt
         cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
-        echo "Submit jobs for theoretical uncertainties YUKAWA = ${gt} ..."
         ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-        ./jobsub ${TYP}/${gt}/theory ttbarxsec.exe ttbarxsec.cfg
-        
-        ./updateconfig.py yukawatxt yukawa_reweighing1.0_169.5.root 
+        ./jobsub ${TYP}/${gt}/generators ttbarxsec.exe ttbarxsec.cfg
+       
+        rm inputs/$JOBDIR/*txt
+        cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
+        ./updateconfig.py yukawatxt yukawa_reweighing${gt}_169.5.root 
         ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
 
-        ./updateconfig.py yukawatxt yukawa_reweighing1.0_175.5.root 
+        rm inputs/$JOBDIR/*txt
+        cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
+        ./updateconfig.py yukawatxt yukawa_reweighing${gt}_175.5.root 
         ./jobsub ${TYP}/${gt}/mtup ttbarxsec.exe ttbarxsec.cfg
+        
+        mv ttbarxsec.tmp ttbarxsec.cfg
     done
 fi
 
 
 if $RUNOUNC; then
-    echo "Submit jobs for other uncertainties ..."
-cp ttbarxsec.cfg ttbarxsec.tmp
 for gt in $GT
 do
 
-    ./updateconfig.py jetres 0.1
-    ./jobsub ${TYP}/${gt}/jetsmear ttbarxsec.exe ttbarxsec.cfg
+    echo "Submit jobs for other uncertainties YUKAWA = ${gt} ..."
+    cp ttbarxsec.cfg ttbarxsec.tmp
 
     #PDF uncertainty is estimated with all MCs
     #============================================================#
@@ -55,20 +62,17 @@ do
     #PDF: total < 1 %
     ./updateconfig.py PDFTEST 1
     ./jobsub ${TYP}/${gt}/pdf ttbarxsec.exe ttbarxsec.cfg
-    #
 
     
     #lepton uncertainties are estimated with all MC except some sparated theoretical signal ones 
     #============================================================#
     rm inputs/$JOBDIR/*txt
     cp inputs/$JOBDIR/backupsmall/*txt inputs/$JOBDIR
-
     #leptons: varies up/down scale factor gotten by tag and probe method; total ~3 %
     ./updateconfig.py ELECTRONS 0
     ./jobsub ${TYP}/${gt}/mu ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py MUONS 0
     ./jobsub ${TYP}/${gt}/el ttbarxsec.exe ttbarxsec.cfg
-    #
 
 
     #uncertainties are estimated only with signal MC
@@ -85,14 +89,12 @@ do
     ./jobsub ${TYP}/${gt}/jetresm ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py jetres 1
     ./jobsub ${TYP}/${gt}/jetresp ttbarxsec.exe ttbarxsec.cfg
-    #
 
     #MET: < 1 %
     ./updateconfig.py sigmamet -1
     ./jobsub ${TYP}/${gt}/metm1sig ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py sigmamet 1
     ./jobsub ${TYP}/${gt}/metp1sig ttbarxsec.exe ttbarxsec.cfg
-    #
 
     #bunch of reweight factors: seems like you don't need those later, but remember to report your 2d YUKAWA reweighting uncertainties
     #./updateconfig.py topptweight -1
@@ -127,16 +129,15 @@ do
     ./jobsub ${TYP}/${gt}/ltagdown ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py ltagunc 1
     ./jobsub ${TYP}/${gt}/ltagup ttbarxsec.exe ttbarxsec.cfg
-    #
 
     #pileup: varies the minimum bias cross section by 5%, reweighting the MC; < 1 % 
     ./updateconfig.py pileupunc -1
     ./jobsub ${TYP}/${gt}/pileupdown ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py pileupunc 1
     ./jobsub ${TYP}/${gt}/pileupup ttbarxsec.exe ttbarxsec.cfg
-    #
+    
     mv ttbarxsec.tmp ttbarxsec.cfg
-
+done
 fi
 
 #./updateconfig.py sigmamet -1
