@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYP=yukawa_rootfiles/4j
+TYP=results/4j
 JOBDIR=JOB11
 GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y'
 
@@ -15,12 +15,17 @@ if $RUN; then
         echo "Submit jobs for YUKAWA = ${gt} ..."
         mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
-    
+   
         rm inputs/$JOBDIR/*txt
-        cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-        ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-        ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
-    
+        if [${gt} == "1.0y"]; then
+            cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+            ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+        else
+            cp inputs/$JOBDIR/tt_PowhegP8.txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+            ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+        fi 
         mv ttbarxsec.tmp ttbarxsec.cfg
     done
 fi
@@ -32,11 +37,13 @@ if $RUNMAINUNC; then
         echo "Submit jobs for theoretical uncertainties YUKAWA = ${gt} ..."
         mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
-        
-        rm inputs/$JOBDIR/*txt
-        cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
-        ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-        ./jobsub ${TYP}/${gt}/generators ttbarxsec.exe ttbarxsec.cfg
+       
+        if [${gt} == '1.0y']; then
+            rm inputs/$JOBDIR/*txt
+            cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+            ./jobsub ${TYP}/${gt}/generators ttbarxsec.exe ttbarxsec.cfg
+        fi
        
         rm inputs/$JOBDIR/*txt
         cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
