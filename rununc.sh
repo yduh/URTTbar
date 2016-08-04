@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYP=yukawa_rootfiles/morej
+TYP=yukawa_rootfiles/4j
 JOBDIR=JOB11
 GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y'
 
