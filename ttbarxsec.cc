@@ -1689,7 +1689,6 @@ void ttbar::ttanalysis(URStreamer& event)
 
         
         reco3j1d["counter_chi2"]->Fill(0.5, weight);
-        yuka1d_reco["njets"]->Fill(3, weight);
 
         if(chi2candidate1>=0 && chi2candidate2>=0) reco3j1d["counter_chi2"]->Fill(1.5, weight);
         else if(chi2candidate2<0 && chi2candidate1>=0)   reco3j1d["counter_chi2"]->Fill(2.5, weight);
@@ -1748,6 +1747,7 @@ void ttbar::ttanalysis(URStreamer& event)
         reco3j1d["MTwl"]->Fill(MTwl, weight);
         if(MTwl >140.) return;
         //if(thad_3j.Mag()>200.) return;//instead of cut off, use to build up a likelihood distribution
+        yuka1d_reco["njets"]->Fill(3, weight);
 
         double Logtlike3j;
         double Logblike3j1; //= 1000; 
