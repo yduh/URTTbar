@@ -153,7 +153,8 @@ double JetScaler::GetScale(const IDJet& jet, double rho, double sigmascale, doub
 		//cout << sfs[0] << " " << sfs[1] << " " << sfs[2] << endl;
 		if(sigmares <= 0) {s = sfs[0] + sigmares*(sfs[0]-sfs[1]);}
 		if(sigmares > 0) {s = sfs[0] + sigmares*(sfs[2]-sfs[0]);}
-		sf = gRandom->Gaus(1., resolution*sqrt(s*s-1.));
+		sf = gRandom->Gaus(1., resolution*sqrt(s*s-1.));//some bug
+                //sf = gRandom->Gaus(0., resolution*sqrt(s*s-1.))/x - 1.;
 	}
 
 	//MC specific correction 

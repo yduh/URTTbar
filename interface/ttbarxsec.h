@@ -36,7 +36,7 @@ class ttbar : public AnalyzerBase
     //friend class NeutrinoSolver;
 
 	private:
-		bool isDA = false;
+		int isDA = 0;
 		map<int, set<int> >  runinfo;
 		PDFuncertainty* pdfunc;
 		//Collections
@@ -93,21 +93,20 @@ class ttbar : public AnalyzerBase
 		//hists
                 TH2DCollection reco3j2d;
                 TH1DCollection reco3j1d;
-                TH2DCollection truth3j2d;
-                TH1DCollection truth3j1d;
+                TH2DCollection right3j2d;
+                TH1DCollection right3j1d;
                 TH2DCollection wrong3j2d;
                 TH1DCollection wrong3j1d;
-                /*TH2DCollection semi3j2d;
+                TH2DCollection semi3j2d;
                 TH1DCollection semi3j1d;
                 TH2DCollection other3j2d;
-                TH1DCollection other3j1d;*/
+                TH1DCollection other3j1d;
                 TH2DCollection gen3j2d;
                 TH1DCollection gen3j1d;
-                /*TH1DCollection alpha3j1d;
+                TH1DCollection alpha3j1d;
                 TH2DCollection alpha3j2d;
                 TH1DCollection missj1d;
-                TH2DCollection missj2d;*/
-                //TH1DCollection fourjets;
+                TH2DCollection missj2d;
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
 		TH1DCollection reco1d;
@@ -164,7 +163,7 @@ class ttbar : public AnalyzerBase
 		BtagEff btageff;
 		BTagWeight btagweight;
 
-                //NeutrinoSolver NS_3j;
+                //NeutrinoSolver NS_missj;
 		//ttbar solver
 		TTBarSolver ttsolver;
 
@@ -216,6 +215,8 @@ class ttbar : public AnalyzerBase
                 bool SCALEDOWN;
                 string cjecuncertainty;
                 string yukawasf;
+                int njetsmin;
+                int njetsmax;
 		//
 		double jetptmin;
 	
@@ -248,6 +249,12 @@ class ttbar : public AnalyzerBase
                 TH1D* yukahist_dely;
                 TH1D* yukahist_beta;
                 TH2D* yukahist_2d;
+                TGraph* grlikelihood3j_nsd;
+                TGraph* grlikelihood3j_thad;
+                //TGraph* grlikelihood3j_nsptmin;
+                //TGraph* grlikelihood3j_nsetamax;
+                TH2D* likelihood3j_nspteta_2d;
+
 	public:
 
 		ttbar(const std::string output_filename);

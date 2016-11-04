@@ -52,13 +52,13 @@ TMatrixD NeutrinoSolver::RotationZ(double a)
 	return(D);
 }
 
-NeutrinoSolver::NeutrinoSolver(const TLorentzVector* lep, const TLorentzVector* bjet, double MW, double MT, double Mn) : ERROR(false), H(3, 3), T(3,1), MET(2, 1), VM(2, 2)
+NeutrinoSolver::NeutrinoSolver(const TLorentzVector* lep, const TLorentzVector* bjet, double MW, double MT) : ERROR(false), H(3, 3), T(3,1), MET(2, 1), VM(2, 2)
 {
 	Mt = MT;
 	Mw = MW;
 	Ml = lep->M();
 	Mb = bjet->M();
-	//Mn = 0.;
+	Mn = 0.;
 	TVector3 l(lep->Vect());
 	TVector3 b(bjet->Vect());
 
