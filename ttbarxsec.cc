@@ -553,7 +553,7 @@ void ttbar::begin()
 	truth1d.AddHist("btagtest_right", 1000, -100, 100., "-Log(p) btag-test", "Events");
 	truth1d.AddHist("masstest_right", 1000, -100, 100., "-Log(p) mass-test", "Events");
 	truth1d.AddHist("nstest_right", 200, 0, 20., "neutrino-test", "Events");
-	truth1d.AddHist("nschi_rightbs", 75, 0., 150., "#chi neutrino-test", "Events");
+	truth1d.AddHist("nschi_right", 75, 0., 150., "#chi neutrino-test", "Events");
 	truth1d.AddHist("comtest_right", 1000, -100, 100., "-Log(p)", "Events");
 	truth2d.AddHist("Elrho_iso_1", 10, 0., 50., 100, 0., 150, "rho", "iso");
 	truth2d.AddHist("Elrho_iso_2", 10, 0., 50., 100, 0., 150, "rho", "iso");
