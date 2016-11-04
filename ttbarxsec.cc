@@ -3250,28 +3250,32 @@ void ttbar::analyze()
 		//cout << event.filter().Flag_goodVertices() << " " <<  event.filter().Flag_CSCTightHaloFilter() << " " << event.filter().Flag_HBHENoiseFilter() << " " << event.filter().HBHEnew() << endl;
 		//event.filter().Flag_goodVertices() == 1 && event.filter().Flag_CSCTightHaloFilter() == 1 &&
 		if(isDA && Abs(event.trigger().HLT_IsoMu20()) != 1) {cout << "TRIGGER UNDEFINED IsoMu20:" << event.trigger().HLT_IsoMu20() << endl; }
-                if(isDA && Abs(event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf()) != 1) {cout << "TRIGGER UNDEFINED EL:" <<  event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() << endl; }
+                if(isDA && Abs(event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf()) != 1) {cout << "TRIGGER UNDEFINED EL:" <<  event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() << endl; }
+                //if(isDA && Abs(event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf()) != 1) {cout << "TRIGGER UNDEFINED EL:" <<  event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() << endl; }//2015
                 if(isDA && Abs(event.trigger().HLT_IsoTkMu20()) != 1) {cout << "TRIGGER UNDEFINED: TKMu20" << event.trigger().HLT_IsoTkMu20() << endl; }
 		if(
 				(
 				 isDA == 0
                                  && (
-                                                   event.trigger().HLT_IsoMu20() == 1 || event.trigger().HLT_IsoTkMu20() == 1
-                                                                    || event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1
+                                     event.trigger().HLT_IsoMu27() == 1 || event.trigger().HLT_IsoTkMu27() == 1 //2016
+                                     || event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1 || event.trigger().HLT_IsoMu27() == 0 //2016
+                                                   
+                                     //event.trigger().HLT_IsoMu20() == 1 || event.trigger().HLT_IsoTkMu20() == 1 //2015
+                                     //|| event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1 //2015
                                                                                     )
 				) ||
 				(
 				 isDA == 13 &&
 				        (
-                                         event.trigger().HLT_IsoMu20() == 1 || event.trigger().HLT_IsoTkMu20() == 1 //2015
-                                         //event.trigger().HLT_IsoMu22() == 1 || event.trigger().HLT_IsoTkMu22() == 1 //2016
+                                         //event.trigger().HLT_IsoMu20() == 1 || event.trigger().HLT_IsoTkMu20() == 1 //2015
+                                         event.trigger().HLT_IsoMu27() == 1 || event.trigger().HLT_IsoTkMu27() == 1 //2016
                                         )
                                 ) ||
 				(
                                  isDA == 11 &&
                                         (
-				         event.trigger().HLT_IsoMu20() == -1 && event.trigger().HLT_IsoTkMu20() == -1 && event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1 //2015
-				         //event.trigger().HLT_IsoMu22() == -1 && event.trigger().HLT_IsoTkMu22() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1 //2016
+				         //event.trigger().HLT_IsoMu20() == -1 && event.trigger().HLT_IsoTkMu20() == -1 && event.trigger().HLT_Ele22_eta2p1_WPLoose_Gsf() == 1 //2015
+                                         event.trigger().HLT_IsoMu27() == -1 && event.trigger().HLT_IsoTkMu27() == -1 && event.trigger().HLT_Ele27_eta2p1_WPLoose_Gsf() == 1 //2016
 				        )
 				)
 			)
