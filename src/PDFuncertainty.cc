@@ -108,6 +108,10 @@ void PDFuncertainty::Fill1d(string name, double val, double weight)
 	const vector<Mcweight>& ws =  streamer->MCWeights();
 	if(Whist1d[name].size() != ws.size())
 	{
+		cout << "W_ERROR: " << Whist1d[name].size() << " " << ws.size() << endl;
+	}
+	if(Whist1d[name].size() != ws.size() && Whist1d[name].size() < 2)
+	{
 		TDirectory* olddir = gDirectory;
 		histdir[name]->cd();
 		Whist1d[name].reserve(ws.size());

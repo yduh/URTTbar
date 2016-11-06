@@ -153,16 +153,14 @@ double JetScaler::GetScale(const IDJet& jet, double rho, double sigmascale, doub
 		//cout << sfs[0] << " " << sfs[1] << " " << sfs[2] << endl;
 		if(sigmares <= 0) {s = sfs[0] + sigmares*(sfs[0]-sfs[1]);}
 		if(sigmares > 0) {s = sfs[0] + sigmares*(sfs[2]-sfs[0]);}
-		sf = gRandom->Gaus(1., resolution*sqrt(s*s-1.));//some bug
-                //sf = gRandom->Gaus(0., resolution*sqrt(s*s-1.))/x - 1.;
+		sf = gRandom->Gaus(1., resolution*sqrt(s*s-1.));
 	}
 
 	//MC specific correction 
-	//if(hlB != nullptr)
-	if(false)
+	if(hlB != nullptr)
 	{
 		double mccorr = 1.;
-		if(find_if(AN->genbpartons.begin(), AN->genbpartons.end(), [&](GenObject* bp){return jet.DeltaR(*bp) < 0.3;}) != AN->genbpartons.end())
+		if(find_if(AN->genbhadrons.begin(), AN->genbhadrons.end(), [&](GenObject* bp){return jet.DeltaR(*bp) < 0.3;}) != AN->genbhadrons.end())
 		{
 			if(Abs(jet.Eta()) < 1.5)
 			{

@@ -47,8 +47,8 @@ class ttbar : public AnalyzerBase
 		bool SEMILEPACC;
 		list<GenObject> sgenparticles;
 		vector<GenObject*> genfincls;
-	  	vector<GenObject*> genbpartons;
-	  	vector<GenObject*> gencpartons;
+	  	vector<GenObject*> genbhadrons;
+	  	vector<GenObject*> genchadrons;
 		//GenObject* gent;
 		//GenObject* gentbar;
 		//GenObject* genbl;

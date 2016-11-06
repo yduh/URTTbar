@@ -855,7 +855,8 @@ void ttbar::begin()
 		ttsolver.Init(PSEUDOTOP, probfilename, false, true, true);
 		//ttsolver.Init(probfilename, false, true);
 	}
-	btagweight.Init(this, "btaggingeff.root", cbtagunc, cltagunc);
+	//btagweight.Init(this, "btaggingeff.root", cbtagunc, cltagunc);
+        btagweight.Init(this, "BTag_SF.csv", "btaggingeff.root", cbtagunc, cltagunc);
 	string puhistname("pu_central");
 	if(cpileup == -1) puhistname = "pu_minus";
 	if(cpileup == 1) puhistname = "pu_plus";
@@ -978,12 +979,12 @@ void ttbar::SelectGenParticles(URStreamer& event)
         if(int(Abs(gp.pdgId()) % 10000) / 1000 == 5 || int(Abs(gp.pdgId()) % 1000) / 100 == 5)
         {
             sgenparticles.push_back(gp);
-            genbpartons.push_back(&(sgenparticles.back()));
+            genbhadrons.push_back(&(sgenparticles.back()));
         }
         else if(int(Abs(gp.pdgId()) % 10000) / 1000 == 4 || int(Abs(gp.pdgId()) % 1000) / 100 == 4)
         {
             sgenparticles.push_back(gp);
-            gencpartons.push_back(&(sgenparticles.back()));
+            genchadrons.push_back(&(sgenparticles.back()));
         }
         if(HERWIGPP)
         {
@@ -1480,6 +1481,68 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	//	}
 	//}
 	//cout << "Num PJ: " << pujets.size() << endl;
+
+
+    if(TTMC)
+    {
+        const vector<Genjet>& genjets = event.genjets();
+        for(vector<Genjet>::const_iterator p = genjets.begin(); p != genjets.end(); ++p)
+        {
+            IDJet* bestjet = nullptr;
+            for(IDJet* j:cleanedjets)
+            {
+                if(j->DeltaR(*p) < 0.4)
+                {
+                    if(bestjet == nullptr){bestjet = j;}
+                    else if(j->DeltaR(*p) < bestjet->DeltaR(*p)){bestjet = j;}
+                }
+            }
+            if(bestjet != nullptr) bestjet->genpt = p->Pt();
+        }
+        //      for(GenObject* p:genfinalpartons)
+        //      {
+        //              IDJet* bestjet = nullptr;
+        //              for(IDJet* j:cleanedjets)
+        //              {
+        //                      if(j->DeltaR(*p) < 0.4)
+        //                      {
+        //                              if(bestjet == nullptr){bestjet = j;}
+        //                              else if(j->DeltaR(*p) < bestjet->DeltaR(*p)){bestjet = j;}
+        //                      }
+        //              }
+        //              if(bestjet != nullptr) bestjet->genpt += p->Pt();
+        //      }
+        for(IDJet* j:cleanedjets)
+        {
+            if(find_if(genbhadrons.begin(), genbhadrons.end(), [&](GenObject* bp){return j->DeltaR(*bp) < 0.3;}) != genbhadrons.end())
+            {
+                if(Abs(j->Eta()) < 1.5)
+                {
+                    //truth2d["jetscale_bB"]->Fill(j->Pt(), (j->Pt() - j->genpt)/j->genpt, weight);
+                }
+                else
+                {
+                    //truth2d["jetscale_bE"]->Fill(j->Pt(), (j->Pt() - j->genpt)/j->genpt, weight);
+                }
+            }
+            else
+            {
+                if(Abs(j->Eta()) < 1.5)
+                {
+                    //truth2d["jetscale_lB"]->Fill(j->Pt(), (j->Pt() - j->genpt)/j->genpt, weight);
+                }
+                else
+                {
+                    //truth2d["jetscale_lE"]->Fill(j->Pt(), (j->Pt() - j->genpt)/j->genpt, weight);
+                }
+            }
+        }
+    }
+
+
+
+
+
 
 	if(SEMILEP)
 	{
@@ -2948,8 +3011,8 @@ void ttbar::analyze()
 		if(nevent % 10000 == 0)cout << "Event:" << nevent << " " << event.run << endl;
 		sgenparticles.clear();
 		genfincls.clear();
-		genbpartons.clear();
-		gencpartons.clear();
+		genbhadrons.clear();
+		genchadrons.clear();
 		//gent = 0;
 		//gentbar = 0;
 

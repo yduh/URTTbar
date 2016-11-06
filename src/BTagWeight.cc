@@ -3,20 +3,66 @@
 
 #include <algorithm>
 #include <cmath>
+#include <regex>
+
+#include <TF1.h>
 
 using namespace std;
+
+void BTagReader::Init(const string& filename, const string& measurement, const string& type, int jets, int wp)
+{
+	fstream fs(filename.c_str(), fstream::in);
+	string line;
+	regex regstart("\\s*\"");
+	regex regend("\"\\s*");
+	int found = 0;
+	while(!fs.eof())
+	{
+		getline(fs, line);
+		if(line.size() == 0 || line[0] == '{') continue;
+		vector<string> vals = string_split(line, {",", ";"});
+		if(vals.size() != 11) continue;
+
+		if(stringtotype<int>(trim(vals[0])) != wp) continue;
+		if(trim(vals[1]) != measurement) continue;
+		if(trim(vals[2]) != type) continue;
+		if(stringtotype<int>(trim(vals[3])) != jets) continue;
+		//cout << line << endl;
+
+		Bin eta(stringtotype<double>(trim(vals[4])), stringtotype<double>(trim(vals[5])));  
+		Bin pt(stringtotype<double>(trim(vals[6])), stringtotype<double>(trim(vals[7])));   
+		Bin discr(stringtotype<double>(trim(vals[8])), stringtotype<double>(trim(vals[9])));
+		stringstream fname;
+		fname << measurement << "_" << type << "_" << jets << "_" << wp;
+		string formular = regex_replace(vals[10], regstart, "");
+		formular = regex_replace(formular, regend, "");
+		//cout << formular << endl;
+		TF1* func = new TF1(fname.str().c_str(), formular.c_str(), 0., 7000.);
+		//cout << func->Eval(40) << endl;
+		data[eta][pt][discr] = func;
+		found++;
+	}
+		if(found == 0) cerr << "BTagReader: Configuration not found:" << measurement << "_" << type << "_" << jets << "_" << wp << endl;
+}
+
+double BTagReader::Get(const IDJet& jet)
+{
+	return data[Abs(jet.Eta())][jet.Pt()][jet.csvIncl()]->Eval(jet.Pt());
+}
+
+
 
 BTagWeight::BTagWeight()
 {
 }
 
-void BTagWeight::Init(ttbar* an, string filename, double bunc, double lunc)
+void BTagWeight::Init(ttbar* an, const string& csvfilename, const string& efffilename, double bunc, double lunc)
 {
 	btyp = bunc;
 	ltyp = lunc;
 	AN = an;
 	TDirectory* dir = gDirectory;
-	probfile = new TFile(filename.c_str(), "READ");
+	probfile = new TFile(efffilename.c_str(), "READ");
 	string mcname("P8");
 	hborigL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_B").c_str()));
 	hcorigL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_C").c_str()));
@@ -26,68 +72,83 @@ void BTagWeight::Init(ttbar* an, string filename, double bunc, double lunc)
 	hlorigM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_L").c_str()));
 	if(an->HERWIGPP){mcname = "Hpp";}
 	if(an->PYTHIA6){mcname = "P6";}
+	if(an->SCALEUP){mcname = "scaleup";}
+	if(an->SCALEDOWN){mcname = "scaledown";}
 	hbeffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_B").c_str()));
 	hceffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_C").c_str()));
 	hleffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_L").c_str()));
 	hbeffM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_B").c_str()));
 	hceffM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_C").c_str()));
 	hleffM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_L").c_str()));
+
+	BL.resize(3);
+	string mes("comb");
+	//string mes("mujets");
+	//string mes("TnP");
+	BL[0].Init(csvfilename, mes, "central", 0, 0);
+	BL[1].Init(csvfilename, mes, "up", 0, 0);
+	BL[2].Init(csvfilename, mes, "down", 0, 0);
+	
+	BM.resize(3);
+	BM[0].Init(csvfilename, mes, "central", 0, 1);
+	BM[1].Init(csvfilename, mes, "up", 0, 1);
+	BM[2].Init(csvfilename, mes, "down", 0, 1);
+
+	mes = "comb";
+	CL.resize(3);
+	CL[0].Init(csvfilename, mes, "central", 1, 0);
+	CL[1].Init(csvfilename, mes, "up", 1, 0);
+	CL[2].Init(csvfilename, mes, "down", 1, 0);
+
+	CM.resize(3);
+	CM[0].Init(csvfilename, mes, "central", 1, 1);
+	CM[1].Init(csvfilename, mes, "up", 1, 1);
+	CM[2].Init(csvfilename, mes, "down", 1, 1);
+
+	LL.resize(3);
+	LL[0].Init(csvfilename, "incl", "central", 2, 0);
+	LL[1].Init(csvfilename, "incl", "up", 2, 0);
+	LL[2].Init(csvfilename, "incl", "down", 2, 0);
+
+	LM.resize(3);
+	LM[0].Init(csvfilename, "incl", "central", 2, 1);
+	LM[1].Init(csvfilename, "incl", "up", 2, 1);
+	LM[2].Init(csvfilename, "incl", "down", 2, 1);
+
 	dir->cd();
 }
 
-double BTagWeight::scalebM(IDJet* jet)
+double BTagWeight::scale(vector<BTagReader>& SF, IDJet* jet, double err)
 {
-	double x = jet->Pt();
-	//double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));//MEDIUM
-	double scale = 0.949;
-	return(scale);
+	if(err < 0.) return SF[2].Get(*jet);	
+	if(err > 0.) return SF[1].Get(*jet);	
+	return SF[0].Get(*jet);
 }
 
-double BTagWeight::scalecM(IDJet* jet)
+double BTagWeight::scalebM(IDJet* jet, double err)
 {
-	double x = jet->Pt();
-	//double scale = -0.0443172+(0.00496634*(log(x+1267.85)*(log(x+1267.85)*(3.-(-0.110428*log(x+1267.85))))));//MEDIUM
-	double scale = 0.949;
-	return(scale);
+	return scale(BM, jet, err);
 }
-double BTagWeight::scalelM(IDJet* jet)
+double BTagWeight::scalecM(IDJet* jet, double err)
 {
-	double x = jet->Pt();
-	double scale = 1.14022;//MEDIUM
-	return(scale);
+	return scale(CM, jet, err);
 }
-
-double BTagWeight::scalebL(IDJet* jet)
+double BTagWeight::scalelM(IDJet* jet, double err)
 {
-	double x = jet->Pt();
-	//double scale = 0.908299+(2.70877e-06*(log(x+370.144)*(log(x+370.144)*(3-(-(104.614*log(x+370.144)))))));//LOOSE
-	double scale = 0.953;
-	return(scale);
+	return scale(LM, jet, err);
 }
 
-double BTagWeight::scalecL(IDJet* jet)
+double BTagWeight::scalebL(IDJet* jet, double err)
 {
-	double x = jet->Pt();
-	//double scale = 0.908299+(2.70877e-06*(log(x+370.144)*(log(x+370.144)*(3-(-(104.614*log(x+370.144)))))));//LOOSE
-	double scale = 0.953;
-	return(scale);
+	return scale(BL, jet, err);
 }
-
-double BTagWeight::scalelL(IDJet* jet)
+double BTagWeight::scalecL(IDJet* jet, double err)
 {
-	double x = jet->Pt();
-	double scale = ((1.07278+(0.000535714*x))+(-1.14886e-06*(x*x)))+(7.0636e-10*(x*(x*x)));//LOOSE
-	return(scale);
+	return scale(CL, jet, err);
 }
-
-double BTagWeight::UnclL(IDJet* jet)
+double BTagWeight::scalelL(IDJet* jet, double err)
 {
-	double x = jet->Pt();
-	//double scale = 1.14022;//MEDIUM
-	double scale = ((1.12921+(0.000804962*x))+(-1.87332e-06*(x*x)))+(1.18864e-09*(x*(x*x)));
-	scale -= ((1.01637+(0.000265653*x))+(-4.22531e-07*(x*x)))+(2.23396e-10*(x*(x*x)));
-	scale /=2;
-	return(scale);
+	return scale(LL, jet, err);
 }
 
 
@@ -97,11 +158,13 @@ double BTagWeight::SF(vector<IDJet*>& jets)
 	double PM=1.;
 	for(IDJet* jet : jets)
 	{
+		if(jet->Pt() >= 670. || jet->Pt() <= 30.) continue;
+		if(Abs(jet->Eta()) >= 2.4) continue;
+		if(jet->csvIncl() >= 1. || jet->csvIncl() <= 0.) continue;
 		//if(jet == bhad || jet == blep) {continue;}
 		double pt = jet->Pt();
 		int hbin = hbeffM->FindFixBin(pt);
-		int bin = Min(Max(hbin, 1), hbeffM->GetNbinsX()-1)-1;
-		if(find_if(AN->genbpartons.begin(), AN->genbpartons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genbpartons.end())
+		if(find_if(AN->genbhadrons.begin(), AN->genbhadrons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genbhadrons.end())
 		{
 			AN->truth1d["Eff_Ball"]->Fill(pt, AN->weight);
 			double effM = hbeffM->GetBinContent(hbin);
@@ -112,21 +175,21 @@ double BTagWeight::SF(vector<IDJet*>& jets)
 			{
 				AN->truth1d["Eff_BpassingM"]->Fill(pt, AN->weight);
 				PM *= effM;
-				PD *= effMorig * (scalebM(jet) + btyp * uncbM[bin]);
+				PD *= effMorig * (scalebM(jet, btyp));
 			}
 			else if(jet->csvIncl() > AN->B_LOOSE)
 			{
 				AN->truth1d["Eff_BpassingL"]->Fill(pt, AN->weight);
 				PM *= effL;
-				PD *= (effLorig+effMorig)*(scalebL(jet) + btyp * uncbL[bin]) - effMorig*(scalebM(jet) + btyp * uncbM[bin]);
+				PD *= (effLorig+effMorig)*scalebL(jet, btyp) - effMorig*scalebM(jet, btyp);
 			}
 			else
 			{
 				PM *= 1. - effM - effL;
-				PD *= 1. - (effLorig+effMorig)*(scalebL(jet) + btyp * uncbL[bin]);
+				PD *= 1. - (effLorig+effMorig)*(scalebL(jet, btyp));
 			}
 		}
-		else if(find_if(AN->gencpartons.begin(), AN->gencpartons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->gencpartons.end())
+		else if(find_if(AN->genchadrons.begin(), AN->genchadrons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genchadrons.end())
 		{
 			AN->truth1d["Eff_Call"]->Fill(pt, AN->weight);
 			double effM = hceffM->GetBinContent(hbin);
@@ -137,18 +200,18 @@ double BTagWeight::SF(vector<IDJet*>& jets)
 			{
 				AN->truth1d["Eff_CpassingM"]->Fill(pt, AN->weight);
 				PM *= effM;
-				PD *= effMorig * (scalecM(jet) + btyp * unccM[bin]);
+				PD *= effMorig * scalecM(jet, btyp);
 			}
 			else if(jet->csvIncl() > AN->B_LOOSE)
 			{
 				AN->truth1d["Eff_CpassingL"]->Fill(pt, AN->weight);
 				PM *= effL;
-				PD *= (effLorig+effMorig)*(scalecL(jet) + btyp * unccL[bin]) - effMorig*(scalecM(jet) + btyp * unccM[bin]);
+				PD *= (effLorig+effMorig)*scalecL(jet, btyp) - effMorig*scalecM(jet, btyp);
 			}
 			else
 			{
 				PM *= 1. - effM - effL;
-				PD *= 1. - (effMorig+effLorig)*(scalecL(jet) + btyp * unccL[bin]);
+				PD *= 1. - (effMorig+effLorig)*scalecL(jet, btyp);
 			}
 		}
 		else
@@ -162,18 +225,18 @@ double BTagWeight::SF(vector<IDJet*>& jets)
 			{
 				AN->truth1d["Eff_LpassingM"]->Fill(pt, AN->weight);
 				PM *= effM;
-				PD *= effMorig * (scalelM(jet) + ltyp * unclM[bin]);
+				PD *= effMorig * scalelM(jet, ltyp);
 			}
 			else if(jet->csvIncl() > AN->B_LOOSE)
 			{
 				AN->truth1d["Eff_LpassingL"]->Fill(pt, AN->weight);
 				PM *= effL;
-				PD *= (effLorig+effMorig)*(scalelL(jet) + ltyp * UnclL(jet)) - effMorig*(scalelM(jet) + ltyp * unclM[bin]);
+				PD *= (effLorig+effMorig)*scalelL(jet, ltyp) - effMorig*scalelM(jet, ltyp);
 			}
 			else
 			{
 				PM *= 1. - effM - effL;
-				PD *= 1. - (effMorig+effLorig)*(scalelL(jet) + ltyp * UnclL(jet));
+				PD *= 1. - (effMorig+effLorig)*scalelL(jet, ltyp);
 			}
 		}
 	}
