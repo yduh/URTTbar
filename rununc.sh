@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TYP=results/totj_ICHEP
-TYPUNC=results/totjunc_ICHEP
+TYP=results/3j_ICHEP
+TYPUNC=results/3junc_ICHEP
 JOBDIR=JOB12
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
 GT='1.0y'
@@ -17,29 +17,29 @@ if $RUN; then
         mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
    
-        rm inputs/$JOBDIR/*txt
-        if [ "${gt}" = "1.0y" ]; then
-            cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-            cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
-            ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-            ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
-        else
-            cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
-            ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-            ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
-        fi
-
+        #rm inputs/$JOBDIR/*txt
         #if [ "${gt}" = "1.0y" ]; then
-        #    rm inputs/$JOBDIR/*txt
-        #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
-        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
-        #    ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
+        #    cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
+        #    cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
+        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+        #    ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+        #else
+        #    cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
+        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+        #    ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+        #fi
+
+        if [ "${gt}" = "1.0y" ]; then
+            rm inputs/$JOBDIR/*txt
+            cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
+            ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
 
         #    rm inputs/$JOBDIR/*txt
         #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
         #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_175.5.root 
         #    ./jobsub ${TYP}/${gt}/mtup ttbarxsec.exe ttbarxsec.cfg
-        #fi
+        fi
 
         mv ttbarxsec.tmp ttbarxsec.cfg
     done
