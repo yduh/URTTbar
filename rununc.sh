@@ -31,15 +31,15 @@ if $RUN; then
         #fi
 
         if [ "${gt}" = "1.0y" ]; then
-            #rm inputs/$JOBDIR/*txt
-            #cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
-            ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
-            ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
-
         #    rm inputs/$JOBDIR/*txt
-        #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
-        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_175.5.root 
-        #    ./jobsub ${TYP}/${gt}/mtup ttbarxsec.exe ttbarxsec.cfg
+        #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
+        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
+        #    ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
+
+            rm inputs/$JOBDIR/*txt
+            cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}_175.5.root 
+            ./jobsub ${TYP}/${gt}/mtup ttbarxsec.exe ttbarxsec.cfg
         fi
 
         mv ttbarxsec.tmp ttbarxsec.cfg
