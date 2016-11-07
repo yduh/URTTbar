@@ -31,8 +31,8 @@ if $RUN; then
         #fi
 
         if [ "${gt}" = "1.0y" ]; then
-            rm inputs/$JOBDIR/*txt
-            cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
+            #rm inputs/$JOBDIR/*txt
+            #cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
             ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
 
