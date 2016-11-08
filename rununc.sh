@@ -7,8 +7,8 @@ JOBDIR=JOB12
 #GT='0.0y 2.0y 3.0y 4.0y 5.0y'
 GT='1.0y'
 
-RUN=true
-RUNOUNC=false
+RUN=false
+RUNOUNC=true
 
 
 if $RUN; then
@@ -18,26 +18,26 @@ if $RUN; then
         mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
    
-        #rm inputs/$JOBDIR/*txt
-        #if [ "${gt}" = "1.0y" ]; then
-        #    cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-        #    cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
-        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-        #    ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
-        #else
-        #    cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
-        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
-        #    ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
-        #fi
+        rm inputs/$JOBDIR/*txt
+        if [ "${gt}" = "1.0y" ]; then
+            cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
+            cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+            ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+        else
+            cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
+            ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
+        fi
 
         if [ "${gt}" = "1.0y" ]; then
-        #    rm inputs/$JOBDIR/*txt
-        #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
-        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
-        #    ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
+            rm inputs/$JOBDIR/*txt
+            cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
+            ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
+            ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
 
-        #    rm inputs/$JOBDIR/*txt
-        #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
+            rm inputs/$JOBDIR/*txt
+            cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}_175.5.root 
             ./jobsub ${TYP}/${gt}/mtup ttbarxsec.exe ttbarxsec.cfg
         fi
@@ -54,17 +54,17 @@ if $RUNOUNC; then
 
     #PDF uncertainty is estimated with all MCs
     #============================================================#
-    rm inputs/$JOBDIR/*txt
-    cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
+    #rm inputs/$JOBDIR/*txt
+    #cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
     #PDF: total < 1 %
-    ./updateconfig.py PDFTEST 1
-    ./jobsub ${TYPUNC}/1.0y/pdf ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py PDFTEST 1
+    #./jobsub ${TYPUNC}/1.0y/pdf ttbarxsec.exe ttbarxsec.cfg
 
     
     #lepton uncertainties are estimated with all MC except some sparated theoretical signal ones 
     #============================================================#
-    rm inputs/$JOBDIR/*txt
-    cp inputs/$JOBDIR/backupsmall/*txt inputs/$JOBDIR
+    #rm inputs/$JOBDIR/*txt
+    #cp inputs/$JOBDIR/backupsmall/*txt inputs/$JOBDIR
     #leptons: varies up/down scale factor gotten by tag and probe method; total ~3 %
     #./updateconfig.py ELECTRONS 0
     #./jobsub ${TYPUNC}/1.0y/el ttbarxsec.exe ttbarxsec.cfg
