@@ -2556,7 +2556,7 @@ void ttbar::ttanalysis(URStreamer& event)
    
 
 
-    }//end of cleanedjets.size()==3 (save time and size)
+    //}//end of cleanedjets.size()==3 (save time and size)
 
     //if(cleanedjets.size() == 3) {return;}
 
@@ -2724,7 +2724,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	response2d.FillAll("njets_ttpt", cleanedjets.size() - 4, bestper.TT().Pt(), weight);
 
         //for yukawa studies
-            if(bestper.MtWLep() >140) return;
+            if(bestper.MtWLep() >140) return; //in TRUTH/truth_Mt_W or right_Mt_W/wrong_Mt_W/semi_Mt_W/other_Mt_W
 		TLorentzVector CMttbar = bestper.THad() + bestper.TLep();
 		TLorentzVector CMlept = bestper.TLep();
 		TLorentzVector CMhadt = bestper.THad();
@@ -2994,6 +2994,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//if(BTAGMODE){btageff.Fill(bestper, nvtx, rightper.IsCorrect(bestper), weight);}
 	if(BTAGMODE){btageff.Fill(bestper, nvtx, bestper.IsTHadCorrect(rightper), bestper.IsBLepCorrect(rightper), weight);}
 }
+    }//end of cleanedjets.size()==3 (save time and size)
 
 //This method is called once every file, contains the event loop
 //run your proper analysis here
