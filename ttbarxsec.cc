@@ -1808,7 +1808,7 @@ void ttbar::ttanalysis(URStreamer& event)
         //double MTwl = Sqrt(pow((*lep+met).Mag(), 2) + pow((*lep+met).Px(), 2) + pow((*lep+met).Py(), 2));
         double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
         reco3j1d["MTwl"]->Fill(MTwl, weight);
-        if(MTwl >140.) return;
+        //if(MTwl >140.) return;
         //if(thad_3j.Mag()>200.) return;//instead of cut off, use to build up a likelihood distribution
         yuka1d_reco["njets"]->Fill(3, weight);
 
@@ -1860,7 +1860,14 @@ void ttbar::ttanalysis(URStreamer& event)
             if(rightper.BLep() == reducedjets[1]) reco3j1d["likelihood_right"]->Fill(Logblike3jr2, weight);
             if(rightper.BLep() != reducedjets[0]) reco3j1d["likelihood_wrong"]->Fill(Logblike3jr1, weight);
             if(rightper.BLep() != reducedjets[1]) reco3j1d["likelihood_wrong"]->Fill(Logblike3jr2, weight);
-                
+        /*if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]) reco3j1d["likelihood_right"]->Fill(Loglike3jr1, weight);
+   else if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) reco3j1d["likelihood_right"]->Fill(Loglike3jr2, weight);
+   else if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() != reducedjets[0] && rightper.BHad() != reducedjets[1]) reco3j1d["likelihood_wrong"]->Fill(Loglike3jr1, weight);
+   else if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() != reducedjets[1] && rightper.BHad() != reducedjets[0]) reco3j1d["likelihood_wrong"]->Fill(Loglike3jr2, weight);
+        else if(SEMILEP) reco3j1d[""] ???*/
+   
+   
+
         }
         
     /*if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
@@ -2724,7 +2731,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	response2d.FillAll("njets_ttpt", cleanedjets.size() - 4, bestper.TT().Pt(), weight);
 
         //for yukawa studies
-            if(bestper.MtWLep() >140) return; //in TRUTH/truth_Mt_W or right_Mt_W/wrong_Mt_W/semi_Mt_W/other_Mt_W
+            //if(bestper.MtWLep() >140) return; //in TRUTH/truth_Mt_W or right_Mt_W/wrong_Mt_W/semi_Mt_W/other_Mt_W
 		TLorentzVector CMttbar = bestper.THad() + bestper.TLep();
 		TLorentzVector CMlept = bestper.TLep();
 		TLorentzVector CMhadt = bestper.THad();

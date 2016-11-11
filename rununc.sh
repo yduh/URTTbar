@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYP=results/3j_test
+TYP=results/3j_ICHEP_noMTwlcut
 TYPUNC=results/3junc_ICHEP
 JOBDIR=JOB12
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
@@ -21,7 +21,7 @@ if $RUN; then
         rm inputs/$JOBDIR/*txt
         if [ "${gt}" = "1.0y" ]; then
             cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-            cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
+            #cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
             ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
         else
