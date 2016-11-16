@@ -740,6 +740,7 @@ void ttbar::begin()
 
         yuka1d_reco.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         yuka1d_reco.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
+        yuka1d_reco.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         yuka1d_reco.AddHist("njets", 11, 0, 11, "njets", "Events");
         yuka1d_reco.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	//yuka1d_reco.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
@@ -761,6 +762,7 @@ void ttbar::begin()
 	dir_yukawareco_right->cd();
         yuka1d_reco_right.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         yuka1d_reco_right.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
+        yuka1d_reco_right.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         yuka1d_reco_right.AddHist("njets", 11, 0, 11, "njets", "Events");
 	yuka1d_reco_right.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	//yuka1d_reco_right.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
@@ -781,6 +783,7 @@ void ttbar::begin()
 	dir_yukawareco_wrong->cd();
         yuka1d_reco_wrong.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         yuka1d_reco_wrong.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
+        yuka1d_reco_wrong.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         yuka1d_reco_wrong.AddHist("njets", 11, 0, 11, "njets", "Events");
 	yuka1d_reco_wrong.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	//yuka1d_reco_wrong.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
@@ -801,6 +804,7 @@ void ttbar::begin()
 	dir_yukawareco_semi->cd();
         yuka1d_reco_semi.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         yuka1d_reco_semi.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
+        yuka1d_reco_semi.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         yuka1d_reco_semi.AddHist("njets", 11, 0, 11, "njets", "Events");
 	yuka1d_reco_semi.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	//yuka1d_reco_semi.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
@@ -821,6 +825,7 @@ void ttbar::begin()
 	dir_yukawareco_other->cd();
         yuka1d_reco_other.AddHist("Mtt_resol", 40, -2, 2, "M(t#bar{t}) reco/gen", "Events");
         yuka1d_reco_other.AddHist("delY_resol", 80, -4, 4, "#Deltay(t#bar{t}) reco/gen", "Events");
+        yuka1d_reco_other.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         yuka1d_reco_other.AddHist("njets", 11, 0, 11, "njets", "Events");
 	yuka1d_reco_other.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	//yuka1d_reco_other.AddHist("costheta", 40, -1, 1, "cos#theta", "Events");
@@ -1740,6 +1745,10 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j
+        double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
+        reco1d["MTwl"]->Fill(MTwl, weight);
+        if(MTwl >140.) return;
+
     if(cleanedjets.size() == 3){
 
         TLorentzVector * bleper;
@@ -1814,9 +1823,9 @@ void ttbar::ttanalysis(URStreamer& event)
         
 
         //double MTwl = Sqrt(pow((*lep+met).Mag(), 2) + pow((*lep+met).Px(), 2) + pow((*lep+met).Py(), 2));
-        double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
+        //double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
         reco3j1d["MTwl"]->Fill(MTwl, weight);
-        if(MTwl >140.) return;
+        //if(MTwl >140.) return;
         //if(thad_3j.Mag()>200.) return;//instead of cut off, use to build up a likelihood distribution
         yuka1d_reco["njets"]->Fill(3, weight);
 
@@ -2791,7 +2800,8 @@ void ttbar::ttanalysis(URStreamer& event)
 
                 yuka1d_reco["Mtt_resol"]->Fill((Mtt - (gentqhad+gentqlep).Mag())/(gentqhad+gentqlep).Mag(), weight);
                 yuka1d_reco["delY_resol"]->Fill((deltaY - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
-                
+        
+                yuka1d_reco["MTwl"]->Fill(MTwl, weight);
                 yuka1d_reco["njets"]->Fill(cleanedjets.size(), weight); 
 		yuka1d_reco["Mtt"]->Fill(Mtt, weight);
 		//yuka1d_reco["costheta"]->Fill(costheta_had, weight);
@@ -2895,6 +2905,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 yuka1d_reco_right["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_right["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
                 yuka2d_reco_right["delY_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka1d_reco_right["MTwl"]->Fill(MTwl, weight);
                 yuka1d_reco_right["njets"]->Fill(cleanedjets.size(), weight); 
 
 		//end of yukawa studies
@@ -2937,6 +2948,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 yuka1d_reco_wrong["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_wrong["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
                 yuka2d_reco_wrong["delY_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka1d_reco_wrong["MTwl"]->Fill(MTwl, weight);
                 yuka1d_reco_wrong["njets"]->Fill(cleanedjets.size(), weight); 
 
 		//end of yukawa studies
@@ -2966,6 +2978,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 yuka1d_reco_semi["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_semi["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
                 yuka2d_reco_semi["delY_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka1d_reco_semi["MTwl"]->Fill(MTwl, weight);
                 yuka1d_reco_semi["njets"]->Fill(cleanedjets.size(), weight); 
 
 		//end of yukawa studies
@@ -2995,6 +3008,7 @@ void ttbar::ttanalysis(URStreamer& event)
                 yuka1d_reco_other["tlepy"]->Fill(tlepy, weight);
                 yuka2d_reco_other["Mtt_tlepy"]->Fill(Mtt, tlepy, weight);
                 yuka2d_reco_other["delY_tlepy"]->Fill(deltaY, tlepy, weight);
+                yuka1d_reco_other["MTwl"]->Fill(MTwl, weight);
                 yuka1d_reco_other["njets"]->Fill(cleanedjets.size(), weight); 
 
 		//end of yukawa studies
