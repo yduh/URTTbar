@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYP=results/totj_ICHEP_implement
+TYP=results/totj_ICHEP_noMTwlcut_implement
 TYPUNC=results/3junc_ICHEP
 JOBDIR=JOB12
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'

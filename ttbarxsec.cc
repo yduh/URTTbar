@@ -1740,8 +1740,9 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
 
 // add for 3j
+        //double MTwl = Sqrt(pow((*lep+met).Mag(), 2) + pow((*lep+met).Px(), 2) + pow((*lep+met).Py(), 2));
         double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
-        if(MTwl >140.) return;
+        //if(MTwl >140.) return;
 
     if(cleanedjets.size() == 3){
 
@@ -1816,9 +1817,6 @@ void ttbar::ttanalysis(URStreamer& event)
         wj1->SetE(Sqrt(reducedjets[2]->Px()*reducedjets[2]->Px() + reducedjets[2]->Py()*reducedjets[2]->Py() + reducedjets[2]->Pz()*reducedjets[2]->Pz()));
         
 
-        //double MTwl = Sqrt(pow((*lep+met).Mag(), 2) + pow((*lep+met).Px(), 2) + pow((*lep+met).Py(), 2));
-        //double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
-        //if(MTwl >140.) return;
         yuka1d_reco["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco["njets"]->Fill(3, weight);
 
@@ -2755,7 +2753,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	response2d.FillAll("njets_ttpt", cleanedjets.size() - 4, bestper.TT().Pt(), weight);
 
         //for yukawa studies
-            if(bestper.MtWLep() >140) return; //in TRUTH/truth_Mt_W or right_Mt_W/wrong_Mt_W/semi_Mt_W/other_Mt_W
+            //if(bestper.MtWLep() >140) return; //in TRUTH/truth_Mt_W or right_Mt_W/wrong_Mt_W/semi_Mt_W/other_Mt_W
 		TLorentzVector CMttbar = bestper.THad() + bestper.TLep();
 		TLorentzVector CMlept = bestper.TLep();
 		TLorentzVector CMhadt = bestper.THad();
