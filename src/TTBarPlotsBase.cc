@@ -23,7 +23,7 @@ void TTBarPlotsBase::Init(ttbar* analysis)
     plot2d.AddHist("bjets_pthad_ptlep", 500, 0., 500., 500, 0., 500., "p_{T}(b_{had}) [GeV]", "p_{T}(b_{lep}) [GeV]");
     plot2d.AddHist("wjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(j_{W})_{min} [GeV]", "p_{T}(j_{W})_{max} [GeV]");
     plot2d.AddHist("wjets_bjets_pt", 500, 0., 500., 500, 0., 500., "p_{T}(j_{W})_{max} [GeV]", "p_{T}(b_{had}) [GeV]");
-    plot2d.AddHist("Whad_M_thad_M", 500, 0., 500., 500, 0., 500., "M(W_{h}) [GeV]", "M(t_{h}) [GeV]");
+    plot2d.AddHist("thad_M_Whad_M", 500, 0., 500., 500, 0., 500., "M(t_{h}) [GeV]", "M(W_{h}) [GeV]");
     plot2d.AddHist("Wlep_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(W_{l}) [GeV]", "M(t_{l}) [GeV]");
     plot2d.AddHist("thad_M_tlep_M", 500, 0., 500., 500, 0., 500., "M(t_{h}) [GeV]", "M(t_{l}) [GeV]");
     plot2d.AddHist("thad_pt_wjwj_dr", 100, 0., 2000., 100, 0., 5., "p_{T}(t_{h}) [GeV]", "#Delta R(j_{W}, j_{W})");
@@ -64,7 +64,7 @@ void TTBarPlotsBase::Fill(Permutation& per, double weight)
 
 	plot2d["thad_pt_wjwj_dr"]->Fill(per.THad().Pt(), per.WJa()->DeltaR(*per.WJb()), weight);
 	plot2d["thad_pt_wjbj_dr"]->Fill(per.THad().Pt(), Min(per.BHad()->DeltaR(*per.WJa()), per.BHad()->DeltaR(*per.WJb())), weight);
-    plot2d["Whad_M_thad_M"]->Fill(per.WHad().M(), per.THad().M(), weight);
+        plot2d["thad_M_Whad_M"]->Fill(per.THad().M(), per.WHad().M(), weight);
 	plot2d["bjets_pt"]->Fill(Min(per.BHad()->Pt(), per.BLep()->Pt()), Max(per.BHad()->Pt(), per.BLep()->Pt()), weight);
 	plot2d["bjets_pthad_ptlep"]->Fill(per.BHad()->Pt(), per.BLep()->Pt(), weight);
 	plot2d["wjets_pt"]->Fill(Min(per.WJa()->Pt(), per.WJb()->Pt()), Max(per.WJa()->Pt(), per.WJb()->Pt()), weight);
