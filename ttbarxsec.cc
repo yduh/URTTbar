@@ -330,7 +330,6 @@ void ttbar::begin()
         reco3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         reco3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
         reco3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
-        reco3j1d.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         reco3j2d.AddHist("thad_M_Whad_M", 250, 0, 500, 50, 0, 100, "M(t_{h}) [GeV]", "M(W_{h}) [GeV]");
         
         reco3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -382,7 +381,6 @@ void ttbar::begin()
         right3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
         right3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
         right3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
-        right3j1d.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         
         right3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
         right3j1d.AddHist("delY", 1200, -6, 6, "#Deltay(t#bar{t})", "Events");
@@ -412,7 +410,6 @@ void ttbar::begin()
         wrong3j1d.AddHist("thad_M_wrongbs", 500, 0, 1000, "M(t_{h})", "Events");
         wrong3j1d.AddHist("thad_M_wrongbh", 500, 0, 1000, "M(t_{h})", "Events");
         wrong3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
-        wrong3j1d.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         wrong3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
         
         wrong3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -448,7 +445,6 @@ void ttbar::begin()
         semi3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         semi3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
         semi3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
-        semi3j1d.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         semi3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
         
         semi3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -475,7 +471,6 @@ void ttbar::begin()
         other3j1d.AddHist("thad_y", 200, 0, 5, "|y(t_{h})|", "Events");
         other3j1d.AddHist("thad_M", 500, 0, 1000, "M(t_{h})", "Events");
         other3j1d.AddHist("tt_pt", 500, 0, 1000," p_{t}(t#bar{t})", "Event");
-        other3j1d.AddHist("MTwl", 500, 0, 1000, "transverse mass W_{T}", "Events");
         other3j1d.AddHist("tt_y", 200, 0, 5, "|y(t#bar{t})|", "Event");
         
         other3j1d.AddHist("Mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
@@ -1746,7 +1741,6 @@ void ttbar::ttanalysis(URStreamer& event)
 
 // add for 3j
         double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
-        reco1d["MTwl"]->Fill(MTwl, weight);
         if(MTwl >140.) return;
 
     if(cleanedjets.size() == 3){
@@ -1824,11 +1818,12 @@ void ttbar::ttanalysis(URStreamer& event)
 
         //double MTwl = Sqrt(pow((*lep+met).Mag(), 2) + pow((*lep+met).Px(), 2) + pow((*lep+met).Py(), 2));
         //double MTwl = Sqrt(2* (lep->Perp() * met.Perp() - lep->Px() * met.Px() - lep->Py() * met.Py()));
-        reco3j1d["MTwl"]->Fill(MTwl, weight);
         //if(MTwl >140.) return;
-        //if(thad_3j.Mag()>200.) return;//instead of cut off, use to build up a likelihood distribution
+        yuka1d_reco["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco["njets"]->Fill(3, weight);
 
+        //if(thad_3j.Mag()>200.) return;//instead of cut off, use to build up a likelihood distribution
+        
         double Logtlike3j;
         double Logblike3j1; //= 1000; 
         double Logblike3j2;
@@ -2105,7 +2100,6 @@ void ttbar::ttanalysis(URStreamer& event)
         right3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
         right3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
         right3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
-        right3j1d["MTwl"]->Fill(MTwl, weight);
         right3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         right3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         right3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
@@ -2125,6 +2119,7 @@ void ttbar::ttanalysis(URStreamer& event)
         right3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         right3j1d["MET"]->Fill(met.Pt(), weight);
         right3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
+        yuka1d_reco_right["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_right["njets"]->Fill(3, weight);
 
     }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
@@ -2140,7 +2135,6 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
         wrong3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
         wrong3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
-        wrong3j1d["MTwl"]->Fill(MTwl, weight);
         wrong3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         wrong3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         wrong3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
@@ -2160,6 +2154,7 @@ void ttbar::ttanalysis(URStreamer& event)
         wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         wrong3j1d["MET"]->Fill(met.Pt(), weight);
         wrong3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
+        yuka1d_reco_wrong["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_wrong["njets"]->Fill(3, weight);
 
           if(rightper.BLep() == bleper){//10% events in wrong meanes bl correct + bh/Wj flips, dely resol no shift 
@@ -2194,7 +2189,6 @@ void ttbar::ttanalysis(URStreamer& event)
         semi3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
         semi3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
         semi3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
-        semi3j1d["MTwl"]->Fill(MTwl, weight);
         semi3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         semi3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         semi3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
@@ -2208,6 +2202,7 @@ void ttbar::ttanalysis(URStreamer& event)
         semi3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         semi3j1d["MET"]->Fill(met.Pt(), weight);
         semi3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
+        yuka1d_reco_semi["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_semi["njets"]->Fill(3, weight);
         //cout<<"semiNS1sol="<<NS1sol<<", bjetsflip="<<bjetsflip<<endl;
 
@@ -2224,7 +2219,6 @@ void ttbar::ttanalysis(URStreamer& event)
         other3j1d["tlep_y"]->Fill(Abs(tlep_3j.Rapidity()), weight);
         other3j1d["thad_y"]->Fill(Abs(thad_3j.Rapidity()), weight);
         other3j1d["thad_M"]->Fill(thad_3j.Mag(), weight);
-        other3j1d["MTwl"]->Fill(MTwl, weight);
         other3j1d["tt_pt"]->Fill((tlep_3j + thad_3j).Pt(), weight);
         other3j1d["tt_y"]->Fill(Abs((tlep_3j + thad_3j).Rapidity()), weight);
         other3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
@@ -2238,6 +2232,7 @@ void ttbar::ttanalysis(URStreamer& event)
         other3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         other3j1d["MET"]->Fill(met.Pt(), weight);
         other3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
+        yuka1d_reco_other["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_other["njets"]->Fill(3, weight);
         //cout<<"otherNS1sol="<<NS1sol<<", bjetsflip="<<bjetsflip<<endl;
     }
