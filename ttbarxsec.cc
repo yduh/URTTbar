@@ -2581,11 +2581,7 @@ void ttbar::ttanalysis(URStreamer& event)
         }        
 
 
-        
-   
-
-
-    //}//end of cleanedjets.size()==3 (save time and size)
+    }//end of cleanedjets.size()==3 (save time and size)
 
     //if(cleanedjets.size() == 3) {return;}
 
@@ -3032,7 +3028,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	//if(BTAGMODE){btageff.Fill(bestper, nvtx, rightper.IsCorrect(bestper), weight);}
 	if(BTAGMODE){btageff.Fill(bestper, nvtx, bestper.IsTHadCorrect(rightper), bestper.IsBLepCorrect(rightper), weight);}
 }
-    }//end of cleanedjets.size()==3 (save time and size)
+   // }//end of cleanedjets.size()==3 (save time and size)
 
 //This method is called once every file, contains the event loop
 //run your proper analysis here
