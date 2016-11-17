@@ -1870,14 +1870,6 @@ void ttbar::ttanalysis(URStreamer& event)
             if(rightper.BLep() == reducedjets[1]) reco3j1d["likelihood_right"]->Fill(Logblike3jr2, weight);
             if(rightper.BLep() != reducedjets[0]) reco3j1d["likelihood_wrong"]->Fill(Logblike3jr1, weight);
             if(rightper.BLep() != reducedjets[1]) reco3j1d["likelihood_wrong"]->Fill(Logblike3jr2, weight);
-        /*if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() == reducedjets[0] && rightper.BHad() == reducedjets[1]) reco3j1d["likelihood_right"]->Fill(Loglike3jr1, weight);
-   else if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() == reducedjets[1] && rightper.BHad() == reducedjets[0]) reco3j1d["likelihood_right"]->Fill(Loglike3jr2, weight);
-   else if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() != reducedjets[0] && rightper.BHad() != reducedjets[1]) reco3j1d["likelihood_wrong"]->Fill(Loglike3jr1, weight);
-   else if((rightper.IsComplete3Ja() || rightper.IsComplete3Jb()) && rightper.BLep() != reducedjets[1] && rightper.BHad() != reducedjets[0]) reco3j1d["likelihood_wrong"]->Fill(Loglike3jr2, weight);
-        else if(SEMILEP) reco3j1d[""] ???*/
-   
-   
-
         }
         
     /*if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
@@ -2086,8 +2078,9 @@ void ttbar::ttanalysis(URStreamer& event)
 
     //save histograms in part of right/wrong/semi/others
     if(rightper.BLep() == bleper && rightper.BHad() == bhadper && (rightper.WJa() == reducedjets[2] || rightper.WJb() == reducedjets[2]) && (rightper.IsComplete3Ja() || rightper.IsComplete3Jb())){  
+        if(!NS1sol){
         if(rightper.BLep() == reducedjets[0]) right3j1d["likelihood"]->Fill(Logblike3jr1, weight);
-        if(rightper.BLep() == reducedjets[1]) right3j1d["likelihood"]->Fill(Logblike3jr2, weight);
+        if(rightper.BLep() == reducedjets[1]) right3j1d["likelihood"]->Fill(Logblike3jr2, weight);}
         reco3j1d["counter2"]->Fill(6.5, weight);
         right3j2d["blepnschi_bhadnschi"]->Fill(chi2lep/Sqrt(Abs(chi2lep)), chi2had/Sqrt(Abs(chi2had)), weight);
         right3j2d["blept_bhadpt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
@@ -2121,8 +2114,9 @@ void ttbar::ttanalysis(URStreamer& event)
         yuka1d_reco_right["njets"]->Fill(3, weight);
 
     }else if(rightper.IsComplete3Ja() || rightper.IsComplete3Jb()){
+        if(!NS1sol){
         if(rightper.BLep() != reducedjets[0]) wrong3j1d["likelihood"]->Fill(Logblike3jr1, weight);
-        if(rightper.BLep() != reducedjets[1]) wrong3j1d["likelihood"]->Fill(Logblike3jr2, weight);
+        if(rightper.BLep() != reducedjets[1]) wrong3j1d["likelihood"]->Fill(Logblike3jr2, weight);}
         reco3j1d["counter2"]->Fill(7.5, weight);
         wrong3j2d["blepnschi_bhadnschi"]->Fill(chi2lep/Sqrt(Abs(chi2lep)), chi2had/Sqrt(Abs(chi2had)), weight);
         wrong3j2d["blept_bhadpt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
@@ -2175,8 +2169,9 @@ void ttbar::ttanalysis(URStreamer& event)
     }
 
     else if(SEMILEP){
+        if(!NS1sol){
         if(rightper.BLep() != reducedjets[0]) semi3j1d["likelihood"]->Fill(Logblike3jr1, weight);
-        if(rightper.BLep() != reducedjets[1]) semi3j1d["likelihood"]->Fill(Logblike3jr2, weight);
+        if(rightper.BLep() != reducedjets[1]) semi3j1d["likelihood"]->Fill(Logblike3jr2, weight);}
         reco3j1d["counter2"]->Fill(8.5, weight);
         semi3j2d["blepnschi_bhadnschi"]->Fill(chi2lep/Sqrt(Abs(chi2lep)), chi2had/Sqrt(Abs(chi2had)), weight);
         semi3j2d["blept_bhadpt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
@@ -2205,8 +2200,9 @@ void ttbar::ttanalysis(URStreamer& event)
         //cout<<"semiNS1sol="<<NS1sol<<", bjetsflip="<<bjetsflip<<endl;
 
     }else{
+        if(!NS1sol){
         if(rightper.BLep() != reducedjets[0]) other3j1d["likelihood"]->Fill(Logblike3jr1, weight);
-        if(rightper.BLep() != reducedjets[1]) other3j1d["likelihood"]->Fill(Logblike3jr2, weight);
+        if(rightper.BLep() != reducedjets[1]) other3j1d["likelihood"]->Fill(Logblike3jr2, weight);}
         reco3j1d["counter2"]->Fill(9.5, weight);
         other3j2d["blepnschi_bhadnschi"]->Fill(chi2lep/Sqrt(Abs(chi2lep)), chi2had/Sqrt(Abs(chi2had)), weight);
         other3j2d["blept_bhadpt"]->Fill(bleper->Pt(), bhadper->Pt(), weight);
