@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TYP=results/3j_ICHEP_implement
-TYPUNC=results/5junc_ICHEP
+TYPUNC=results/6junc_ICHEP
 JOBDIR=JOB12
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
 #GT='0.0y 2.0y 3.0y 4.0y 5.0y'
@@ -78,20 +78,20 @@ if $RUNOUNC; then
     #cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
 
     #jer/jes: jer < 1 % + jes ~5-7 % 
-    ./updateconfig.py sigmajet -1
-    ./jobsub ${TYPUNC}/1.0y/jetm1sig ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py sigmajet 1
-    ./jobsub ${TYPUNC}/1.0y/jetp1sig ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py sigmajet -1
+    #./jobsub ${TYPUNC}/1.0y/jetm1sig ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py sigmajet 1
+    #./jobsub ${TYPUNC}/1.0y/jetp1sig ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py jetres -1
     ./jobsub ${TYPUNC}/1.0y/jetresm ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py jetres 1
     ./jobsub ${TYPUNC}/1.0y/jetresp ttbarxsec.exe ttbarxsec.cfg
 
     #MET: < 1 %
-    ./updateconfig.py sigmamet -1
-    ./jobsub ${TYPUNC}/1.0y/metm1sig ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py sigmamet 1
-    ./jobsub ${TYPUNC}/1.0y/metp1sig ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py sigmamet -1
+    #./jobsub ${TYPUNC}/1.0y/metm1sig ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py sigmamet 1
+    #./jobsub ${TYPUNC}/1.0y/metp1sig ttbarxsec.exe ttbarxsec.cfg
 
     #bunch of reweight factors: seems like you don't need those later, but remember to report your 2d YUKAWA reweighting uncertainties
     #./updateconfig.py topptweight -1
@@ -108,14 +108,14 @@ if $RUNOUNC; then
     #./jobsub ${TYPUNC}_ttptup_${VER} ttbarxsec.exe ttbarxsec.cfg
 
     #factorization and renormalization: total < 1 %
-    ./updateconfig.py renscale -1
-    ./jobsub ${TYPUNC}/1.0y/rsdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py renscale 1
-    ./jobsub ${TYPUNC}/1.0y/rsup ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py facscale -1
-    ./jobsub ${TYPUNC}/1.0y/fsdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py facscale 1
-    ./jobsub ${TYPUNC}/1.0y/fsup ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py renscale -1
+    #./jobsub ${TYPUNC}/1.0y/rsdown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py renscale 1
+    #./jobsub ${TYPUNC}/1.0y/rsup ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py facscale -1
+    #./jobsub ${TYPUNC}/1.0y/fsdown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py facscale 1
+    #./jobsub ${TYPUNC}/1.0y/fsup ttbarxsec.exe ttbarxsec.cfg
 
     #btag: includes b and light jets tags, vary scale factor up/down; total ~2-3 % depends on the pT and b jets
     ./updateconfig.py btagunc -1
