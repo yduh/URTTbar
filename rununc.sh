@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TYP=results/3j_ICHEP_implement
-TYPUNC=results/3junc_ICHEP
+TYPUNC=results/3junc
 JOBDIR=JOB12
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
 #GT='0.0y 2.0y 3.0y 4.0y 5.0y'
@@ -78,14 +78,14 @@ if $RUNOUNC; then
     #cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
 
     #jer/jes: jer < 1 % + jes ~5-7 % 
-    #./updateconfig.py sigmajet -1
-    #./jobsub ${TYPUNC}/1.0y/jetm1sig ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py sigmajet 1
-    #./jobsub ${TYPUNC}/1.0y/jetp1sig ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py jetres -1
-    ./jobsub ${TYPUNC}/1.0y/jetresm ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py jetres 1
-    ./jobsub ${TYPUNC}/1.0y/jetresp ttbarxsec.exe ttbarxsec.cfg
+    ./updateconfig.py sigmajet -1
+    ./jobsub ${TYPUNC}/1.0y/jetm1sig ttbarxsec.exe ttbarxsec.cfg
+    ./updateconfig.py sigmajet 1
+    ./jobsub ${TYPUNC}/1.0y/jetp1sig ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py jetres -1
+    #./jobsub ${TYPUNC}/1.0y/jetresm ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py jetres 1
+    #./jobsub ${TYPUNC}/1.0y/jetresp ttbarxsec.exe ttbarxsec.cfg
 
     #MET: < 1 %
     #./updateconfig.py sigmamet -1
@@ -118,20 +118,20 @@ if $RUNOUNC; then
     #./jobsub ${TYPUNC}/1.0y/fsup ttbarxsec.exe ttbarxsec.cfg
 
     #btag: includes b and light jets tags, vary scale factor up/down; total ~2-3 % depends on the pT and b jets
-    ./updateconfig.py btagunc -1
-    ./jobsub ${TYPUNC}/1.0y/btagdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py btagunc 1
-    ./jobsub ${TYPUNC}/1.0y/btagup ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py ltagunc -1
-    ./jobsub ${TYPUNC}/1.0y/ltagdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py ltagunc 1
-    ./jobsub ${TYPUNC}/1.0y/ltagup ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py btagunc -1
+    #./jobsub ${TYPUNC}/1.0y/btagdown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py btagunc 1
+    #./jobsub ${TYPUNC}/1.0y/btagup ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py ltagunc -1
+    #./jobsub ${TYPUNC}/1.0y/ltagdown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py ltagunc 1
+    #./jobsub ${TYPUNC}/1.0y/ltagup ttbarxsec.exe ttbarxsec.cfg
 
     #pileup: varies the minimum bias cross section by 5%, reweighting the MC; < 1 % 
-    ./updateconfig.py pileupunc -1
-    ./jobsub ${TYPUNC}/1.0y/pileupdown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py pileupunc 1
-    ./jobsub ${TYPUNC}/1.0y/pileupup ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py pileupunc -1
+    #./jobsub ${TYPUNC}/1.0y/pileupdown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py pileupunc 1
+    #./jobsub ${TYPUNC}/1.0y/pileupup ttbarxsec.exe ttbarxsec.cfg
     
     mv ttbarxsec.tmp ttbarxsec.cfg
 fi
