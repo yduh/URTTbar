@@ -1,17 +1,17 @@
 #ifndef MCMatchable_H
 #define MCMatchable_H
-#include "URStreamer.h"
+#include "GenObject.h"
 
 class MCMatchable {
 private:
-	const Genparticle* match_=0;
+	const GenObject* match_=0;
 public:
 	MCMatchable(){};
-	MCMatchable(const Genparticle* m):
+	MCMatchable(const GenObject* m):
 		match_(m)
 	{};
-	const Genparticle* match() const {return match_;}
-	void addMatch(const Genparticle* m) {match_ = m;}
+	const GenObject* match() const {return match_;}
+	void addMatch(const GenObject* m) {match_ = m;}
 };
 
 #endif

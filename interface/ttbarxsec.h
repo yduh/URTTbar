@@ -18,10 +18,8 @@
 #include "TTBarResponse2D.h"
 #include "Permutation.h"
 #include "BtagEff.h"
-//#include "JetScale.h"
 #include "JetScaler.h"
 #include "BTagWeight.h"
-//#include "NeutrinoSolver.h"
 
 using namespace std;
 class PDFuncertainty;
@@ -33,7 +31,6 @@ class ttbar : public AnalyzerBase
     friend class TTBarResponse;
     friend class BTagWeight;
     friend class JetScaler;
-    //friend class NeutrinoSolver;
 
 	private:
 		int isDA = 0;
@@ -45,31 +42,26 @@ class ttbar : public AnalyzerBase
 		bool SEMILEP;
 		bool FULLLEP;
 		bool SEMILEPACC;
+		GenObject gps[8];
 		list<GenObject> sgenparticles;
 		vector<GenObject*> genfincls;
 	  	vector<GenObject*> genbhadrons;
 	  	vector<GenObject*> genchadrons;
-		//GenObject* gent;
-		//GenObject* gentbar;
-		//GenObject* genbl;
-		//GenObject* genbh;
-		//TLorentzVector gentoplep;
-		//TLorentzVector gentophad;
-        TLorentzVector gentq;
-        TLorentzVector gentqbar;
-        TLorentzVector gentqlep;
-        TLorentzVector gentqhad;
-        TLorentzVector gentqhad_3j;
-        TLorentzVector gentqhad_miss;
-        TLorentzVector gentqhad_misspartner;
-        TLorentzVector gent;
-        TLorentzVector gentbar;
-        TLorentzVector gentlep;
-        TLorentzVector genthad;
+	  	vector<GenObject*> genfinalpartons;
+		TLorentzVector gentq;
+		TLorentzVector gentqbar;
+		TLorentzVector gentqlep;
+		TLorentzVector gentqhad;
+                TLorentzVector gentqhad_3j;
+                TLorentzVector gentqhad_miss;
+                TLorentzVector gentqhad_misspartner;
+		TLorentzVector gent;
+		TLorentzVector gentbar;
+		TLorentzVector gentlep;
+		TLorentzVector genthad;
 
-
-		list<Genjet> sgenjets;
-		vector<Genjet*> genaddjets;
+		list<GenObject> sgenjets;
+		vector<GenObject*> genaddjets;
 
 		Permutation genallper;
 		Permutation psper;
@@ -91,6 +83,13 @@ class ttbar : public AnalyzerBase
 		IDMet met;
 
 		//hists
+		TH1DCollection gen1d;
+		TH2DCollection gen2d;
+		TH1DCollection reco1d;
+		TH2DCollection reco2d;
+		TH1DCollection truth1d;
+		TH2DCollection truth2d;
+
                 TH2DCollection reco3j2d;
                 TH1DCollection reco3j1d;
                 TH2DCollection right3j2d;
@@ -107,26 +106,20 @@ class ttbar : public AnalyzerBase
                 TH2DCollection alpha3j2d;
                 TH1DCollection missj1d;
                 TH2DCollection missj2d;
-		TH1DCollection gen1d;
-		TH2DCollection gen2d;
-		TH1DCollection reco1d;
-		TH2DCollection reco2d;
-		TH1DCollection truth1d;
-		TH2DCollection truth2d;
+                
                 TH1DCollection yuka1d_gen;
-                //TH1DCollection yuka1d_offshell;
                 TH1DCollection yuka1d_reco;
                 TH1DCollection yuka1d_reco_right;
                 TH1DCollection yuka1d_reco_wrong;
                 TH1DCollection yuka1d_reco_semi;
                 TH1DCollection yuka1d_reco_other;
                 TH2DCollection yuka2d_gen;
-                //TH2DCollection yuka2d_offshell;
                 TH2DCollection yuka2d_reco;
                 TH2DCollection yuka2d_reco_right;
                 TH2DCollection yuka2d_reco_wrong;
                 TH2DCollection yuka2d_reco_semi;
                 TH2DCollection yuka2d_reco_other;
+
 
         TTBarGenPlots ttp_genall;
         TTBarGenPlots ttp_genacc;
@@ -163,7 +156,6 @@ class ttbar : public AnalyzerBase
 		BtagEff btageff;
 		BTagWeight btagweight;
 
-                //NeutrinoSolver NS_missj;
 		//ttbar solver
 		TTBarSolver ttsolver;
 
@@ -179,6 +171,7 @@ class ttbar : public AnalyzerBase
 		double B_TIGHT;
 		double B_MEDIUM;
 		double B_LOOSE;
+		//string cnbtag;
 		int cnbtag;
 		size_t cnusedjets;
 		double clikelihoodcut;
@@ -198,32 +191,40 @@ class ttbar : public AnalyzerBase
 		double cpletamax;
 		double cpjetsep;
 		double csigmajet;
-		double cjetres;
+		string cjecuncertainty;
+		int cjetres;
 		double csigmamet;
 		double ctopptweight;
-		double cttptweight;
 		double ctoprapweight;
+		double cttptweight;
 		int cfacscale;
 		int crenscale;
 		int cbtagunc;
 		int cltagunc;
 		int cpileup;
+		string cLeptonScaleFactor;
+		string cJetEnergyUncertainty;
+		string cJetResolution;
+		string cJetResolutionSF;
+		bool TTMC;
 		bool HERWIGPP;
 		bool PYTHIA6;
-                bool TTMC;
-                bool SCALEUP;
-                bool SCALEDOWN;
-                string cjecuncertainty;
-                string yukawasf;
-                int njetsmin;
-                int njetsmax;
+		bool SCALEUP;
+		bool SCALEDOWN;
+                 string yukawasf;
+                 int njetsmin;
+                 int njetsmax;
+
 		//
 		double jetptmin;
 	
+		int lastlumi = -1;
 		double weight;
+		double mcweight;
+		double puweight;
                 double weightparametrize;
                 double weightparametrize_origin;
-		double mcweight;
+
 
 		//binning vectors
 		vector<double> topptbins;
@@ -236,23 +237,20 @@ class ttbar : public AnalyzerBase
 		vector<double> nobins;
 		vector<double> dybins;
 		vector<double> btagpt;
-		vector<double> runbins;
-
-//		JetScale jetscale;
+ 		vector<double> runbins;
 
 		TH1D* puhist;
 		TH2D* musfhist;
 		TH2D* elsfhist;
 		TH2D* mutrgsfhist;
 		TH2D* eltrgsfhist;
+
                 TH1D* yukahist_mtt;
                 TH1D* yukahist_dely;
                 TH1D* yukahist_beta;
                 TH2D* yukahist_2d;
                 TGraph* grlikelihood3j_nsd;
                 TGraph* grlikelihood3j_thad;
-                //TGraph* grlikelihood3j_nsptmin;
-                //TGraph* grlikelihood3j_nsetamax;
                 TH2D* likelihood3j_nspteta_2d;
 
 	public:
@@ -267,6 +265,7 @@ class ttbar : public AnalyzerBase
 		virtual void analyze();
 
 		void SelectGenParticles(URStreamer& event);
+		void SelectPseudoTopLHC(URStreamer& event);
 		void SelectPseudoTop(URStreamer& event);
 		void SelectRecoParticles(URStreamer& event);
 		void AddGenJetSelection(URStreamer& event);

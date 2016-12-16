@@ -19,9 +19,8 @@ public:
 
 	bool ID()
 	{
-		//to be filled in new tree version
 		if(numberOfDaughters() <= 1) {return false;}
-		if(neutralHadronEnergyFraction() + HFHadronEnergyFraction() >= 0.99){return false;}
+		if(neutralHadronEnergyFraction() >= 0.99){return false;}
 		if(neutralEmEnergyFraction() >= 0.99){return false;}
 		if(TMath::Abs(Eta()) < 2.4)
 		{

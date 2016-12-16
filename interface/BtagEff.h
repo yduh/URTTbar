@@ -8,7 +8,7 @@ class BtagEff
 {
 	private:
 		TTree* btagtree;
-		Float_t j[5];
+		Float_t j[7];
 		Float_t prob;
 		Float_t problep;
 		Float_t probhad;
@@ -19,9 +19,10 @@ class BtagEff
 		Int_t typ;
 		Int_t test;
 		double btagselection;
+		double bkgcutmin_, bkgcutmax_;
 	public:
 		BtagEff();
-		void Init(double btagsel);
+		void Init(double btagsel, double bkgcutmin, double bkgcutmax);
 		//void Fill(Permutation& per, float thenvtx, bool filltyp, double theweight);
 		void Fill(Permutation& per, float thenvtx, bool bhadcorrect, bool blepcorrect, double theweight);
 };

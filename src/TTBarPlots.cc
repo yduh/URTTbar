@@ -55,6 +55,7 @@ void TTBarPlots::Init(ttbar* analysis)
 	plot1d.AddHist("massmttest", 500, 0, 100, "mttest", "Events");
 	plot1d.AddHist("massnutest", 500, 0, 100, "-log(#lambda)", "Events");
 	plot2d.AddHist("METunc", 100, 0, 0.5, 100, 0., .5, "#sigma(MET_{x})/MET_{x}", "#sigma(MET_{y})/MET_{y}");
+	plot2d.AddHist("dphi_deta", 100, 0, Pi(), 12, 0., 6., "#Delta #phi(j,j)", "#Delta #eta(jj)");
 	for(int jn : jetbins)
 	{
 		stringstream jb;
@@ -113,6 +114,26 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 	sort(addjets.begin(), addjets.end(), [](IDJet* A, IDJet* B){return A->Pt() > B->Pt();});
 	
 	plot1d["njets"]->Fill(addjets.size(), weight);
+
+	double dphi = -1;
+	double deta = -1;
+	for(size_t nja = 0 ; nja < addjets.size() ; ++nja)
+	{
+		TLorentzVector* ja = addjets[nja];
+		for(size_t njb = 0 ; njb < nja ; ++njb)
+		{
+			TLorentzVector* jb = addjets[njb];
+			double de = Abs(ja->Eta() - jb->Eta());
+			if(de > deta) {deta = de; dphi = ja->DeltaPhi(*jb);}
+
+		}
+	}
+	if(deta > 0.)
+	{
+		plot2d["dphi_deta"]->Fill(Abs(dphi), deta, weight);
+	}
+	
+
 	double drminwa = 100000.;
 	double drminwb = 100000.;
 	double drminbl = 100000.;
@@ -141,8 +162,8 @@ void TTBarPlots::Fill(Permutation& per, double weight)
 		if(j == 3){plot1d["addjet4_pt"]->Fill(addjets[j]->Pt(), weight);}
 		if(j == 4){plot1d["addjet5_pt"]->Fill(addjets[j]->Pt(), weight);}
 	}
-	plot1d["btag_blep"]->Fill(dynamic_cast<IDJet*>(per.BLep())->csvIncl(), weight);
-	plot1d["btag_bhad"]->Fill(dynamic_cast<IDJet*>(per.BHad())->csvIncl(), weight);
+	//plot1d["btag_blep"]->Fill(dynamic_cast<IDJet*>(per.BLep())->csvIncl(), weight);
+	//plot1d["btag_bhad"]->Fill(dynamic_cast<IDJet*>(per.BHad())->csvIncl(), weight);
 	plot1d["DRminW"]->Fill(drminwa, weight);
 	plot1d["DRminW"]->Fill(drminwb, weight);
 	plot1d["DRminbl"]->Fill(drminbl, weight);

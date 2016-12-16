@@ -171,7 +171,7 @@ double TTBarSolver::Test(double* par)
 	NeutrinoSolver NS(&llepT_, &blepT_, par[1], par[0]);
 	//metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], umetx_, umety_, rhomet_, nschi));
 	metT_ = TLorentzVector(NS.GetBest(met_->Px()*par[7], met_->Py()*par[8], 1., 1., 0., nschi));
-	//cout << nschi << " NS " << (metT_ + *llep_ + *blep_).M() << " " << (metT_ + *llep_).M() << endl;
+	//cout << nschi << " NS " << metT_.E() << " " << metT_.Pt() << endl;
 	if(nschi > 0. && nschi < 150.*150.)
 	{
 		nstest = -1.*Log(N_right->Interpolate(Sqrt(nschi)));

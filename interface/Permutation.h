@@ -21,9 +21,13 @@ class Permutation
 		double btag_discriminant_ = numeric_limits<double>::max();
 		double mass_discriminant_ = numeric_limits<double>::max();
 		double mt_discriminant_ = numeric_limits<double>::max();
+		TLorentzVector* owja_ = 0;
+		TLorentzVector* owjb_ = 0;
+		TLorentzVector* objh_ = 0;
+		TLorentzVector* objl_ = 0;
+		TLorentzVector* olep_ = 0;
 		TLorentzVector* wja_ = 0;
 		TLorentzVector* wjb_ = 0;
-		TLorentzVector* wj_ = 0;
 		TLorentzVector* bjh_ = 0;
 		TLorentzVector* bjl_ = 0;
 		TLorentzVector* lep_ = 0;
@@ -39,7 +43,29 @@ class Permutation
 		TLorentzVector t_cms_;
 		bool kinfit_ = false;
 		vector<TLorentzVector> improvedobjects;
+		
 	public:
+		void SetImproved(bool improved)
+		{
+			if(improved && improvedobjects.size() == 6)
+			{
+				wja_ = &improvedobjects[0]; 
+				wjb_ = &improvedobjects[1]; 
+				bjh_ = &improvedobjects[2]; 
+				bjl_ = &improvedobjects[3]; 
+				lep_ = &improvedobjects[4]; 
+				nu_ = improvedobjects[5]; 
+			}
+			else
+			{
+				wja_ = owja_; 
+				wjb_ = owjb_;
+				bjh_ = objh_;
+				bjl_ = objl_;
+				lep_ = olep_;
+			}
+			calculated = false;
+		}
 		Permutation() : nu_(0.,0.,0.,-1.){}
 		//Permutation(int a) {cout << "HALLOllll "<< improvedobjects.size() << endl; }
 		//Permutation(IDJet* wja, IDJet* wjb, IDJet* bjh, IDJet* bjl, TLorentzVector* lep, int leppdgid, IDMet* met);
@@ -52,6 +78,11 @@ class Permutation
 			bjh_ = bjh;
 			bjl_ = bjl;
 			lep_ = lep;
+			owja_ = wja;
+			owjb_ = wjb;
+			objh_ = bjh;
+			objl_ = bjl;
+			olep_ = lep;
 			nu_ = *nu;
 			lpdgid_ = leppdgid;
 		}
@@ -64,29 +95,47 @@ class Permutation
 			bjh_ = bjh;
 			bjl_ = bjl;
 			lep_ = lep;
+			owja_ = wja;
+			owjb_ = wjb;
+			objh_ = bjh;
+			objl_ = bjl;
+			olep_ = lep;
 			met_ = met;
 			lpdgid_ = leppdgid;
 		}
 		void Reset();
 		bool IsComplete() const {return(wja_ != 0 && wjb_ != 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5)&& wja_ != wjb_ && wja_ != bjh_ && wja_ != bjl_ && wjb_ != bjl_ && wjb_ != bjh_ && bjl_ != bjh_);}
-		//bool IsComplete3J() const {return((wja_ != 0 || wjb_!= 0) && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && met_ != 0 && wja_ != wjb_ && (wja_ != bjh_ && wjb_ != bjh_) && (wja_ != bjl_ && wjb_ != bjl_) && bjl_ != bjh_);}
-		bool IsComplete3Ja() const {return(wja_ != 0 && wjb_ == 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5) && wja_ != bjh_ && wja_ != bjl_ && bjl_ != bjh_);}
-		bool IsComplete3Jb() const {return(wjb_ != 0 && wja_ == 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5) && wjb_ != bjh_ && wjb_ != bjl_ && bjl_ != bjh_);}
+ 		bool IsComplete3Ja() const {return(wja_ != 0 && wjb_ == 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5) && wja_ != bjh_ && wja_ != bjl_ && bjl_ != bjh_);}
+ 		bool IsComplete3Jb() const {return(wjb_ != 0 && wja_ == 0 && bjh_ != 0 && bjl_ != 0 && lep_ != 0 && (met_ != 0 || nu_.E() > -0.5) && wjb_ != bjh_ && wjb_ != bjl_ && bjl_ != bjh_);}
+
 		int NumBJets() const {return((bjl_ != 0 ? 1 : 0) + (bjh_ != 0 ? 1 : 0));}
 		int NumWJets() const {return((wja_ != 0 ? 1 : 0) + (wjb_ != 0 ? 1 : 0));}
 		int NumTTBarJets() const {return(NumBJets() + NumWJets());}
 		double Solve(TTBarSolver& ttsolver, bool kinfit = false);
 		TLorentzVector* WJa() const {return(wja_);}
 		TLorentzVector* WJb() const {return(wjb_);}
+		TLorentzVector* WJPtmin() const
+		{
+			if(wja_ == nullptr || wjb_ == nullptr){return nullptr;}
+			return(wja_->Pt() < wjb_->Pt() ? wja_ : wjb_);
+		}
+		TLorentzVector* WJPtmax() const 
+		{
+
+			if(wja_ == nullptr && wjb_ != nullptr){return wjb_;}
+			if(wja_ != nullptr && wjb_ == nullptr){return wja_;}
+			if(wja_ == nullptr && wjb_ == nullptr){return nullptr;}
+			return(wja_->Pt() >= wjb_->Pt() ? wja_ : wjb_);
+		}
 		TLorentzVector* BHad() const {return(bjh_);}
 		TLorentzVector* BLep() const {return(bjl_);}
 		TLorentzVector* L() const {return(lep_);}
 		IDMet* MET() const {return(met_);}
-		void WJa(TLorentzVector* wja){calculated = false; wja_=wja;}
-		void WJb(TLorentzVector* wjb){calculated = false; wjb_=wjb;}
-		void BHad(TLorentzVector* bjh){calculated = false; bjh_=bjh;}
-		void BLep(TLorentzVector* bjl){calculated = false; bjl_=bjl;}
-		void L(TLorentzVector* lep, int leppdgid){calculated = false; lep_=lep; lpdgid_=leppdgid;}
+		void WJa(TLorentzVector* wja){calculated = false; wja_=wja; owja_=wja;}
+		void WJb(TLorentzVector* wjb){calculated = false; wjb_=wjb; owjb_=wjb;}
+		void BHad(TLorentzVector* bjh){calculated = false; bjh_=bjh; objh_=bjh;}
+		void BLep(TLorentzVector* bjl){calculated = false; bjl_=bjl; objl_=bjl;}
+		void L(TLorentzVector* lep, int leppdgid){calculated = false; lep_=lep; olep_=lep; lpdgid_=leppdgid;}
 		void Nu(TLorentzVector* nu){calculated = false; nu_=*nu;}
 		int LCharge() {return (lpdgid_ < 0 ? 1 : -1);}
 		int LPDGId() {return lpdgid_;}
@@ -129,46 +178,49 @@ class Permutation
 		double MassDiscr() const {return mass_discriminant_;}
 		double MTDiscr() const {return mt_discriminant_;}
 
-	//	bool IsValid() const
-	//	{
-	//		if(WJa() != 0 && WJa() == WJb()) {return(false);}
-	//		if(BHad() != 0 && (BHad() == WJa() || BHad() == WJb())) {return(false);}
-	//		if(BLep() != 0 && (BLep() == BHad() || BLep() == WJa() || BLep() == WJb())) {return(false);}
-	//		return(true);
-	//	}
+		bool IsValid() const
+		{
+			if(owja_ != 0 && owja_ == owjb_) {return(false);}
+			if(objh_ != 0 && (objh_ == owja_ || objh_ == owjb_)) {return(false);}
+			if(objl_ != 0 && (objl_ == objh_ || objl_ == owja_ || objl_ == owjb_)) {return(false);}
+			return(true);
+		}
 
 		bool AreBsCorrect(const Permutation& other) const //bjets are selected correct, but not necessarily at the right position!!!!!!!!!!
 		{
-			return((BLep() == other.BLep() && BHad() == other.BHad()) || (BHad() == other.BLep() && BLep() == other.BHad()));
+			return((objl_ == other.objl_ && objh_ == other.objh_) || (objh_ == other.objl_ && objl_ == other.objh_));
 		}
 		bool AreJetsCorrect(const Permutation& other) const
 		{
-			if(BLep() != other.BLep() && BLep() != other.BHad() && BLep() != other.WJa() && BLep() != other.WJb()){return(false);}
-			if(BHad() != other.BLep() && BHad() != other.BHad() && BHad() != other.WJa() && BHad() != other.WJb()){return(false);}
-			if(WJa() != other.BLep() && WJa() != other.BHad() && WJa() != other.WJa() && WJa() != other.WJb()){return(false);}
-			if(WJb() != other.BLep() && WJb() != other.BHad() && WJb() != other.WJa() && WJb() != other.WJb()){return(false);}
+			if(objl_ != other.objl_ && objl_ != other.objh_ && objl_ != other.owja_ && objl_ != other.owjb_){return(false);}
+			if(objh_ != other.objl_ && objh_ != other.objh_ && objh_ != other.owja_ && objh_ != other.owjb_){return(false);}
+			if(owja_ != other.objl_ && owja_ != other.objh_ && owja_ != other.owja_ && owja_ != other.owjb_){return(false);}
+			if(owjb_ != other.objl_ && owjb_ != other.objh_ && owjb_ != other.owja_ && owjb_ != other.owjb_){return(false);}
 			return(true);
 		}
 
 		bool AreHadJetsCorrect(const Permutation& other) const
 		{
-			if(BHad() != other.BHad() && BHad() != other.WJa() && BHad() != other.WJb()){return(false);}
-			if(WJa() != other.BHad() && WJa() != other.WJa() && WJa() != other.WJb()){return(false);}
-			if(WJb() != other.BHad() && WJb() != other.WJa() && WJb() != other.WJb()){return(false);}
+			if(objh_ != other.objh_ && objh_ != other.owja_ && objh_ != other.owjb_){return(false);}
+			if(owja_ != other.objh_ && owja_ != other.owja_ && owja_ != other.owjb_){return(false);}
+			if(owjb_ != other.objh_ && owjb_ != other.owja_ && owjb_ != other.owjb_){return(false);}
 			return(true);
 		}
 
 		bool IsBLepCorrect(const Permutation& other) const
 		{
-			return(BLep() == other.BLep());
+			//return(BLep() == other.BLep());
+			return(objl_ == other.objl_);
 		}
 		bool IsBHadCorrect(const Permutation& other) const
 		{
-			return(BHad() == other.BHad());
+			//return(BHad() == other.BHad());
+			return(objh_ == other.objh_);
 		}
 		bool IsWHadCorrect(const Permutation& other) const
 		{
-			return((WJa() == other.WJa() && WJb() == other.WJb()) || (WJa() == other.WJb() && WJb() == other.WJa()));
+			//return((WJa() == other.WJa() && WJb() == other.WJb()) || (WJa() == other.WJb() && WJb() == other.WJa()));
+			return((owja_ == other.owja_ && owjb_ == other.owjb_) || (owja_ == other.owjb_ && owjb_ == other.owja_));
 		}
 		bool IsTHadCorrect(const Permutation& other) const
 		{
@@ -178,9 +230,23 @@ class Permutation
 		{
 			return(IsBLepCorrect(other) && IsTHadCorrect(other));
 		}
-		bool IsJetIn(TLorentzVector* jet)
+		int IsJetIn(TLorentzVector* jet)
 		{
-			return(jet == WJa() || jet == WJb() || jet == BHad() || jet == BLep());
+			if(jet == objl_) return 1;
+			if(jet == objh_) return 2;
+			if(jet == WJPtmax()) return 3;
+			if(jet == WJPtmin()) return 4;
+
+			return 0;
+		}
+		TLorentzVector* GetJet(int n)
+		{
+			if(n == 1) return objl_;
+			if(n == 2) return objh_;
+			if(n == 3) return WJPtmax();
+			if(n == 4) return WJPtmin();
+
+			return nullptr;
 		}
 		
 };
