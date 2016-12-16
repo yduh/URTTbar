@@ -1,14 +1,14 @@
 #!/bin/bash
 
-TYP=results/3j_ICHEP_implement
+TYP=results/newdataset/4j
 TYPUNC=results/6junc
-JOBDIR=JOB12
+JOBDIR=JOB13
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
-#GT='0.0y 2.0y 3.0y 4.0y 5.0y'
+#GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y'
 GT='1.0y'
 
-RUN=false
-RUNOUNC=true
+RUN=true
+RUNOUNC=false
 
 
 if $RUN; then
@@ -19,13 +19,17 @@ if $RUN; then
         cp ttbarxsec.cfg ttbarxsec.tmp
    
         rm inputs/$JOBDIR/*txt
+        rm inputs/$JOBDIR/INPUT/yukawa_reweighting*.root
+
         if [ "${gt}" = "1.0y" ]; then
             cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
             #cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
+            cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}.root inputs/$JOBDIR/INPUT
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
             ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
         else
             cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
+            cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}.root inputs/$JOBDIR/INPUT 
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
             ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
         fi
@@ -33,11 +37,13 @@ if $RUN; then
         #if [ "${gt}" = "1.0y" ]; then
         #    rm inputs/$JOBDIR/*txt
         #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
+        #    cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}_169.5.root inputs/$JOBDIR/INPUT
         #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
         #    ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
 
         #    rm inputs/$JOBDIR/*txt
         #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
+        #    cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}_175.5.root inputs/$JOBDIR/INPUT
         #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_175.5.root 
         #    ./jobsub ${TYP}/${gt}/mtup ttbarxsec.exe ttbarxsec.cfg
         #fi
@@ -51,6 +57,9 @@ if $RUNOUNC; then
     echo "Submit jobs for other uncertainties YUKAWA = 1.0y ..."
     mkdir -p ${TYPUNC}/1.0y
     cp ttbarxsec.cfg ttbarxsec.tmp
+
+    rm inputs/$JOBDIR/INPUT/yukawa_reweighting*.root
+    cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting1.0y.root inputs/$JOBDIR/INPUT
 
     #PDF uncertainty is estimated with all MCs
     #============================================================#
