@@ -1171,6 +1171,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 	for(vector<Jet>::const_iterator jetit = jets.begin(); jetit != jets.end(); ++jetit)
 	{
 		IDJet jet(*jetit);
+                if(Abs(jet.Eta()) > cjetetamax) {continue;}
                 if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
                 double sf = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet, cjetres);
                 metcorrx -= (sf-1)*jet.Px();
@@ -1178,7 +1179,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
                 //cout << sf << " " << jet.Pt() << " ";
                 jet.SetPxPyPzE(jet.Px()*sf, jet.Py()*sf, jet.Pz()*sf, jet.E()*sf);
                 //cout << jet.Pt() << endl;
-                if(jet.Pt() < jetptmin || Abs(jet.Eta()) > cjetetamax) {continue;}
+                if(jet.Pt() < jetptmin) {continue;}
 
                 sjets.push_back(jet);
                 cleanedjets.push_back(&(sjets.back()));
@@ -1265,7 +1266,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 
 
 
-	if(SEMILEP)
+	if(SEMILEPACC)
 	{
 			rightper.MET(&met);
 			for(IDElectron* el : mediumelectrons)
@@ -1392,7 +1393,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		truth2d["dPtbJet_right"]->Fill(genper->BLep()->Pt(), (rightper.BLep()->Pt() - genper->BLep()->Pt())/genper->BLep()->Pt(), weight);
 	}
 	//jet number plots
-	if(SEMILEP)
+	if(SEMILEPACC)
 	{
 		//if(lep != rightper.L()) {cout << "Wrong Lep" << endl;}
 		truth2d["Jetstt_JetsAll"]->Fill(rightper.NumTTBarJets()+0.5, cleanedjets.size()+0.5, weight);
@@ -1881,7 +1882,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
     }
 
-    else if(SEMILEP){
+    else if(SEMILEPACC){
         if(!NS1sol){
         if(rightper.BLep() != reducedjets[0]) semi3j1d["likelihood"]->Fill(Logblike3jr1, weight);
         if(rightper.BLep() != reducedjets[1]) semi3j1d["likelihood"]->Fill(Logblike3jr2, weight);}
@@ -2295,7 +2296,7 @@ void ttbar::ttanalysis(URStreamer& event)
     //if(cleanedjets.size() == 3) {return;}
 
         //check what we have reconstructed
-	if(SEMILEP)
+	if(SEMILEPACC)
 	{
 		truth2d["tt_jets"]->Fill(rightper.NumBJets()+0.5, rightper.NumWJets()+0.5, weight);
 	}
@@ -2523,7 +2524,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
 		//end of yukawa studies
 
-	if(SEMILEP)
+	if(SEMILEPACC)
 	{
 		if(PDFTEST)
 		{
@@ -2652,7 +2653,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		//end of yukawa studies
 
 	}
-	else if(SEMILEP)
+	else if(SEMILEPACC)
 	{
 		ttp_semi.Fill(bestper, weight);
                 //for yukawa studies
@@ -2725,7 +2726,7 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		ttp_tlep_right.Fill(bestper, weight);
 	}
-	else if(SEMILEP)
+	else if(SEMILEPACC)
 	{
 		ttp_nn_right.Fill(bestper, weight);
 	}
@@ -2850,7 +2851,7 @@ void ttbar::analyze()
 				//weight *= yukahist_2d->GetBinContent(weight_bin_mtt+1, weight_bin_dely+1) + 1
                                 //
                                 
-                                    /*if(SEMILEP){ 
+                                    /*if(SEMILEPACC){ 
                                     yuka1d_offshell["Mt"]->Fill(Mt, weight);
                                     yuka1d_offshell["Mtbar"]->Fill(Mtbar, weight);
                                     TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
@@ -2887,7 +2888,7 @@ void ttbar::analyze()
 			
                                 double tlepy = Abs(gentqlep.Rapidity());
 
-                                if(SEMILEP){
+                                if(SEMILEPACC){
                                     /*for(int runmt = 150; runmt <= 800; runmt = runmt + 10){
                                         if(Mtt>= 2*runmt*cosh(deltaY/2) && Mtt< 2*(runmt+10)*cosh(deltaY/2)){ 
                                             yuka1d_gen["parametrize"]->Fill(runmt, weight);
@@ -3011,7 +3012,7 @@ void ttbar::analyze()
 		}
 		AddGenJetSelection(event);
 
-		if(SEMILEP) 
+		if(SEMILEPACC) 
 		{
 			truth1d["counter"]->Fill(1.5, weight);
 			ttp_genall.Fill(*genper, weight);
