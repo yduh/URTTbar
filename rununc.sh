@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYP=results/newdataset/4j
+TYP=results/newdataset/5j
 TYPUNC=results/6junc
 JOBDIR=JOB13
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
@@ -18,13 +18,13 @@ if $RUN; then
         mkdir -p ${TYP}
         cp ttbarxsec.cfg ttbarxsec.tmp
    
-        rm inputs/$JOBDIR/*txt
-        rm inputs/$JOBDIR/INPUT/yukawa_reweighting*.root
+        #rm inputs/$JOBDIR/*txt
+        #rm inputs/$JOBDIR/INPUT/yukawa_reweighting*.root
 
         if [ "${gt}" = "1.0y" ]; then
-            cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
-            #cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
-            cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}.root inputs/$JOBDIR/INPUT
+            #cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
+            ##cp inputs/$JOBDIR/backup_theoreticaluncert/*txt inputs/$JOBDIR
+            #cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}.root inputs/$JOBDIR/INPUT
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
             ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
         else
