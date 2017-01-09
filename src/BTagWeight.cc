@@ -82,9 +82,9 @@ void BTagWeight::Init(ttbar* an, const string& csvfilename, const string& efffil
 	hleffM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_L").c_str()));
 
 	BL.resize(3);
-	string mes("comb");
+	//string mes("comb");
 	//string mes("mujets");
-	//string mes("TnP");
+	string mes("TnP");
 	BL[0].Init(csvfilename, mes, "central", 0, 0);
 	BL[1].Init(csvfilename, mes, "up", 0, 0);
 	BL[2].Init(csvfilename, mes, "down", 0, 0);
