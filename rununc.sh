@@ -1,11 +1,11 @@
 #!/bin/bash
 
-TYP=results/newdataset/6j
-TYPUNC=results/6junc
+TYP=results/newdataset/4j
+TYPUNC=results/4junc
 JOBDIR=JOB13
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
-#GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y'
-GT='1.0y'
+GT='0.0y 2.0y 3.0y 4.0y 5.0y'
+#GT='1.0y'
 
 RUN=true
 RUNOUNC=false
@@ -28,8 +28,8 @@ if $RUN; then
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
             ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
         else
-            cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
-            cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}.root inputs/$JOBDIR/INPUT 
+            #cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
+            #cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}.root inputs/$JOBDIR/INPUT 
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
             ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
         fi
