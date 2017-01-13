@@ -1444,11 +1444,11 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(!BTAGMODE)
 	{
             if(cleanedjets.size() == 3)
-                //{if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}} // add for 3j 
-                {if(reducedjets[0]->csvIncl() > 0.6 || reducedjets[1]->csvIncl() > 0.6){return;}}// for bck templates 
+                {if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}} // add for 3j 
+                //{if(reducedjets[0]->csvIncl() > 0.6 || reducedjets[1]->csvIncl() > 0.6){return;}}// for bck templates 
             else
-                //{if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}} 
-                {if(reducedjets[0]->csvIncl() > 0.6 || reducedjets[1]->csvIncl() > 0.6){return;}} //for bck templates
+                {if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}} 
+                //{if(reducedjets[0]->csvIncl() > 0.6 || reducedjets[1]->csvIncl() > 0.6){return;}} //for bck templates
                 //{if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}}
 	}
 	reco1d["c_btag"]->Fill(event.run+0.5);

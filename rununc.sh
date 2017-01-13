@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYP=results/bck_template/6j/1.0y/add
+TYP=results/newdataset/3j/1.0y
 TYPUNC=results/6junc
 JOBDIR=JOB13
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
