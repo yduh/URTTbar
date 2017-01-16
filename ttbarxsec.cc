@@ -1368,8 +1368,8 @@ void ttbar::ttanalysis(URStreamer& event)
 	if(lep == 0){return;}
 	reco1d["c_lep"]->Fill(event.run+0.5);
 
-	double nvtx = event.vertexs().size();
-	reco1d["NumVertices"]->Fill(nvtx , mcweight);
+	//double nvtx = event.vertexs().size();
+	//reco1d["NumVertices"]->Fill(nvtx , mcweight);
 
 	if(isDA == 0)
 	{
@@ -1383,7 +1383,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		}
 
 	}
-	reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
+	//reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
         
 	reco1d["counter"]->Fill(1.5, weight);
 	if(SEMILEPACC)
@@ -1456,6 +1456,9 @@ void ttbar::ttanalysis(URStreamer& event)
                 //{if(reducedjets[0]->csvIncl() > 0.6 || reducedjets[1]->csvIncl() > 0.6){return;}} //for bck templates
                 //{if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}}
 	}
+	double nvtx = event.vertexs().size();
+	reco1d["NumVertices"]->Fill(nvtx , mcweight);
+	reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
 	reco1d["c_btag"]->Fill(event.run+0.5);
 	reco1d["counter"]->Fill(3.5, weight);
 	if(SEMILEPACC) truth1d["counter"]->Fill(5.5, weight);
