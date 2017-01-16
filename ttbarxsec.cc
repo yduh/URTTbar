@@ -339,6 +339,7 @@ void ttbar::begin()
        
         reco3j1d.AddHist("met_pz", 300, -300, 300, "met p_{z}", "Events");
         reco3j1d.AddHist("MET", 150, 0, 300, "MET p_{T}", "Events");
+        reco3j1d.AddHist("lep_eta", 480, -2.4, 2.4, "#eta(l)", "Events");
         reco3j2d.AddHist("met_pt_pz", 15, 0, 300, 30, -300, 300, "met p_{T}", "met p_{z}");
         reco3j1d.AddHist("met_dpz_pz", 40, -2, 2, "met #Deltap_{z}/p_{z}", "Events");
         reco3j1d.AddHist("met_dpt_pt", 40, -2, 2, "met #Deltap_{T}/p_{T}", "Events");
@@ -392,6 +393,7 @@ void ttbar::begin()
        
         right3j1d.AddHist("met_pz", 300, -300, 300, "met p_{z}", "Events");
         right3j1d.AddHist("MET", 150, 0, 300, "MET p_{T}", "Events");
+        right3j1d.AddHist("lep_eta", 480, -2.4, 2.4, "#eta(l)", "Events");
         right3j2d.AddHist("MTwl_MET", 500, 0, 1000, 150, 0, 300, "transverse mass W_{T}", "MET p_{T}");
 
 
@@ -431,6 +433,7 @@ void ttbar::begin()
         
         wrong3j1d.AddHist("met_pz", 300, -300, 300, "met p_{z}", "Events");
         wrong3j1d.AddHist("MET", 150, 0, 300, "MET p_{T}", "Events");
+        wrong3j1d.AddHist("lep_eta", 480, -2.4, 2.4, "#eta(l)", "Events");
         wrong3j2d.AddHist("MTwl_MET", 500, 0, 1000, 150, 0, 300, "transverse mass W_{l}", "MET p_{T}");
 
         TDirectory* dir_3jreco_semi = outFile_.mkdir("3j_RECO_semi");
@@ -457,6 +460,7 @@ void ttbar::begin()
        
         semi3j1d.AddHist("met_pz", 300, -300, 300, "met p_{z}", "Events");
         semi3j1d.AddHist("MET", 150, 0, 300, "MET p_{T}", "Events");
+        semi3j1d.AddHist("lep_eta", 480, -2.4, 2.4, "#eta(l)", "Events");
         semi3j2d.AddHist("MTwl_MET", 500, 0, 1000, 150, 0, 300, "transverse mass W_{l}", "MET p_{T}");
 
         TDirectory* dir_3jreco_other = outFile_.mkdir("3j_RECO_other");
@@ -483,6 +487,7 @@ void ttbar::begin()
 
         other3j1d.AddHist("met_pz", 300, -300, 300, "met p_{z}", "Events");
         other3j1d.AddHist("MET", 150, 0, 300, "MET p_{T}", "Events");
+        other3j1d.AddHist("lep_eta", 480, -2.4, 2.4, "#eta(l)", "Events");
         other3j2d.AddHist("MTwl_MET", 500, 0, 1000, 150, 0, 300, "transverse mass W_{l}", "MET p_{T}");
 
 	
@@ -888,7 +893,7 @@ void ttbar::begin()
         //TGraph* grlikelihood3j_thad_wrong = (TGraph*)tf->Get("thad_bhwrong");
         //grlikelihood3j_nsptmin = (TGraph*)tf->Get("nsptmin_bhright");
         //grlikelihood3j_nsetamax = (TGraph*)tf->Get("nsetamax_bhright");
-        likelihood3j_nspteta_2d = (TH2D*)tf->Get("nspteta_right");
+        //likelihood3j_nspteta_2d = (TH2D*)tf->Get("nspteta_right");
 
 }
 
@@ -1784,6 +1789,7 @@ void ttbar::ttanalysis(URStreamer& event)
 
         reco3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         reco3j1d["MET"]->Fill(met.Pt(), weight);
+        reco3j1d["lep_eta"]->Fill(lep->Eta(), weight);
         reco3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
         reco3j1d["met_dpz_pz"]->Fill((metsolver.Pz()-genper->Nu().Pz())/genper->Nu().Pz(), weight);
         reco3j1d["met_dpt_pt"]->Fill((metsolver.Pt()-genper->Nu().Pt())/genper->Nu().Pt(), weight);
@@ -1825,6 +1831,8 @@ void ttbar::ttanalysis(URStreamer& event)
 
         right3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         right3j1d["MET"]->Fill(met.Pt(), weight);
+        right3j1d["lep_eta"]->Fill(lep->Eta(), weight);
+        reco3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
         right3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
         yuka1d_reco_right["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_right["njets"]->Fill(3, weight);
@@ -1861,6 +1869,8 @@ void ttbar::ttanalysis(URStreamer& event)
 
         wrong3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         wrong3j1d["MET"]->Fill(met.Pt(), weight);
+        wrong3j1d["lep_eta"]->Fill(lep->Eta(), weight);
+        reco3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
         wrong3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
         yuka1d_reco_wrong["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_wrong["njets"]->Fill(3, weight);
@@ -1910,6 +1920,8 @@ void ttbar::ttanalysis(URStreamer& event)
 
         semi3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         semi3j1d["MET"]->Fill(met.Pt(), weight);
+        semi3j1d["lep_eta"]->Fill(lep->Eta(), weight);
+        reco3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
         semi3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
         yuka1d_reco_semi["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_semi["njets"]->Fill(3, weight);
@@ -1941,6 +1953,8 @@ void ttbar::ttanalysis(URStreamer& event)
     
         other3j1d["met_pz"]->Fill(metsolver.Pz(), weight);
         other3j1d["MET"]->Fill(met.Pt(), weight);
+        other3j1d["lep_eta"]->Fill(lep->Eta(), weight);
+        reco3j2d["met_pt_pz"]->Fill(metsolver.Pt(), metsolver.Pz(), weight);
         other3j2d["MTwl_MET"]->Fill(MTwl, met.Pt(), weight);
         yuka1d_reco_other["MTwl"]->Fill(MTwl, weight);
         yuka1d_reco_other["njets"]->Fill(3, weight);
