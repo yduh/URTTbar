@@ -110,6 +110,7 @@ ttbar::ttbar(const std::string output_filename):
         ctoprapweight(0.),
 	crenscale(0),
 	cfacscale(0),
+        chdamp(0),
 	cbtagunc(0),
 	cltagunc(0),
 	cpileup(0),
@@ -161,6 +162,7 @@ ttbar::ttbar(const std::string output_filename):
 	{
 		cfacscale = CP.Get<int>("facscale");
 		crenscale = CP.Get<int>("renscale");
+                chdamp = CP.Get<int>("hdamp");
 		PDFTEST = CP.Get<bool>("PDFTEST");
 	}
 	cbtagunc = CP.Get<int>("btagunc");
@@ -2816,6 +2818,8 @@ void ttbar::analyze()
 			    else if(cfacscale == 1) mcweight = ws[1].weights()/Abs(ws[0].weights());
 			    if(crenscale == -1) mcweight = ws[6].weights()/Abs(ws[0].weights());
 			    else if(crenscale == 1) mcweight = ws[3].weights()/Abs(ws[0].weights());
+                            if(chdamp == -1) mcweight = ws[227].weights()/Abs(ws[0].weights());
+                            else if(chdamp == 1) mcweight = ws[245].weights()/Abs(ws[0].weights());
 
                         }
 			truth1d["counter"]->Fill(18.5, mcweight);
