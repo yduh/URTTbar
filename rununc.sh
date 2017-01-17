@@ -88,19 +88,26 @@ if $RUNOUNC; then
     #cp inputs/$JOBDIR/backup/tt_PowhegP8.txt inputs/$JOBDIR
 
     #NLO:
+    #factorization and renormalization: total < 1 %
     cp ttbarxsec.cfg ttbarxsec.tmp
     ./updateconfig.py hdamp -1
-    ./jobsub ${TYPUNC}/1.0y/NLODown ttbarxsec.exe ttbarxsec.cfg
+    ./jobsub ${TYPUNC}/1.0y/hdampDown ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py hdamp 1
-    ./jobsub ${TYPUNC}/1.0y/NLOUp ttbarxsec.exe ttbarxsec.cfg
+    ./jobsub ${TYPUNC}/1.0y/hdampUp ttbarxsec.exe ttbarxsec.cfg
     mv ttbarxsec.tmp ttbarxsec.cfg
 
-    #PS:
     cp ttbarxsec.cfg ttbarxsec.tmp
     ./updateconfig.py facscale -1
-    ./jobsub ${TYPUNC}/1.0y/PSDown ttbarxsec.exe ttbarxsec.cfg
+    ./jobsub ${TYPUNC}/1.0y/fsDown ttbarxsec.exe ttbarxsec.cfg
     ./updateconfig.py facscale 1
-    ./jobsub ${TYPUNC}/1.0y/PSUp ttbarxsec.exe ttbarxsec.cfg
+    ./jobsub ${TYPUNC}/1.0y/fsUp ttbarxsec.exe ttbarxsec.cfg
+    mv ttbarxsec.tmp ttbarxsec.cfg
+    
+    cp ttbarxsec.cfg ttbarxsec.tmp
+    ./updateconfig.py renscale -1
+    ./jobsub ${TYPUNC}/1.0y/rsDown ttbarxsec.exe ttbarxsec.cfg
+    ./updateconfig.py renscale 1
+    ./jobsub ${TYPUNC}/1.0y/rsUp ttbarxsec.exe ttbarxsec.cfg
     mv ttbarxsec.tmp ttbarxsec.cfg
 
     #jer/jes: jer < 1 % + jes ~5-7 % 
@@ -140,15 +147,6 @@ if $RUNOUNC; then
     #./updateconfig.py ttptweight 1
     #./jobsub ${TYPUNC}_ttptup_${VER} ttbarxsec.exe ttbarxsec.cfg
 
-    #factorization and renormalization: total < 1 %
-    #./updateconfig.py renscale -1
-    #./jobsub ${TYPUNC}/1.0y/rsdown ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py renscale 1
-    #./jobsub ${TYPUNC}/1.0y/rsup ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py facscale -1
-    #./jobsub ${TYPUNC}/1.0y/fsdown ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py facscale 1
-    #./jobsub ${TYPUNC}/1.0y/fsup ttbarxsec.exe ttbarxsec.cfg
 
     #btag: includes b and light jets tags, vary scale factor up/down; total ~2-3 % depends on the pT and b jets
     cp ttbarxsec.cfg ttbarxsec.tmp
@@ -157,11 +155,13 @@ if $RUNOUNC; then
     ./updateconfig.py btagunc 1
     ./jobsub ${TYPUNC}/1.0y/btagUp ttbarxsec.exe ttbarxsec.cfg
     mv ttbarxsec.tmp ttbarxsec.cfg
-    
-    #./updateconfig.py ltagunc -1
-    #./jobsub ${TYPUNC}/1.0y/ltagdown ttbarxsec.exe ttbarxsec.cfg
-    #./updateconfig.py ltagunc 1
-    #./jobsub ${TYPUNC}/1.0y/ltagup ttbarxsec.exe ttbarxsec.cfg
+    #mis-btag: 
+    cp ttbarxsec.cfg ttbarxsec.tmp
+    ./updateconfig.py ltagunc -1
+    ./jobsub ${TYPUNC}/1.0y/ltagDown ttbarxsec.exe ttbarxsec.cfg
+    ./updateconfig.py ltagunc 1
+    ./jobsub ${TYPUNC}/1.0y/ltagUp ttbarxsec.exe ttbarxsec.cfg
+    mv ttbarxsec.tmp ttbarxsec.cfg
 
     #pileup: varies the minimum bias cross section by 5%, reweighting the MC; < 1 % 
     cp ttbarxsec.cfg ttbarxsec.tmp
