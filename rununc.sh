@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TYP=results/3j
-TYPUNC=results/3junc
+TYP=results/4j
+TYPUNC=results/4junc
 JOBDIR=JOB13
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
 #GT='0.0y 2.0y 3.0y 4.0y 5.0y'
@@ -126,12 +126,12 @@ if $RUNOUNC; then
     mv ttbarxsec.tmp ttbarxsec.cfg
 
     #MET: < 1 %
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py sigmamet -1
-    ./jobsub ${TYPUNC}/1.0y/METDown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py sigmamet 1
-    ./jobsub ${TYPUNC}/1.0y/METUp ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py sigmamet -1
+    #./jobsub ${TYPUNC}/1.0y/METDown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py sigmamet 1
+    #./jobsub ${TYPUNC}/1.0y/METUp ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
 
     #bunch of reweight factors: seems like you don't need those later, but remember to report your 2d YUKAWA reweighting uncertainties
     #./updateconfig.py topptweight -1
