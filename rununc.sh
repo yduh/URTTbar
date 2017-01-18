@@ -54,8 +54,8 @@ if $RUNMASS; then
     #rm inputs/$JOBDIR/*txt
     #cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
     #cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}_175.5.root inputs/$JOBDIR/INPUT
-    ./updateconfig.py yukawatxt yukawa_reweighting1.0y_175.5.root 
-    ./jobsub ${TYPUNC}/1.0y/mtUp ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py yukawatxt yukawa_reweighting1.0y_175.5.root 
+    #./jobsub ${TYPUNC}/1.0y/mtUp ttbarxsec.exe ttbarxsec.cfg
 
     mv ttbarxsec.tmp ttbarxsec.cfg
 fi
