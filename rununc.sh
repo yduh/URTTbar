@@ -8,7 +8,8 @@ JOBDIR=JOB13
 GT='1.0y'
 
 RUN=false
-RUNOUNC=true
+RUNOUNC=false
+RUNMASS=true
 
 
 if $RUN; then
@@ -33,23 +34,30 @@ if $RUN; then
             ./updateconfig.py yukawatxt yukawa_reweighting${gt}.root
             ./jobsub ${TYP}/${gt} ttbarxsec.exe ttbarxsec.cfg
         fi
-
-        #if [ "${gt}" = "1.0y" ]; then
-        #    rm inputs/$JOBDIR/*txt
-        #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
-        #    cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}_169.5.root inputs/$JOBDIR/INPUT
-        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
-        #    ./jobsub ${TYP}/${gt}/mtdown ttbarxsec.exe ttbarxsec.cfg
-
-        #    rm inputs/$JOBDIR/*txt
-        #    cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
-        #    cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}_175.5.root inputs/$JOBDIR/INPUT
-        #    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_175.5.root 
-        #    ./jobsub ${TYP}/${gt}/mtup ttbarxsec.exe ttbarxsec.cfg
-        #fi
-
+        
         mv ttbarxsec.tmp ttbarxsec.cfg
     done
+fi
+
+
+
+if $RUNMASS; then
+    echo "submit jobs for YUKAWA = ${gt} ..."
+    cp ttbarxsec.cfg ttbarxsec.tmp
+
+    #rm inputs/$JOBDIR/*txt
+    #cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1695_PowhegP8.txt inputs/$JOBDIR
+    #cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}_169.5.root inputs/$JOBDIR/INPUT
+    ./updateconfig.py yukawatxt yukawa_reweighting${gt}_169.5.root 
+    ./jobsub ${TYP}/${gt}/mtDown ttbarxsec.exe ttbarxsec.cfg
+
+    #rm inputs/$JOBDIR/*txt
+    #cp inputs/$JOBDIR/backup_theoreticaluncert/mtop/tt_mtop1755_PowhegP8.txt inputs/$JOBDIR
+    #cp inputs/$JOBDIR/INPUT_TEMP/yukawa_reweighting${gt}_175.5.root inputs/$JOBDIR/INPUT
+    #./updateconfig.py yukawatxt yukawa_reweighting${gt}_175.5.root 
+    #./jobsub ${TYP}/${gt}/mtUp ttbarxsec.exe ttbarxsec.cfg
+
+    mv ttbarxsec.tmp ttbarxsec.cfg
 fi
 
 
