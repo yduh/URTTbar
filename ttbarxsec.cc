@@ -633,6 +633,8 @@ void ttbar::begin()
 		pdfunc->Add1dHist("pdfunc_reco_dymp", dybins, "|y(t)|-|y(#bar{t})|", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_njets_thadpt", response2d.GetNBins("njets_thadpt"), 0., response2d.GetNBins("njets_thadpt") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_njets_ttpt", response2d.GetNBins("njets_ttpt"), 0., response2d.GetNBins("njets_ttpt") , "bin", "Events");
+                //add mtt and dely here later for PDF uncertainties 
+
 	}
 
 	ttp_truth.Init(this);

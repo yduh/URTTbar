@@ -8,8 +8,8 @@ JOBDIR=JOB13
 GT='1.0y'
 
 RUN=false
-RUNOUNC=false
-RUNMASS=true
+RUNOUNC=true
+RUNMASS=false
 
 
 if $RUN; then
@@ -73,10 +73,10 @@ if $RUNOUNC; then
     #rm inputs/$JOBDIR/*txt
     #cp inputs/$JOBDIR/backup/*txt inputs/$JOBDIR
     #PDF: total < 1 %
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py PDFTEST 1
-    ./jobsub ${TYPUNC}/1.0y/pdf ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py PDFTEST 1
+    #./jobsub ${TYPUNC}/1.0y/pdf ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
 
     
     #lepton uncertainties are estimated with all MC except some sparated theoretical signal ones 
@@ -97,26 +97,26 @@ if $RUNOUNC; then
 
     #NLO:
     #factorization and renormalization: total < 1 %
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py hdamp -1
-    ./jobsub ${TYPUNC}/1.0y/hdampDown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py hdamp 1
-    ./jobsub ${TYPUNC}/1.0y/hdampUp ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py hdamp -1
+    #./jobsub ${TYPUNC}/1.0y/hdampDown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py hdamp 1
+    #./jobsub ${TYPUNC}/1.0y/hdampUp ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
 
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py facscale -1
-    ./jobsub ${TYPUNC}/1.0y/fsDown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py facscale 1
-    ./jobsub ${TYPUNC}/1.0y/fsUp ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py facscale -1
+    #./jobsub ${TYPUNC}/1.0y/fsDown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py facscale 1
+    #./jobsub ${TYPUNC}/1.0y/fsUp ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
     
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py renscale -1
-    ./jobsub ${TYPUNC}/1.0y/rsDown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py renscale 1
-    ./jobsub ${TYPUNC}/1.0y/rsUp ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py renscale -1
+    #./jobsub ${TYPUNC}/1.0y/rsDown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py renscale 1
+    #./jobsub ${TYPUNC}/1.0y/rsUp ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
 
     #jer/jes: jer < 1 % + jes ~5-7 % 
     cp ttbarxsec.cfg ttbarxsec.tmp
