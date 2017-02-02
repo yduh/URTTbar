@@ -125,6 +125,12 @@ ttbar::ttbar(const std::string output_filename):
         SCALEDOWN(false)
 {
 	ConfigParser CP("ttbarxsec.cfg");
+        cLeptonScaleFactor = CP.Get<string>("LeptonScaleFactor");
+        cJetEnergyUncertainty = CP.Get<string>("JetEnergyUncertainty");
+        cBTaggingSF = CP.Get<string>("BTaggingSF");
+        cBTaggingEff = CP.Get<string>("BTaggingEff");
+        cJetResolution = CP.Get<string>("JetResolution");
+        cJetResolutionSF = CP.Get<string>("JetResolutionSF");
 	PSEUDOTOP = CP.Get<bool>("PSEUDOTOP");
 	BTAGMODE = CP.Get<bool>("BTAGMODE");
 	ELECTRONS = CP.Get<bool>("ELECTRONS");
@@ -839,8 +845,10 @@ void ttbar::begin()
 
 
         //jetscaler.Init("Fall15_25nsV2_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
-        jetscaler.Init("Spring16_25nsV6_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
-        jetscaler.InitResolution("jetresolution.txt", "jetresolutionsf.txt");
+        //jetscaler.Init("Spring16_25nsV6_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
+        jetscaler.Init(cJetEnergyUncertainty, cjecuncertainty);
+        //jetscaler.InitResolution("jetresolution.txt", "jetresolutionsf.txt");
+        jetscaler.InitResolution(cJetResolution, cJetResolutionSF);
         jetscaler.InitMCrescale(this, "jetrescale.root");
 
 	//strin. probfilename("Prob_parton.root");
@@ -864,14 +872,15 @@ void ttbar::begin()
 		//ttsolver.Init(probfilename, false, true);
 	}
 	//btagweight.Init(this, "btaggingeff.root", cbtagunc, cltagunc);
-        btagweight.Init(this, "BTag_SF.csv", "btaggingeff.root", cbtagunc, cltagunc);
+        //btagweight.Init(this, "BTag_SF.csv", "btaggingeff.root", cbtagunc, cltagunc);
+        btagweight.Init(this, cBTaggingSF, cBTaggingEff, cbtagunc, cltagunc);
 	string puhistname("pu_central");
 	if(cpileup == -1) puhistname = "pu_minus";
 	if(cpileup == 1) puhistname = "pu_plus";
 
 	TFile* f = TFile::Open("PUweight.root");
 	puhist = (TH1D*)f->Get(puhistname.c_str());
-	TFile* fl = TFile::Open("Lep_SF.root");
+	TFile* fl = TFile::Open(cLeptonScaleFactor.c_str());
         musfhist = (TH2D*)fl->Get("MuSF");
         elsfhist = (TH2D*)fl->Get("ElSF");
 	//musfhist = (TH2D*)fl->Get("MuTOT");
@@ -1088,58 +1097,21 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 //otto's new version
 void ttbar::AddGenJetSelection(URStreamer& event)
 {
-	if(!SEMILEPACC) return;
-	const vector<Pl>& pls = event.PLs();
-	bool wa = false;
-	bool wb = false;
-	bool ba = false;
-	bool bb = false;
-	for(Pl gj : pls)
-	{
-		if(abs(gj.pdgId()) > 5) {continue;}
-		if(gj.pdgId() == 5 && gj.Pt() > 25. && abs(gj.Eta()) < 2.5)
-		{
-			sgenjets.push_back(gj);
-			genbhadrons.push_back(&(sgenjets.back()));
-		}
-		if(gj.pdgId() == 4 && gj.Pt() > 25. && abs(gj.Eta()) < 2.5)
-		{
-			sgenjets.push_back(gj);
-			genchadrons.push_back(&(sgenjets.back()));
-		}
-		if(gj.DeltaR(*genper->L()) < 0.4)
-		{
-			continue;
-		}
-		if(gj.DeltaR(*genper->WJa()) < 0.4)
-		{
-			if(!wa){wa = true; truth1d["foundgen"]->Fill(0.5, weight);}
-			continue;
-		}
-		if(gj.DeltaR(*genper->WJb()) < 0.4)
-		{
-			if(!wb){wb = true; truth1d["foundgen"]->Fill(1.5, weight);}
-			continue;
-		}
-		if(gj.DeltaR(*genper->BLep()) < 0.4)
-		{
-			if(!ba){ba = true; truth1d["foundgen"]->Fill(2.5, weight);}
-			continue;
-		}
-		if(gj.DeltaR(*genper->BHad()) < 0.4)
-		{
-			if(!bb){bb = true; truth1d["foundgen"]->Fill(3.5, weight);}
-			continue;
-		}
-		if(gj.Pt() > 30. && abs(gj.Eta()) < 2.5)
-		{
-			sgenjets.push_back(gj);
-			genaddjets.push_back(&(sgenjets.back()));
-		}
-	}
-	sort(genaddjets.begin(), genaddjets.end(), [](TLorentzVector* A, TLorentzVector* B){return(A->Pt() > B->Pt());});
-
-	if(wa && wb && ba && bb){truth1d["foundgen"]->Fill(4.5, weight);}
+    const vector<Pl>& pls = event.PLs();
+    for(const Pl& gj : pls)
+    {
+        if(abs(gj.pdgId()) > 5) {continue;}
+        if(gj.pdgId() == 5 && gj.Pt() > 25. && abs(gj.Eta()) < 2.5)
+        {
+            sgenparticles.push_back(gj);
+            genbhadrons.push_back(&(sgenparticles.back()));
+        }
+        if(gj.pdgId() == 4 && gj.Pt() > 25. && abs(gj.Eta()) < 2.5)
+        {
+            sgenparticles.push_back(gj);
+            genchadrons.push_back(&(sgenparticles.back()));
+        }
+    }
 }
 
 void ttbar::SelectRecoParticles(URStreamer& event)
@@ -3085,26 +3057,25 @@ void ttbar::analyze()
 		if(isDA && Abs(event.trigger().HLT_IsoTkMu24()) != 1) {cout << "TRIGGER UNDEFINED: TKMu24" << event.trigger().HLT_IsoTkMu24() << endl; }
 		if(
 				(
-				 isDA == 0
-				 && (
-				  event.trigger().HLT_IsoMu24() == 1 || event.trigger().HLT_IsoTkMu24() == 1
-				  || event.trigger().HLT_Ele27_WPTight_Gsf() == 1
-				 )
-				) ||
-				(
-				 isDA == 13 &&
-					(
-						event.trigger().HLT_IsoMu24() == 1 || event.trigger().HLT_IsoTkMu24() == 1 //2016
-					)
-				 ) ||
-				(
-				 isDA == 11 &&
-					(
-						event.trigger().HLT_IsoMu24() == -1 && event.trigger().HLT_IsoTkMu24() == -1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1 //2016
-					)
-
-				)
-			)
+                                 isDA == 0
+                                 && (
+                                        event.trigger().HLT_IsoMu24() == 1 || event.trigger().HLT_IsoTkMu24() == 1
+                                     || (event.trigger().L1_SingleIsoEG34() == 1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1)
+                                    )
+                                ) ||
+                                (
+                                 isDA == 13 &&
+                                     (
+                                        event.trigger().HLT_IsoMu24() == 1 || event.trigger().HLT_IsoTkMu24() == 1 //2016
+                                     )
+                                ) ||
+                                (
+                                 isDA == 11 &&
+                                    (
+                                        event.trigger().HLT_IsoMu24() == -1 && event.trigger().HLT_IsoTkMu24() == -1 && event.trigger().L1_SingleIsoEG34() == 1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1 //2016 
+                                    )
+                                )
+                )
 		{
 			//cout << "sel " << event.run << " " << event.lumi << " " << event.evt << " " << -1 << " " << cleanedjets.size() << endl;
 			SelectRecoParticles(event);

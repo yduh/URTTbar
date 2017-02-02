@@ -192,6 +192,8 @@ class ttbar : public AnalyzerBase
 		double cpjetsep;
 		double csigmajet;
 		string cjecuncertainty;
+		string cBTaggingSF;
+		string cBTaggingEff;
 		int cjetres;
 		double csigmamet;
 		double ctopptweight;
