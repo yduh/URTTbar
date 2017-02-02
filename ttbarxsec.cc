@@ -851,10 +851,10 @@ void ttbar::begin()
         jetscaler.InitResolution(cJetResolution, cJetResolutionSF);
         jetscaler.InitMCrescale(this, "jetrescale.root");
 
-	//strin. probfilename("Prob_parton.root");
-	string probfilename("LH_parton.root");
-	//if(PSEUDOTOP){probfilename = "Prob_pseudo.root";}
-	if(PSEUDOTOP){probfilename = "LH_pseudo.root";}
+	string probfilename("Prob_parton.root");
+	//string probfilename("LH_parton.root");
+	if(PSEUDOTOP){probfilename = "Prob_pseudo.root";}
+	//if(PSEUDOTOP){probfilename = "LH_pseudo.root";}
 	if(BTAGMODE)
 	{
 		cnbtag = 1;
