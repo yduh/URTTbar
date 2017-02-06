@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TYP=results/6j
-TYPUNC=results/6jbckunc
+TYP=results/test/6j
+TYPUNC=results/test/6junc
 JOBDIR=JOB13
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
 #GT='0.0y 2.0y 3.0y 4.0y 5.0y'
@@ -157,27 +157,27 @@ if $RUNOUNC; then
 
 
     #btag: includes b and light jets tags, vary scale factor up/down; total ~2-3 % depends on the pT and b jets
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py btagunc -1
-    ./jobsub ${TYPUNC}/1.0y/btagDown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py btagunc 1
-    ./jobsub ${TYPUNC}/1.0y/btagUp ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py btagunc -1
+    #./jobsub ${TYPUNC}/1.0y/btagDown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py btagunc 1
+    #./jobsub ${TYPUNC}/1.0y/btagUp ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
     #mis-btag: 
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py ltagunc -1
-    ./jobsub ${TYPUNC}/1.0y/ltagDown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py ltagunc 1
-    ./jobsub ${TYPUNC}/1.0y/ltagUp ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py ltagunc -1
+    #./jobsub ${TYPUNC}/1.0y/ltagDown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py ltagunc 1
+    #./jobsub ${TYPUNC}/1.0y/ltagUp ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
 
     #pileup: varies the minimum bias cross section by 5%, reweighting the MC; < 1 % 
-    cp ttbarxsec.cfg ttbarxsec.tmp
-    ./updateconfig.py pileupunc -1
-    ./jobsub ${TYPUNC}/1.0y/pileupDown ttbarxsec.exe ttbarxsec.cfg
-    ./updateconfig.py pileupunc 1
-    ./jobsub ${TYPUNC}/1.0y/pileupUp ttbarxsec.exe ttbarxsec.cfg
-    mv ttbarxsec.tmp ttbarxsec.cfg
+    #cp ttbarxsec.cfg ttbarxsec.tmp
+    #./updateconfig.py pileupunc -1
+    #./jobsub ${TYPUNC}/1.0y/pileupDown ttbarxsec.exe ttbarxsec.cfg
+    #./updateconfig.py pileupunc 1
+    #./jobsub ${TYPUNC}/1.0y/pileupUp ttbarxsec.exe ttbarxsec.cfg
+    #mv ttbarxsec.tmp ttbarxsec.cfg
     
 fi
 
