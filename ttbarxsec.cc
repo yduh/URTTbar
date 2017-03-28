@@ -131,6 +131,7 @@ ttbar::ttbar(const std::string output_filename):
         cBTaggingEff = CP.Get<string>("BTaggingEff");
         cJetResolution = CP.Get<string>("JetResolution");
         cJetResolutionSF = CP.Get<string>("JetResolutionSF");
+        cel27eff = CP.GetVector<double>("el27eff");
 	PSEUDOTOP = CP.Get<bool>("PSEUDOTOP");
 	BTAGMODE = CP.Get<bool>("BTAGMODE");
 	ELECTRONS = CP.Get<bool>("ELECTRONS");
@@ -851,10 +852,10 @@ void ttbar::begin()
         jetscaler.InitResolution(cJetResolution, cJetResolutionSF);
         jetscaler.InitMCrescale(this, "jetrescale.root");
 
-	string probfilename("Prob_parton.root");
-	//string probfilename("LH_parton.root");
-	if(PSEUDOTOP){probfilename = "Prob_pseudo.root";}
-	//if(PSEUDOTOP){probfilename = "LH_pseudo.root";}
+	//string probfilename("Prob_parton.root");
+	string probfilename("LH_parton.root");
+	//if(PSEUDOTOP){probfilename = "Prob_pseudo.root";}
+	if(PSEUDOTOP){probfilename = "LH_pseudo.root";}
 	if(BTAGMODE)
 	{
 		cnbtag = 1;
@@ -1310,6 +1311,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 void ttbar::ttanalysis(URStreamer& event)
 {
 	reco1d["counter"]->Fill(0.5, weight);
+	if(SEMILEPACC && rightper.IsComplete()){ttp_truth.Fill(rightper, weight);}
 
 	if(SEMILEPACC)
 	{
@@ -1317,11 +1319,7 @@ void ttbar::ttanalysis(URStreamer& event)
 		if(Abs(genper->LPDGId()) == 13) {truth2d["Nmu_Ne"]->Fill(tightmuons.size()+0.5, mediumelectrons.size()+0.5, weight);}
 	}
 
-	//keeping only the n leading jets. 
-	sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->Pt() > B->Pt());});
-	int reducedsize = Min(cleanedjets.size(), cnusedjets);
-	reducedjets.resize(reducedsize);
-	copy(cleanedjets.begin(), cleanedjets.begin()+reducedsize, reducedjets.begin());
+        if(cleanedjets.size() < 3){return;}
 
 	//check for lepton:
 	TLorentzVector* lep = 0;
@@ -1338,7 +1336,6 @@ void ttbar::ttanalysis(URStreamer& event)
 		lep = dynamic_cast<TLorentzVector*>(mediumelectrons[0]);
 		leppdgid = mediumelectrons[0]->charge()*-11;
 	}
-	if(SEMILEPACC && rightper.IsComplete()){ttp_truth.Fill(rightper, weight);}
 	if(lep == 0){return;}
 	reco1d["c_lep"]->Fill(event.run+0.5);
 
@@ -1349,16 +1346,28 @@ void ttbar::ttanalysis(URStreamer& event)
 	{
 		if(tightmuons.size() == 1)
 		{
-			weight *= musfhist->GetBinContent(musfhist->GetXaxis()->FindFixBin(lep->Eta()), musfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 160.)));
+			weight *= musfhist->GetBinContent(musfhist->GetXaxis()->FindFixBin(lep->Eta()), musfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.)));
 		}
 		if(mediumelectrons.size() == 1)
 		{
-			weight *= elsfhist->GetBinContent(elsfhist->GetXaxis()->FindFixBin(lep->Eta()), elsfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 160.)));
+			weight *= elsfhist->GetBinContent(elsfhist->GetXaxis()->FindFixBin(lep->Eta()), elsfhist->GetYaxis()->FindFixBin(Min(lep->Pt(), 170.)));
+                        int l1ptmax = event.trigger().El27ptmax();
+                        if(l1ptmax != -1 && l1ptmax < 34)
+                        {
+                            weight*=cel27eff[(l1ptmax-24)/2];
+                        }
 		}
 
 	}
 	//reco1d["NumVerticesWeighted"]->Fill(nvtx , weight);
-        
+	
+        //keeping only the n leading jets. 
+	sort(cleanedjets.begin(), cleanedjets.end(), [](IDJet* A, IDJet* B){return(A->Pt() > B->Pt());});
+	int reducedsize = Min(cleanedjets.size(), cnusedjets);
+	reducedjets.resize(reducedsize);
+	copy(cleanedjets.begin(), cleanedjets.begin()+reducedsize, reducedjets.begin());
+      
+  
 	reco1d["counter"]->Fill(1.5, weight);
 	if(SEMILEPACC)
 	{
@@ -2776,6 +2785,7 @@ void ttbar::analyze()
 		weight = 1.;	
                 weightparametrize = 1.;
                 weightparametrize_origin = 1.;
+                //weighttheoryunc = 1.;
 		mcweight = 1.;	
 		if(event.PUInfos().size() > 0)
 		{
@@ -2866,6 +2876,8 @@ void ttbar::analyze()
                                 weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 weightparametrize *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 weightparametrize_origin *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                //weightthoeryunc *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                
 
                                 //if(Mtt>= 2*172.5*cosh(deltaY/2))
                                 //    weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
@@ -3058,7 +3070,7 @@ void ttbar::analyze()
                                  isDA == 0
                                  && (
                                         event.trigger().HLT_IsoMu24() == 1 || event.trigger().HLT_IsoTkMu24() == 1
-                                     || (event.trigger().L1_SingleIsoEG34() == 1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1)
+                                     || (event.trigger().El27ptmax() != -1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1)
                                     )
                                 ) ||
                                 (
@@ -3070,7 +3082,7 @@ void ttbar::analyze()
                                 (
                                  isDA == 11 &&
                                     (
-                                        event.trigger().HLT_IsoMu24() == -1 && event.trigger().HLT_IsoTkMu24() == -1 && event.trigger().L1_SingleIsoEG34() == 1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1 //2016 
+                                        event.trigger().HLT_IsoMu24() == -1 && event.trigger().HLT_IsoTkMu24() == -1 && event.trigger().El27ptmax() != -1 && event.trigger().HLT_Ele27_WPTight_Gsf() == 1 //2016 
                                     )
                                 )
                 )

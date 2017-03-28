@@ -62,6 +62,7 @@ class ttbar : public AnalyzerBase
 
 		list<GenObject> sgenjets;
 		vector<GenObject*> genaddjets;
+                vector<double> cel27eff;
 
 		Permutation genallper;
 		Permutation psper;
