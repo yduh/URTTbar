@@ -8,7 +8,7 @@ class BtagEff
 {
 	private:
 		TTree* btagtree;
-		Float_t j[7];
+		Float_t j[9];
 		Float_t prob;
 		Float_t problep;
 		Float_t probhad;

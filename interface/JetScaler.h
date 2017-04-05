@@ -26,6 +26,10 @@ class JetScaler
 		TH1D* Heta = nullptr;
 		vector<TH1D*> HptsP;
 		vector<TH1D*> HptsM;
+		vector<TH1D*> HptsPqcd;
+		vector<TH1D*> HptsMqcd;
+		vector<TH1D*> HptsPb;
+		vector<TH1D*> HptsMb;
 		TFile* tf = nullptr;
 		TGraph* hlE =nullptr;
 		TGraph* hlB =nullptr;
@@ -42,7 +46,8 @@ class JetScaler
 
 		void Init(const string& filename, const string& type);
 
-		double GetScale(const IDJet& jet, double rho, double sigmascale = 0., double sigmares = 0);
+		double GetRes(const IDJet& jet, double rho, double sigmares = 0.);
+		double GetScale(const IDJet& jet, double rho, double sigmascale = 0.);
 };
 
 

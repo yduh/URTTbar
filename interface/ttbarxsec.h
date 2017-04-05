@@ -20,6 +20,7 @@
 #include "BtagEff.h"
 #include "JetScaler.h"
 #include "BTagWeight.h"
+#include "BHadronDecayWeights.h"
 
 using namespace std;
 class PDFuncertainty;
@@ -45,8 +46,9 @@ class ttbar : public AnalyzerBase
 		GenObject gps[8];
 		list<GenObject> sgenparticles;
 		vector<GenObject*> genfincls;
-	  	vector<GenObject*> genbhadrons;
-	  	vector<GenObject*> genchadrons;
+	  	vector<GenObject*> genbjets;
+	  	vector<GenObject*> gencjets;
+	  	vector<GenObject*> genljets;
 	  	vector<GenObject*> genfinalpartons;
 		TLorentzVector gentq;
 		TLorentzVector gentqbar;
@@ -200,6 +202,8 @@ class ttbar : public AnalyzerBase
 		double ctopptweight;
 		double ctoprapweight;
 		double cttptweight;
+		double cbdecay = 0.;
+		double cbfrag = 0.;
 		int cfacscale;
 		int crenscale;
                 int chdamp;
@@ -213,8 +217,12 @@ class ttbar : public AnalyzerBase
 		bool TTMC;
 		bool HERWIGPP;
 		bool PYTHIA6;
-		bool SCALEUP;
-		bool SCALEDOWN;
+		bool ISRUP;
+		bool ISRDOWN;
+		bool FSRUP;
+		bool FSRDOWN;
+		bool TUNEUP;
+		bool TUNEDOWN;
                  string yukawasf;
                  int njetsmin;
                  int njetsmax;
@@ -228,6 +236,8 @@ class ttbar : public AnalyzerBase
 		double puweight;
                 double weightparametrize;
                 double weightparametrize_origin;
+		BHadronDecayWeights bdecayweights;
+		BFragWeights bfragweights;
 
 
 		//binning vectors

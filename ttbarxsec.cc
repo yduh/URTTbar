@@ -120,9 +120,9 @@ ttbar::ttbar(const std::string output_filename):
         FULLLEP(false),
         SEMILEPACC(false),
 	HERWIGPP(false),
-	PYTHIA6(false),
-        SCALEUP(false), 
-        SCALEDOWN(false)
+	PYTHIA6(false)
+        //SCALEUP(false), 
+        //SCALEDOWN(false)
 {
 	ConfigParser CP("ttbarxsec.cfg");
         cLeptonScaleFactor = CP.Get<string>("LeptonScaleFactor");
@@ -165,12 +165,26 @@ ttbar::ttbar(const std::string output_filename):
 	ctopptweight = CP.Get<double>("topptweight");
 	cttptweight = CP.Get<double>("ttptweight");
 	ctoprapweight = CP.Get<double>("toprapweight");
+	if(CP.Get<bool>("mcspecificcorrections"))
+	{
+		if(output_filename.find("Hpp") != string::npos){HERWIGPP = true;}
+		if(output_filename.find("P6") != string::npos){PYTHIA6 = true;}
+		if(output_filename.find("isrup") != string::npos){ISRUP = true;}
+		if(output_filename.find("isrdown") != string::npos){ISRDOWN = true;}
+		if(output_filename.find("fsrup") != string::npos){FSRUP = true;}
+		if(output_filename.find("fsrdown") != string::npos){FSRDOWN = true;}
+		if(output_filename.find("tuneup") != string::npos){TUNEUP = true;}
+		if(output_filename.find("tunedown") != string::npos){TUNEDOWN = true;}
+	}
+
 	if(output_filename.find("tt_PowhegP8") != string::npos)
 	{
 		cfacscale = CP.Get<int>("facscale");
 		crenscale = CP.Get<int>("renscale");
                 chdamp = CP.Get<int>("hdamp");
 		PDFTEST = CP.Get<bool>("PDFTEST");
+		cbdecay = CP.Get<double>("bdecay");
+		cbfrag = CP.Get<double>("bfrag");
 	}
 	cbtagunc = CP.Get<int>("btagunc");
 	cltagunc = CP.Get<int>("ltagunc");
@@ -181,10 +195,11 @@ ttbar::ttbar(const std::string output_filename):
         njetsmax = CP.Get<int>("njetsmax");
 
 	cout << output_filename << endl;
-	if(output_filename.find("Hpp") != string::npos){HERWIGPP = true;}
-	if(output_filename.find("P6") != string::npos){PYTHIA6 = true;}
-        if(output_filename.find("scaleup") != string::npos){SCALEUP = true;}
-        if(output_filename.find("scaledown") != string::npos){SCALEDOWN = true;}
+	//CHECK mcspecificcorrections
+        //if(output_filename.find("Hpp") != string::npos){HERWIGPP = true;}
+	//if(output_filename.find("P6") != string::npos){PYTHIA6 = true;}
+        //if(output_filename.find("scaleup") != string::npos){SCALEUP = true;}
+        //if(output_filename.find("scaledown") != string::npos){SCALEDOWN = true;}
         if(output_filename.find("tt_") == 0){TTMC = true;}
         isDA = 0;
         if(output_filename.find("DATAEL") == 0){isDA = 11;}
@@ -579,6 +594,10 @@ void ttbar::begin()
 	truth1d.AddHist("Eff_Lall", btagpt, "p_{T} [GeV]", "Events");
 	truth1d.AddHist("Mu", 100, 0, 100, "#mu", "Events");
 	truth1d.AddHist("MuWeighted", 100, 0, 100, "#mu", "Events");
+	truth1d.AddHist("xb", 150, 0, 1.5, "x_{b}", "Events");
+	truth1d.AddHist("xc", 150, 0, 1.5, "x_{c}", "Events");
+	truth1d.AddHist("bids_had", 10000, 0, 10000, "pdgids b", "Events");
+	truth1d.AddHist("bids_lep", 10000, 0, 10000, "pdgids b", "Events");
 
 	response.AddMatrix("thardpt", topptbins, topptbins, "high p_{T}(t) [GeV]");
 	response.AddMatrix("tsoftpt", topptbins, topptbins, "soft p_{T}(t) [GeV]");
@@ -641,6 +660,8 @@ void ttbar::begin()
 		pdfunc->Add1dHist("pdfunc_reco_njets_thadpt", response2d.GetNBins("njets_thadpt"), 0., response2d.GetNBins("njets_thadpt") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_njets_ttpt", response2d.GetNBins("njets_ttpt"), 0., response2d.GetNBins("njets_ttpt") , "bin", "Events");
                 //add mtt and dely here later for PDF uncertainties 
+		pdfunc->Add1dHist("pdfunc_reco_dy1mtt", {}, "|y(t)|-|y(#bar{t})|", "Events");
+		pdfunc->Add1dHist("pdfunc_reco_dy2mtt", {100,200, }, "|y(t)|-|y(#bar{t})|", "Events");
 
 	}
 
@@ -907,6 +928,8 @@ void ttbar::begin()
         //grlikelihood3j_nsetamax = (TGraph*)tf->Get("nsetamax_bhright");
         //likelihood3j_nspteta_2d = (TH2D*)tf->Get("nspteta_right");
 
+	bdecayweights.Init(cbdecay);
+	bfragweights.Init("bfragweights.root", cbfrag);
 }
 
 ttbar::~ttbar()
@@ -1096,6 +1119,60 @@ void ttbar::SelectPseudoTop(URStreamer& event)
 //otto's new version
 void ttbar::AddGenJetSelection(URStreamer& event)
 {
+	const vector<Pl>& pls = event.PLs();
+	//int addbs = 0;	
+	//int addcs = 0;	
+	double bweights = 1.;
+	for(const Pl& gj : pls)
+	{
+		if(abs(gj.pdgId()) > 5) {continue;}
+		sgenparticles.push_back(gj);
+		//genalljets.push_back(&(sgenparticles.back()));
+		if(gj.pdgId() == 5)
+		{
+			genbjets.push_back(&(sgenparticles.back()));
+			bweights *= bfragweights.Weight(gj);
+			bweights *= bdecayweights.Weight(gj);
+			//if(genallper.IsComplete() && genallper.DRminTTjets(&gj) > 0.4) {addbs++;}
+		}
+		else if(gj.pdgId() == 4)
+		{
+			gencjets.push_back(&(sgenparticles.back()));
+			//if(genallper.IsComplete() && genallper.DRminTTjets(&gj) > 0.4) {addcs++;}
+		}
+		else
+		{
+			genljets.push_back(&(sgenparticles.back()));
+		}
+	}
+	weight *= bweights;
+	for(const Pl& gj : pls)
+	{
+		if(abs(gj.pdgId()) == 4)
+		{
+			truth1d["xc"]->Fill(gj.isoR4(), weight);
+		}
+		else if(abs(gj.pdgId()) == 5)
+		{
+			truth1d["xb"]->Fill(gj.isoR4(), weight);
+			float pdgid = gj.isoR3();
+			if(fmod(pdgid,1) != 0.)
+			{
+				truth1d["bids_lep"]->Fill(abs(pdgid-0.5), weight);
+			}
+			else
+			{
+				truth1d["bids_had"]->Fill(abs(pdgid), weight);
+			}
+		}
+	}
+	//weight *= pow(cbsplitting, addbs);
+	//weight *= pow(ccsplitting, addbs);
+}
+
+/*
+void ttbar::AddGenJetSelection(URStreamer& event)
+{
     const vector<Pl>& pls = event.PLs();
     for(const Pl& gj : pls)
     {
@@ -1103,15 +1180,15 @@ void ttbar::AddGenJetSelection(URStreamer& event)
         if(gj.pdgId() == 5 && gj.Pt() > 25. && abs(gj.Eta()) < 2.5)
         {
             sgenparticles.push_back(gj);
-            genbhadrons.push_back(&(sgenparticles.back()));
+            genbjets.push_back(&(sgenparticles.back()));
         }
         if(gj.pdgId() == 4 && gj.Pt() > 25. && abs(gj.Eta()) < 2.5)
         {
             sgenparticles.push_back(gj);
-            genchadrons.push_back(&(sgenparticles.back()));
+            gencjets.push_back(&(sgenparticles.back()));
         }
     }
-}
+}*/
 
 void ttbar::SelectRecoParticles(URStreamer& event)
 {
@@ -1153,7 +1230,10 @@ void ttbar::SelectRecoParticles(URStreamer& event)
 		IDJet jet(*jetit);
                 if(Abs(jet.Eta()) > cjetetamax) {continue;}
                 if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
-                double sf = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet, cjetres);
+		double sfres = jetscaler.GetRes(jet, Min(event.rho().value(), 30.), cjetres);
+		double sf = sfres + jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet);
+                //may do some develope on Wj later ref:otto's
+                //double sf = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet, cjetres);
                 metcorrx -= (sf-1)*jet.Px();
                 metcorry -= (sf-1)*jet.Py();
                 //cout << sf << " " << jet.Pt() << " ";
@@ -1216,7 +1296,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
         //      }
         for(IDJet* j:cleanedjets)
         {
-            if(find_if(genbhadrons.begin(), genbhadrons.end(), [&](GenObject* bp){return j->DeltaR(*bp) < 0.3;}) != genbhadrons.end())
+            if(find_if(genbjets.begin(), genbjets.end(), [&](GenObject* bp){return j->DeltaR(*bp) < 0.3;}) != genbjets.end())
             {
                 if(Abs(j->Eta()) < 1.5)
                 {
@@ -2758,8 +2838,9 @@ void ttbar::analyze()
 		if(nevent % 10000 == 0)cout << "Event:" << nevent << " " << event.run << endl;
 		sgenparticles.clear();
 		genfincls.clear();
-		genbhadrons.clear();
-		genchadrons.clear();
+		genbjets.clear();
+		gencjets.clear();
+		genljets.clear();
 		//gent = 0;
 		//gentbar = 0;
 

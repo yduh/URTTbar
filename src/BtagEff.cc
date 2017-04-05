@@ -19,7 +19,7 @@ void BtagEff::Init(double btagsel, double bkgcutmin, double bkgcutmax)
 	btagtree = new TTree("btagtree", "btagtree", 1);
 	//btagtree->Branch("jwa", jwa, "jwa[5]/F");
 	//btagtree->Branch("jwb", jwb, "jwb[5]/F");
-	btagtree->Branch("j", j, "j[7]/F");
+	btagtree->Branch("j", j, "j[8]/F");
 	btagtree->Branch("prob", &prob, "prob/F");
 	btagtree->Branch("problep", &problep, "problep/F");
 	btagtree->Branch("probhad", &probhad, "probhad/F");
@@ -29,7 +29,6 @@ void BtagEff::Init(double btagsel, double bkgcutmin, double bkgcutmax)
 	btagtree->Branch("nvtx", &nvtx, "nvtx/F");
 	btagtree->Branch("typ", &typ, "typ/I");
 	btagtree->Branch("test", &test, "test/I");
-
 }
 
 void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepcorrect, double theweight)
@@ -58,8 +57,8 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepc
 		if(bhad->CvsB() > -0.17 && bhad->CvsL() > -0.48){ j[6] = 0;}
 		if(bhad->CvsB() > 0.08 && bhad->CvsL() > -0.1){ j[6] = 1;}
 		if(bhad->CvsB() > -0.45 && bhad->CvsL() > 0.69){ j[6] = 2;}
+		j[7] = bhad->DeepCSVb()+bhad->DeepCSVbb();
 		btagtree->Fill();
-
 	}
 
 	if(bhad->csvIncl() > btagselection)
@@ -69,6 +68,7 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepc
 		if(blep->CvsB() > -0.17 && blep->CvsL() > -0.48){ j[6] = 0;}
 		if(blep->CvsB() > 0.08 && blep->CvsL() > -0.1){ j[6] = 1;}
 		if(blep->CvsB() > -0.45 && blep->CvsL() > 0.69){ j[6] = 2;}
+		j[7] = blep->DeepCSVb()+blep->DeepCSVbb();
 		btagtree->Fill();
 	}
 
@@ -79,11 +79,13 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepc
 		if(wja->CvsB() > -0.17 && wja->CvsL() > -0.48){ j[6] = 0;}
 		if(wja->CvsB() > 0.08 && wja->CvsL() > -0.1){ j[6] = 1;}
 		if(wja->CvsB() > -0.45 && wja->CvsL() > 0.69){ j[6] = 2;}
+		j[7] = wja->DeepCSVb()+wja->DeepCSVbb();
 		btagtree->Fill();
 		j[0] = per.WJb()->Px(); j[1] = per.WJb()->Py(); j[2] = per.WJb()->Pz(); j[3] = per.WJb()->E(); j[4] = wjb->csvIncl(); j[5] = wjb->CombinedMVA(); j[6] = -1;
 		if(wjb->CvsB() > -0.17 && wjb->CvsL() > -0.48){ j[6] = 0;}
 		if(wjb->CvsB() > 0.08 && wjb->CvsL() > -0.1){ j[6] = 1;}
 		if(wjb->CvsB() > -0.45 && wjb->CvsL() > 0.69){ j[6] = 2;}
+		j[7] = wjb->DeepCSVb()+wjb->DeepCSVbb();
 		btagtree->Fill();
 	}
 
@@ -91,15 +93,15 @@ void BtagEff::Fill(Permutation& per, float thenvtx, bool thadcorrect, bool tlepc
 	if(bmax > bkgcutmin_ && bmax < bkgcutmax_)
 	{
 		test = -1;
-		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.;
+		j[0] = per.BHad()->Px(); j[1] = per.BHad()->Py(); j[2] = per.BHad()->Pz(); j[3] = per.BHad()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.; j[7] = -1.;
 		btagtree->Fill();
 		test = -2;
-		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.;
+		j[0] = per.BLep()->Px(); j[1] = per.BLep()->Py(); j[2] = per.BLep()->Pz(); j[3] = per.BLep()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.; j[7] = -1.;
 		btagtree->Fill();
 		test = -3;
-		j[0] = per.WJa()->Px(); j[1] = per.WJa()->Py(); j[2] = per.WJa()->Pz(); j[3] = per.WJa()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.;
+		j[0] = per.WJa()->Px(); j[1] = per.WJa()->Py(); j[2] = per.WJa()->Pz(); j[3] = per.WJa()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.;j[7] = -1.;
 		btagtree->Fill();
-		j[0] = per.WJb()->Px(); j[1] = per.WJb()->Py(); j[2] = per.WJb()->Pz(); j[3] = per.WJb()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.;
+		j[0] = per.WJb()->Px(); j[1] = per.WJb()->Py(); j[2] = per.WJb()->Pz(); j[3] = per.WJb()->E(); j[4] = -1.; j[5] = -1.; j[6] = -1.; j[7] = -1.;
 		btagtree->Fill();
 	}
 

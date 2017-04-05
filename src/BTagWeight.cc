@@ -70,10 +70,18 @@ void BTagWeight::Init(ttbar* an, const string& csvfilename, const string& efffil
 	hborigM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_B").c_str()));
 	hcorigM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_C").c_str()));
 	hlorigM = dynamic_cast<TH1D*>(probfile->Get((mcname + "_M_L").c_str()));
-	if(an->HERWIGPP){mcname = "Hpp";}
+	if(an->HERWIGPP){mcname = "hpp";}
 	if(an->PYTHIA6){mcname = "P6";}
-	if(an->SCALEUP){mcname = "scaleup";}
-	if(an->SCALEDOWN){mcname = "scaledown";}
+	if(an->ISRUP){mcname = "isrup";}
+	if(an->ISRDOWN){mcname = "isrdown";}
+	if(an->FSRUP){mcname = "fsrup";}
+	if(an->FSRDOWN){mcname = "fsrdown";}
+	if(an->TUNEUP){mcname = "tuneup";}
+	if(an->TUNEDOWN){mcname = "tunedown";}
+	if(an->cbfrag == -1.){mcname = "bfragdown";}
+	if(an->cbfrag == 1.){mcname = "bfragup";}
+	if(an->cbdecay == -1.){mcname = "bdecaydown";}
+	if(an->cbdecay == 1.){mcname = "bdecayup";}
 	hbeffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_B").c_str()));
 	hceffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_C").c_str()));
 	hleffL = dynamic_cast<TH1D*>(probfile->Get((mcname + "_L_L").c_str()));
@@ -164,7 +172,7 @@ double BTagWeight::SF(vector<IDJet*>& jets)
 		//if(jet == bhad || jet == blep) {continue;}
 		double pt = jet->Pt();
 		int hbin = hbeffM->FindFixBin(pt);
-		if(find_if(AN->genbhadrons.begin(), AN->genbhadrons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genbhadrons.end())
+		if(find_if(AN->genbjets.begin(), AN->genbjets.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genbjets.end())
 		{
 			AN->truth1d["Eff_Ball"]->Fill(pt, AN->weight);
 			double effM = hbeffM->GetBinContent(hbin);
@@ -189,7 +197,7 @@ double BTagWeight::SF(vector<IDJet*>& jets)
 				PD *= 1. - (effLorig+effMorig)*(scalebL(jet, btyp));
 			}
 		}
-		else if(find_if(AN->genchadrons.begin(), AN->genchadrons.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->genchadrons.end())
+		else if(find_if(AN->gencjets.begin(), AN->gencjets.end(), [&](GenObject* bp){return jet->DeltaR(*bp) < 0.3;}) != AN->gencjets.end())
 		{
 			AN->truth1d["Eff_Call"]->Fill(pt, AN->weight);
 			double effM = hceffM->GetBinContent(hbin);
