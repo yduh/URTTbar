@@ -869,6 +869,8 @@ void ttbar::begin()
         //jetscaler.Init("Fall15_25nsV2_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
         //jetscaler.Init("Spring16_25nsV6_DATA_UncertaintySources_AK4PFchs.txt", cjecuncertainty);
         jetscaler.Init(cJetEnergyUncertainty, cjecuncertainty);
+	jetscaler.Init(cJetEnergyUncertainty, "FlavorPureBottom");
+	jetscaler.Init(cJetEnergyUncertainty, "FlavorQCD");
         //jetscaler.InitResolution("jetresolution.txt", "jetresolutionsf.txt");
         jetscaler.InitResolution(cJetResolution, cJetResolutionSF);
         jetscaler.InitMCrescale(this, "jetrescale.root");
