@@ -1232,7 +1232,7 @@ void ttbar::SelectRecoParticles(URStreamer& event)
                 if(!jet.ID() || !jet.Clean(loosemuons, looseelectrons)) {continue;}
 		double sfres = jetscaler.GetRes(jet, Min(event.rho().value(), 30.), cjetres);
 		double sf = sfres + jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet);
-                //may do some develope on Wj later ref:otto's
+                //could do some developes later on Wj, ref:otto's ellipse
                 //double sf = jetscaler.GetScale(jet, Min(event.rho().value(), 30.), csigmajet, cjetres);
                 metcorrx -= (sf-1)*jet.Px();
                 metcorry -= (sf-1)*jet.Py();
