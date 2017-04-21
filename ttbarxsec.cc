@@ -210,6 +210,7 @@ ttbar::ttbar(const std::string output_filename):
 	topptbins = {0.0, 45.0, 90.0, 135.0, 180.0, 225.0, 270.0, 315.0, 400.0, 800.0};
 	topybins = {0.0, 0.2, 0.4, 0.7, 1.0, 1.3, 1.6, 2.5};
 	ttmbins = {300.0, 375.0, 450.0, 530.0, 625.0, 740.0, 850.0, 1100.0, 2000.0};
+        mttbins = {0, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600, 640, 680, 720, 760, 800, 840, 880, 920, 960, 1000, 1040, 1080, 1120, 1160, 1200, 1240, 1280, 1320, 1360, 1400, 1440, 1480, 1520, 1560, 1600, 1640, 1680, 1720, 1760, 1800, 1840, 1880, 1920, 1960, 2000};
 	ttybins = {0.0, 0.2, 0.4, 0.6, 0.9, 1.3, 2.3};
 	ttptbins = {0.0, 35.0, 80.0, 140.0, 200.0, 500.0};
 	metbins = {0.0, 30.0, 45.0, 60.0, 80.0, 120.0, 580.0};
@@ -659,9 +660,17 @@ void ttbar::begin()
 		pdfunc->Add1dHist("pdfunc_reco_dymp", dybins, "|y(t)|-|y(#bar{t})|", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_njets_thadpt", response2d.GetNBins("njets_thadpt"), 0., response2d.GetNBins("njets_thadpt") , "bin", "Events");
 		pdfunc->Add1dHist("pdfunc_reco_njets_ttpt", response2d.GetNBins("njets_ttpt"), 0., response2d.GetNBins("njets_ttpt") , "bin", "Events");
+                
                 //add mtt and dely here later for PDF uncertainties 
-		pdfunc->Add1dHist("pdfunc_reco_dy1mtt", {}, "|y(t)|-|y(#bar{t})|", "Events");
-		pdfunc->Add1dHist("pdfunc_reco_dy2mtt", {100,200, }, "|y(t)|-|y(#bar{t})|", "Events");
+		pdfunc->Add1dHist("pdfunc_dy1mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 0 ~ 0.5
+		pdfunc->Add1dHist("pdfunc_dy2mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 0.5 ~ 1.0
+		pdfunc->Add1dHist("pdfunc_dy3mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 1.0 ~ 1.5
+		pdfunc->Add1dHist("pdfunc_dy4mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 1.5 ~ 6.0
+		
+                pdfunc->Add1dHist("pdfunc_reco_dy1mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 0 ~ 0.5
+		pdfunc->Add1dHist("pdfunc_reco_dy2mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 0.5 ~ 1.0
+		pdfunc->Add1dHist("pdfunc_reco_dy3mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 1.0 ~ 1.5
+		pdfunc->Add1dHist("pdfunc_reco_dy4mtt", mttbins, "|y(t)|-|y(#bar{t})|", "Events");//|dy| = 1.5 ~ 6.0
 
 	}
 
@@ -2626,7 +2635,13 @@ void ttbar::ttanalysis(URStreamer& event)
 			pdfunc->Fill1d("pdfunc_reco_dymp", Abs(genper->T().Rapidity()) - Abs(genper->Tb().Rapidity()), weight);
 			pdfunc->Fill1d("pdfunc_reco_njets_thadpt", response2d.GetBin("njets_thadpt", cleanedjets.size() - 4, bestper.THad().Pt())-0.5, weight);
 			pdfunc->Fill1d("pdfunc_reco_njets_ttpt", response2d.GetBin("njets_ttpt", cleanedjets.size() - 4, bestper.TT().Pt())-0.5, weight);
-		}
+	
+                        double absdely = Abs(genper->THad().Rapidity() - genper->TLep().Rapidity());
+		        if(absdely <0.5) pdfunc->Fill1d("pdfunc_reco_dy1mtt", genper->TT().M(), weight);
+                        else if(absdely <1.0) pdfunc->Fill1d("pdfunc_reco_dy2mtt", genper->TT().M(), weight);
+                        else if(absdely <1.5) pdfunc->Fill1d("pdfunc_reco_dy3mtt", genper->TT().M(), weight);
+                        else pdfunc->Fill1d("pdfunc_reco_dy4mtt", genper->TT().M(), weight);
+                }
 		response.FillTruthReco("thardpt", genper->THard().Pt(), bestper.THard().Pt(), weight);
 		response.FillTruthReco("tsoftpt", genper->TSoft().Pt(), bestper.TSoft().Pt(), weight);
 		response.FillTruthReco("nobin", genper->THad().Pt(), bestper.THad().Pt(), weight);
@@ -3137,7 +3152,13 @@ void ttbar::analyze()
 				pdfunc->Fill1d("pdfunc_dymp", Abs(genper->T().Rapidity()) - Abs(genper->Tb().Rapidity()), weight);
 				pdfunc->Fill1d("pdfunc_njets_thadpt", response2d.GetBin("njets_thadpt", genaddjets.size(), genper->THad().Pt())-0.5, weight);
 				pdfunc->Fill1d("pdfunc_njets_ttpt", response2d.GetBin("njets_ttpt", genaddjets.size(), genper->TT().Pt())-0.5, weight);
-			}
+			
+                                double absdely = Abs(genper->THad().Rapidity() - genper->TLep().Rapidity());
+                                if(absdely <0.5) pdfunc->Fill1d("pdfunc_dy1mtt", genper->TT().M(), weight);
+                                else if(absdely <1.0) pdfunc->Fill1d("pdfunc_dy2mtt", genper->TT().M(), weight);
+                                else if(absdely <1.5) pdfunc->Fill1d("pdfunc_dy3mtt", genper->TT().M(), weight);
+                                else pdfunc->Fill1d("pdfunc_dy4mtt", genper->TT().M(), weight);
+                        }
 		}
 		if(SEMILEPACC)
 		{

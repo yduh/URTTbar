@@ -244,6 +244,7 @@ class ttbar : public AnalyzerBase
 		vector<double> topptbins;
 		vector<double> topybins;
 		vector<double> ttmbins;
+		vector<double> mttbins;
 		vector<double> ttybins;
 		vector<double> ttptbins;
 		vector<double> metbins;
