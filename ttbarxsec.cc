@@ -935,6 +935,7 @@ void ttbar::begin()
         //TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
         TFile* fyuka_2d = TFile::Open(yukawasf.c_str());
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
+	//yukahist_2dLO = (TH2D*)fyuka_2d->Get("LO");
 
         //TDirectory* dir = gDirectory;
         TFile* tf = TFile::Open("likelihood3j.root");
@@ -1016,7 +1017,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
         double lhedely = lhet.Rapidity() - lhetbar.Rapidity();
         lhe1d["mtt"]->Fill((lhet+lhetbar).Mag(), weightlhe);
         lhe1d["delY"]->Fill(lhet.Rapidity()-lhetbar.Rapidity(), weightlhe);
-        lhe2d["mtt_delY"]->Fill((lhet+lhetbar).Mag(), lhet.Rapidity()-lhetbar.Rapidity(), weightlhe);
+        lhe2d["Mtt_delY"]->Fill((lhet+lhetbar).Mag(), lhet.Rapidity()-lhetbar.Rapidity(), weightlhe);
 
 	SEMILEP = false;
 	SEMILEPACC = false;
@@ -2998,11 +2999,11 @@ void ttbar::analyze()
                                 TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
                                 TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
                                 weightlhe = weight;
-                                cout<<"weightlhe="<<weightlhe<<endl;
                                 weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 weightparametrize *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 weightparametrize_origin *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 //weightthoeryunc *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                //hcout<<"weightlhe="<<weightlhe<<", weight="<<weight<<endl;
                                 
 
                                 //if(Mtt>= 2*172.5*cosh(deltaY/2))

@@ -112,7 +112,6 @@ class ttbar : public AnalyzerBase
                 
                 TH1DCollection lhe1d;
                 TH2DCollection lhe2d;
-
                 TH1DCollection yuka1d_gen;
                 TH1DCollection yuka1d_reco;
                 TH1DCollection yuka1d_reco_right;
