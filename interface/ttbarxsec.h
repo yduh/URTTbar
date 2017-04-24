@@ -112,6 +112,8 @@ class ttbar : public AnalyzerBase
                 
                 TH1DCollection lhe1d;
                 TH2DCollection lhe2d;
+                TH1DCollection lhephlo1d;
+                TH2DCollection lhephlo2d;
                 TH1DCollection yuka1d_gen;
                 TH1DCollection yuka1d_reco;
                 TH1DCollection yuka1d_reco_right;
@@ -267,6 +269,7 @@ class ttbar : public AnalyzerBase
                 TH1D* yukahist_dely;
                 TH1D* yukahist_beta;
                 TH2D* yukahist_2d;
+                TH2D* yukahist_2dlo;
                 TGraph* grlikelihood3j_nsd;
                 TGraph* grlikelihood3j_thad;
                 TH2D* likelihood3j_nspteta_2d;
