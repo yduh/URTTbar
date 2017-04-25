@@ -731,6 +731,8 @@ void ttbar::begin()
         lhe1d.AddHist("mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	lhe1d.AddHist("delY", 1200, -6, 6, "#Deltay_{t#bar{t}}", "Events");
 	lhe2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+        lhe1d.AddHist("mtt_constraint", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	lhe2d.AddHist("Mtt_constraint_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
         
 
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
@@ -1058,8 +1060,8 @@ void ttbar::SelectGenParticles(URStreamer& event)
 	}
 
         
-        Lhe lhet;
-        Lhe lhetbar;
+        //Lhe lhet;
+        //Lhe lhetbar;
 	const vector<Lhe>& lheparticles = event.lhes();
         //for(const Lhe& lp : lheparticles)
 	for(Lhe lp : lheparticles)
@@ -1068,19 +1070,19 @@ void ttbar::SelectGenParticles(URStreamer& event)
             if(lp.pdgid() == -6) lhetbar = lp;
         }
 
-        lhe1d["mtt"]->Fill((lhet+lhetbar).Mag(), weight);
-        lhe1d["delY"]->Fill(lhet.Rapidity()-lhetbar.Rapidity(), weight);
-        lhe2d["Mtt_delY"]->Fill((lhet+lhetbar).Mag(), lhet.Rapidity()-lhetbar.Rapidity(), weight);
+        lhe1d["mtt"]->Fill((lhet+lhetbar).Mag(), 1);
+        lhe1d["delY"]->Fill(lhet.Rapidity()-lhetbar.Rapidity(), 1);
+        lhe2d["Mtt_delY"]->Fill((lhet+lhetbar).Mag(), lhet.Rapidity()-lhetbar.Rapidity(), 1);
 
         TLorentzVector v1(lhet.Px(), lhet.Py(), lhet.Pz(), sqrt(lhet.P()*lhet.P()+172.5*172.5));
         TLorentzVector v2(lhetbar.Px(), lhetbar.Py(), lhetbar.Pz(), sqrt(lhetbar.P()*lhetbar.P()+172.5*172.5));
-        //TLorentzVector v3(gent.Px(), gent.Py(), gent.Pz(), sqrt(gent.P()*gent.P()+172.5*172.5));
-        //TLorentzVector v4(gentbar.Px(), gentbar.Py(), gentbar.Pz(), sqrt(gentbar.P()*gentbar.P()+172.5*172.5));
+        TLorentzVector v3(gent.Px(), gent.Py(), gent.Pz(), sqrt(gent.P()*gent.P()+172.5*172.5));
+        TLorentzVector v4(gentbar.Px(), gentbar.Py(), gentbar.Pz(), sqrt(gentbar.P()*gentbar.P()+172.5*172.5));
         double LO = yukahist_2dlo->GetBinContent(yukahist_2dlo->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2dlo->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()));
         double EW = yukahist_2dew->GetBinContent(yukahist_2dew->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2dew->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()));
-        //lhe1d["mtt"]->Fill((lhet+lhetbar).Mag()/LO, weight);
+        lhe1d["mtt_constrain"]->Fill((v1+v2).Mag(), 1);
         //lhe1d["delY"]->Fill((lhet.Rapidity()-lhetbar.Rapidity())/LO, weight);
-        //lhe2d["Mtt_delY"]->Fill((lhet+lhetbar).Mag()/LO, (lhet.Rapidity()-lhetbar.Rapidity())/LO, weight);
+        lhe2d["Mtt_constraint_delY"]->Fill((v1+v2).Mag(), (lhet.Rapidity()-lhetbar.Rapidity()), 1);
         //cout<<"lhe = "<<(lhet+lhetbar).Mag()<<" "<<(v1+v2).Mag()<<", "<<(lhet.Rapidity()-lhetbar.Rapidity())<<endl;
         //cout<<"powheg = "<<(gent+gentbar).Mag()<<" "<<(v3+v4).Mag()<<", "<<(gent.Rapidity()-gentbar.Rapidity())<<endl;
         //cout<<"LO = "<<yukahist_2dlo->GetBinContent(yukahist_2dlo->GetXaxis()->FindFixBin((lhet+lhetbar).Mag()), yukahist_2dlo->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()))<<", "<<LO<<endl;
@@ -1900,6 +1902,9 @@ void ttbar::ttanalysis(URStreamer& event)
 
         reco3j1d["Mtt"]->Fill((tlep_3j + thad_3j).Mag(), weight);
         reco3j1d["delY"]->Fill(tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
+        //cout<<"lhe = "<<(lhet+lhetbar).Mag()<<", "<<(lhet.Rapidity()-lhetbar.Rapidity())<<endl;
+        //cout<<"gen powheg = "<<(gentq+gentqbar).M()<<", "<<gentqlep.Rapidity()-gentqhad.Rapidity()<<endl;
+        //cout<<"reco powheg = "<<(tlep_3j + thad_3j).Mag()<<", "<<tlep_3j.Rapidity()-thad_3j.Rapidity()<<endl<<endl;
         reco3j2d["Mtt_delY"]->Fill((tlep_3j + thad_3j).Mag(), tlep_3j.Rapidity()-thad_3j.Rapidity(), weight);
         reco3j1d["Mtt_resol"]->Fill(((tlep_3j + thad_3j).Mag() - (gentqhad+gentqlep).Mag())/(gentqhad + gentqlep).Mag(), weight);
         reco3j1d["delY_resol"]->Fill(((tlep_3j.Rapidity() - thad_3j.Rapidity()) - (gentqlep.Rapidity() - gentqhad.Rapidity()))/(gentqlep.Rapidity() - gentqhad.Rapidity()), weight);
@@ -2639,6 +2644,9 @@ void ttbar::ttanalysis(URStreamer& event)
 		//yuka1d_reco["costheta"]->Fill(costheta_had, weight);
 		//yuka1d_reco["costheta"]->Fill(costheta_lep, weight);
 		yuka1d_reco["delY"]->Fill(deltaY, weight);
+                //cout<<"lhe = "<<(lhet+lhetbar).Mag()<<", "<<(lhet.Rapidity()-lhetbar.Rapidity())<<endl;
+                //cout<<"gen powheg = "<<(gentq+gentqbar).M()<<", "<<gentqlep.Rapidity()-gentqhad.Rapidity()<<endl;
+                //cout<<"reco powheg = "<<(bestper.THad() + bestper.TLep()).M()<<", "<<bestper.TLep().Rapidity()-bestper.THad().Rapidity()<<endl;
 		yuka1d_reco["Y"]->Fill(bestper.TLep().Rapidity(), weight);
 		yuka1d_reco["Y"]->Fill(bestper.THad().Rapidity(), weight);
 		//yuka1d_reco["delBeta"]->Fill(deltaBeta, weight);

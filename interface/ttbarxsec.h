@@ -61,6 +61,8 @@ class ttbar : public AnalyzerBase
 		TLorentzVector gentbar;
 		TLorentzVector gentlep;
 		TLorentzVector genthad;
+                Lhe lhet;
+                Lhe lhetbar;
 
 		list<GenObject> sgenjets;
 		vector<GenObject*> genaddjets;
