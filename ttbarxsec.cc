@@ -60,8 +60,6 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_nsemi_right("ttp_nsemi_right"),
         lhe1d("lhe"), 
         lhe2d("lhe"), 
-        lhephlo1d("lhephlo"), 
-        lhephlo2d("lhephlo"), 
         yuka1d_gen("yukawa"),
         //yuka1d_offshell("yukawa"),
         yuka1d_reco("yukawa"),
@@ -733,11 +731,6 @@ void ttbar::begin()
         lhe1d.AddHist("mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	lhe1d.AddHist("delY", 1200, -6, 6, "#Deltay_{t#bar{t}}", "Events");
 	lhe2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
-        TDirectory* dir_LHEpHLO = outFile_.mkdir("LHEpHLO");
-	dir_LHEpHLO->cd();
-        lhephlo1d.AddHist("mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	lhephlo1d.AddHist("delY", 1200, -6, 6, "#Deltay_{t#bar{t}}", "Events");
-	lhephlo2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
         
 
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
@@ -943,6 +936,7 @@ void ttbar::begin()
         TFile* fyuka_2d = TFile::Open(yukawasf.c_str());
 	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
 	yukahist_2dlo = (TH2D*)fyuka_2d->Get("LO");
+	yukahist_2dew = (TH2D*)fyuka_2d->Get("EW");
 
         //TDirectory* dir = gDirectory;
         TFile* tf = TFile::Open("likelihood3j.root");
@@ -1078,13 +1072,20 @@ void ttbar::SelectGenParticles(URStreamer& event)
         lhe1d["delY"]->Fill(lhet.Rapidity()-lhetbar.Rapidity(), weight);
         lhe2d["Mtt_delY"]->Fill((lhet+lhetbar).Mag(), lhet.Rapidity()-lhetbar.Rapidity(), weight);
 
-        TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
-        TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
-	double deltaY = gentqlep.Rapidity() - gentqhad.Rapidity();
-        double LO = yukahist_2dlo->GetBinContent(yukahist_2dlo->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2dlo->GetYaxis()->FindFixBin(deltaY));
-        lhephlo1d["mtt"]->Fill((lhet+lhetbar).Mag() - LO, weight);
-        lhephlo1d["delY"]->Fill((lhet.Rapidity()-lhetbar.Rapidity()) - LO, weight);
-        lhephlo2d["Mtt_delY"]->Fill((lhet+lhetbar).Mag() - LO, (lhet.Rapidity()-lhetbar.Rapidity()) - LO, weight);
+        TLorentzVector v1(lhet.Px(), lhet.Py(), lhet.Pz(), sqrt(lhet.P()*lhet.P()+172.5*172.5));
+        TLorentzVector v2(lhetbar.Px(), lhetbar.Py(), lhetbar.Pz(), sqrt(lhetbar.P()*lhetbar.P()+172.5*172.5));
+        //TLorentzVector v3(gent.Px(), gent.Py(), gent.Pz(), sqrt(gent.P()*gent.P()+172.5*172.5));
+        //TLorentzVector v4(gentbar.Px(), gentbar.Py(), gentbar.Pz(), sqrt(gentbar.P()*gentbar.P()+172.5*172.5));
+        double LO = yukahist_2dlo->GetBinContent(yukahist_2dlo->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2dlo->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()));
+        double EW = yukahist_2dew->GetBinContent(yukahist_2dew->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2dew->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()));
+        //lhe1d["mtt"]->Fill((lhet+lhetbar).Mag()/LO, weight);
+        //lhe1d["delY"]->Fill((lhet.Rapidity()-lhetbar.Rapidity())/LO, weight);
+        //lhe2d["Mtt_delY"]->Fill((lhet+lhetbar).Mag()/LO, (lhet.Rapidity()-lhetbar.Rapidity())/LO, weight);
+        //cout<<"lhe = "<<(lhet+lhetbar).Mag()<<" "<<(v1+v2).Mag()<<", "<<(lhet.Rapidity()-lhetbar.Rapidity())<<endl;
+        //cout<<"powheg = "<<(gent+gentbar).Mag()<<" "<<(v3+v4).Mag()<<", "<<(gent.Rapidity()-gentbar.Rapidity())<<endl;
+        //cout<<"LO = "<<yukahist_2dlo->GetBinContent(yukahist_2dlo->GetXaxis()->FindFixBin((lhet+lhetbar).Mag()), yukahist_2dlo->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()))<<", "<<LO<<endl;
+
+        //lhe2d["Mtt_delY_LO"]->Fill((lhet+lhetbar).Mag()/LO, (lhet.Rapidity()-lhetbar.Rapidity())/LO, weight);
 }
 
 //otto's new version
