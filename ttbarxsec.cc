@@ -731,8 +731,8 @@ void ttbar::begin()
         lhe1d.AddHist("mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	lhe1d.AddHist("delY", 1200, -6, 6, "#Deltay_{t#bar{t}}", "Events");
 	lhe2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
-        lhe1d.AddHist("mtt_constraint", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	lhe2d.AddHist("Mtt_constraint_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+        lhe1d.AddHist("mtt_constrain", 1000, 0, 2000, "M(t#bar{t})", "Events");
+	lhe2d.AddHist("Mtt_constrain_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
         
 
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
@@ -1082,7 +1082,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
         double EW = yukahist_2dew->GetBinContent(yukahist_2dew->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2dew->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()));
         lhe1d["mtt_constrain"]->Fill((v1+v2).Mag(), 1);
         //lhe1d["delY"]->Fill((lhet.Rapidity()-lhetbar.Rapidity())/LO, weight);
-        lhe2d["Mtt_constraint_delY"]->Fill((v1+v2).Mag(), (lhet.Rapidity()-lhetbar.Rapidity()), 1);
+        lhe2d["Mtt_constrain_delY"]->Fill((v1+v2).Mag(), (lhet.Rapidity()-lhetbar.Rapidity()), 1);
         //cout<<"lhe = "<<(lhet+lhetbar).Mag()<<" "<<(v1+v2).Mag()<<", "<<(lhet.Rapidity()-lhetbar.Rapidity())<<endl;
         //cout<<"powheg = "<<(gent+gentbar).Mag()<<" "<<(v3+v4).Mag()<<", "<<(gent.Rapidity()-gentbar.Rapidity())<<endl;
         //cout<<"LO = "<<yukahist_2dlo->GetBinContent(yukahist_2dlo->GetXaxis()->FindFixBin((lhet+lhetbar).Mag()), yukahist_2dlo->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()))<<", "<<LO<<endl;
