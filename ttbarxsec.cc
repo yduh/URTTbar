@@ -2429,6 +2429,17 @@ void ttbar::ttanalysis(URStreamer& event)
             gen3j1d["thadmiss_DeltaR3"]->Fill(genper->WJa()->DeltaR(*genper->BLep()), weight);
         }        
 
+	if(SEMILEPACC)
+	{
+		if(PDFTEST)
+		{
+                        double absdely = Abs(genper->THad().Rapidity() - genper->TLep().Rapidity());
+		        if(absdely <0.5) pdfunc->Fill1d("pdfunc_reco_dy1mtt", genper->TT().M(), weight);
+                        else if(absdely <1.0) pdfunc->Fill1d("pdfunc_reco_dy2mtt", genper->TT().M(), weight);
+                        else if(absdely <1.5) pdfunc->Fill1d("pdfunc_reco_dy3mtt", genper->TT().M(), weight);
+                        else pdfunc->Fill1d("pdfunc_reco_dy4mtt", genper->TT().M(), weight);
+                }
+        }
 
     }//end of cleanedjets.size()==3 (save time and size)
 
@@ -2886,7 +2897,6 @@ void ttbar::ttanalysis(URStreamer& event)
 	//if(BTAGMODE){btageff.Fill(bestper, nvtx, rightper.IsCorrect(bestper), weight);}
 	if(BTAGMODE){btageff.Fill(bestper, nvtx, bestper.IsTHadCorrect(rightper), bestper.IsBLepCorrect(rightper), weight);}
 }
-   // }//end of cleanedjets.size()==3 (save time and size)
 
 //This method is called once every file, contains the event loop
 //run your proper analysis here
