@@ -58,8 +58,8 @@ ttbar::ttbar(const std::string output_filename):
 	ttp_thad_right("ttp_thad_right"),
 	ttp_nn_right("ttp_nn_right"),
 	ttp_nsemi_right("ttp_nsemi_right"),
-        lhe1d("lhe"), 
-        lhe2d("lhe"), 
+        //lhe1d("lhe"), 
+        //lhe2d("lhe"), 
         yuka1d_gen("yukawa"),
         //yuka1d_offshell("yukawa"),
         yuka1d_reco("yukawa"),
@@ -726,13 +726,13 @@ void ttbar::begin()
 	reco1d.AddHist("Mt_W", 200, 0, 200, "M_{t}(W) [GeV]", "Events");
 	ttp_all.Init(this);
 
-        TDirectory* dir_LHE = outFile_.mkdir("LHE");
+        /*TDirectory* dir_LHE = outFile_.mkdir("LHE");
 	dir_LHE->cd();
         lhe1d.AddHist("mtt", 1000, 0, 2000, "M(t#bar{t})", "Events");
 	lhe1d.AddHist("delY", 1200, -6, 6, "#Deltay_{t#bar{t}}", "Events");
 	lhe2d.AddHist("Mtt_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
         lhe1d.AddHist("mtt_constrain", 1000, 0, 2000, "M(t#bar{t})", "Events");
-	lhe2d.AddHist("Mtt_constrain_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");
+	lhe2d.AddHist("Mtt_constrain_delY", 1000, 0, 2000, 1200, -6, 6, "M(t#bar{t})", "#Deltay_{t#bar{t}}");*/
         
 
         TDirectory* dir_yukawagen = outFile_.mkdir("YUKAWA_GEN");
@@ -1059,7 +1059,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
 		gen1d["TYP"]->Fill(2.5, weight);
 	}
 
-        
+        /*
         //Lhe lhet;
         //Lhe lhetbar;
 	const vector<Lhe>& lheparticles = event.lhes();
@@ -1088,6 +1088,7 @@ void ttbar::SelectGenParticles(URStreamer& event)
         //cout<<"LO = "<<yukahist_2dlo->GetBinContent(yukahist_2dlo->GetXaxis()->FindFixBin((lhet+lhetbar).Mag()), yukahist_2dlo->GetYaxis()->FindFixBin(lhet.Rapidity()-lhetbar.Rapidity()))<<", "<<LO<<endl;
 
         //lhe2d["Mtt_delY_LO"]->Fill((lhet+lhetbar).Mag()/LO, (lhet.Rapidity()-lhetbar.Rapidity())/LO, weight);
+        */
 }
 
 //otto's new version
@@ -2929,7 +2930,7 @@ void ttbar::analyze()
 
 		truth1d["counter"]->Fill(0.5);
 		weight = 1.;	
-		weightlhe = 1.;	
+		//weightlhe = 1.;	
                 weightparametrize = 1.;
                 weightparametrize_origin = 1.;
                 //weighttheoryunc = 1.;
@@ -3020,7 +3021,7 @@ void ttbar::analyze()
 
                                 TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
                                 TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
-                                weightlhe = weight;
+                                //weightlhe = weight;
                                 weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 weightparametrize *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
                                 weightparametrize_origin *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;

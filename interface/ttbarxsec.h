@@ -61,8 +61,8 @@ class ttbar : public AnalyzerBase
 		TLorentzVector gentbar;
 		TLorentzVector gentlep;
 		TLorentzVector genthad;
-                Lhe lhet;
-                Lhe lhetbar;
+                //Lhe lhet;
+                //Lhe lhetbar;
 
 		list<GenObject> sgenjets;
 		vector<GenObject*> genaddjets;
@@ -112,8 +112,8 @@ class ttbar : public AnalyzerBase
                 TH1DCollection missj1d;
                 TH2DCollection missj2d;
                 
-                TH1DCollection lhe1d;
-                TH2DCollection lhe2d;
+                //TH1DCollection lhe1d;
+                //TH2DCollection lhe2d;
                 TH1DCollection yuka1d_gen;
                 TH1DCollection yuka1d_reco;
                 TH1DCollection yuka1d_reco_right;
@@ -236,7 +236,7 @@ class ttbar : public AnalyzerBase
 	
 		int lastlumi = -1;
 		double weight;
-		double weightlhe;
+		//double weightlhe;
 		double mcweight;
 		double puweight;
                 double weightparametrize;
