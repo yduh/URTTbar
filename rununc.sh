@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TYP=results/totj
+TYP=results/4jup
 TYPUNC=results/test/3junc/SubTotalMC
 JOBDIR=JOB15
 #GT='0.0y 1.0y 2.0y 3.0y 4.0y 5.0y N1.0y N2.0y N3.0y N4.0y N5.0y'
