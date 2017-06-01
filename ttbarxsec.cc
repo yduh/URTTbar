@@ -1568,13 +1568,13 @@ void ttbar::ttanalysis(URStreamer& event)
             if(cleanedjets.size() == 3)
                 //{if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}} // add for 3j 
                 //{if(reducedjets[0]->csvIncl() > 0.6 || reducedjets[1]->csvIncl() > 0.6){return;}}// for bck templates 
-                //{if((reducedjets[0]->csvIncl() >0.7 || reducedjets[1]->csvIncl() >0.7) || (reducedjets[0]->csvIncl() <0.4 || reducedjets[1]->csvIncl() <0.4)){return;}}//bck templates comparisons 2 
-                {if(reducedjets[0]->csvIncl() >0.4 || reducedjets[1]->csvIncl() >0.4){return;}}//bck templates comparisons 1 
+                {if((reducedjets[0]->csvIncl() >0.7 || reducedjets[1]->csvIncl() >0.7) || (reducedjets[0]->csvIncl() <0.4 || reducedjets[1]->csvIncl() <0.4)){return;}}//bck templates comparisons 2 
+                //{if(reducedjets[0]->csvIncl() >0.4 || reducedjets[1]->csvIncl() >0.4){return;}}//bck templates comparisons 1 
             else
                 //{if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_MEDIUM){return;}} 
                 //{if(reducedjets[0]->csvIncl() > 0.6 || reducedjets[1]->csvIncl() > 0.6){return;}} //for bck templates
-                //{if((reducedjets[0]->csvIncl() >0.7 || reducedjets[1]->csvIncl() >0.7) || (reducedjets[0]->csvIncl() <0.4 || reducedjets[1]->csvIncl() <0.4)){return;}}//bck templates comparisons 2 
-                {if(reducedjets[0]->csvIncl() >0.4 || reducedjets[1]->csvIncl() >0.4){return;}}//bck templates comparisons 1 
+                {if((reducedjets[0]->csvIncl() >0.7 || reducedjets[1]->csvIncl() >0.7) || (reducedjets[0]->csvIncl() <0.4 || reducedjets[1]->csvIncl() <0.4)){return;}}//bck templates comparisons 2 
+                //{if(reducedjets[0]->csvIncl() >0.4 || reducedjets[1]->csvIncl() >0.4){return;}}//bck templates comparisons 1 
                 //{if(reducedjets[0]->csvIncl() < B_MEDIUM || reducedjets[1]->csvIncl() < B_LOOSE){return;}}
 	}
 	double nvtx = event.vertexs().size();
