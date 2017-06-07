@@ -219,6 +219,7 @@ class ttbar : public AnalyzerBase
 		string cJetResolution;
 		string cJetResolutionSF;
 		bool TTMC;
+		bool NOEW;
 		bool HERWIGPP;
 		bool PYTHIA6;
 		bool ISRUP;

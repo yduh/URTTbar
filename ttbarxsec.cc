@@ -117,6 +117,7 @@ ttbar::ttbar(const std::string output_filename):
 	cltagunc(0),
 	cpileup(0),
         TTMC(false),
+        NOEW(false),
         FULLHAD(false),
         SEMILEP(false),
         FULLLEP(false),
@@ -203,6 +204,7 @@ ttbar::ttbar(const std::string output_filename):
         //if(output_filename.find("scaleup") != string::npos){SCALEUP = true;}
         //if(output_filename.find("scaledown") != string::npos){SCALEDOWN = true;}
         if(output_filename.find("tt_") == 0){TTMC = true;}
+        if(yukawasf.find("noEW") == 0){NOEW = true;}
         isDA = 0;
         if(output_filename.find("DATAEL") == 0){isDA = 11;}
         if(output_filename.find("DATAMU") == 0){isDA = 13;} 
@@ -934,11 +936,15 @@ void ttbar::begin()
 	//TFile* fyuka_beta = TFile::Open("yukawa2_beta.root");
 	//yukahist_beta = (TH1D*)fyuka_beta->Get("XSR_beta");
 
-        //TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
-        TFile* fyuka_2d = TFile::Open(yukawasf.c_str());
-	yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
-	yukahist_2dlo = (TH2D*)fyuka_2d->Get("LO");
-	yukahist_2dew = (TH2D*)fyuka_2d->Get("EW");
+        //if(yukawasf.c_str() != "noEW"){
+        if(!NOEW){
+            cout<<"i am in the EW file reading, "<<yukawasf.c_str()<<endl;
+            //TFile* fyuka_2d = TFile::Open("yukawa_reweighing1.0.root");
+            TFile* fyuka_2d = TFile::Open(yukawasf.c_str());
+            yukahist_2d = (TH2D*)fyuka_2d->Get("EWtoLO");
+            yukahist_2dlo = (TH2D*)fyuka_2d->Get("LO");
+            yukahist_2dew = (TH2D*)fyuka_2d->Get("EW");
+        }
 
         //TDirectory* dir = gDirectory;
         TFile* tf = TFile::Open("likelihood3j.root");
@@ -3035,11 +3041,15 @@ void ttbar::analyze()
                                 TLorentzVector v1(gentq.Px(), gentq.Py(), gentq.Pz(), sqrt(gentq.P()*gentq.P()+172.5*172.5));
                                 TLorentzVector v2(gentqbar.Px(), gentqbar.Py(), gentqbar.Pz(), sqrt(gentqbar.P()*gentqbar.P()+172.5*172.5));
                                 //weightlhe = weight;
-                                //weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1; //on/off EW correction 
-                                weightparametrize *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                weightparametrize_origin *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                //weightthoeryunc *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
-                                //hcout<<"weightlhe="<<weightlhe<<", weight="<<weight<<endl;
+                                //if(yukawasf.c_str() != "noEW"){
+                                if(!NOEW){
+                                    cout<<"i am in the EW reweighting ,"<<yukawasf.c_str()<<endl;
+                                    weight *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1; //on/off EW correction 
+                                    weightparametrize *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                    weightparametrize_origin *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin(Mtt), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                    //weightthoeryunc *= yukahist_2d->GetBinContent(yukahist_2d->GetXaxis()->FindFixBin((v1+v2).M()), yukahist_2d->GetYaxis()->FindFixBin(deltaY)) + 1;
+                                    //hcout<<"weightlhe="<<weightlhe<<", weight="<<weight<<endl;
+                                }
                                 
 
                                 //if(Mtt>= 2*172.5*cosh(deltaY/2))
