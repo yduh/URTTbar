@@ -14,13 +14,14 @@
 #include "TTBarGenPlots.h"
 #include "TTBarPlots.h"
 #include "TTBarSolver.h"
-#include "TTBarResponse.h"
-#include "TTBarResponse2D.h"
+//#include "TTBarResponse.h"
+//#include "TTBarResponse2D.h"
 #include "Permutation.h"
 #include "BtagEff.h"
 #include "JetScaler.h"
 #include "BTagWeight.h"
 #include "BHadronDecayWeights.h"
+#include "LepEffCorrection.h"
 
 using namespace std;
 class PDFuncertainty;
@@ -29,7 +30,7 @@ class ttbar : public AnalyzerBase
 {
 	friend class TTBarGenPlots;
     friend class TTBarPlots;
-    friend class TTBarResponse;
+    //friend class TTBarResponse;
     friend class BTagWeight;
     friend class JetScaler;
 
@@ -61,8 +62,8 @@ class ttbar : public AnalyzerBase
 		TLorentzVector gentbar;
 		TLorentzVector gentlep;
 		TLorentzVector genthad;
-                //Lhe lhet;
-                //Lhe lhetbar;
+                Lhe lhet;
+                Lhe lhetbar;
 
 		list<GenObject> sgenjets;
 		vector<GenObject*> genaddjets;
@@ -87,6 +88,8 @@ class ttbar : public AnalyzerBase
 		vector<IDElectron*> mediumelectrons;
 		IDMet met;
 
+        TLorentzVector* lep = nullptr;
+		int leppdgid = 0;
 		//hists
 		TH1DCollection gen1d;
 		TH2DCollection gen2d;
@@ -112,8 +115,8 @@ class ttbar : public AnalyzerBase
                 TH1DCollection missj1d;
                 TH2DCollection missj2d;
                 
-                //TH1DCollection lhe1d;
-                //TH2DCollection lhe2d;
+                TH1DCollection lhe1d;
+                TH2DCollection lhe2d;
                 TH1DCollection yuka1d_gen;
                 TH1DCollection yuka1d_reco;
                 TH1DCollection yuka1d_reco_right;
@@ -147,18 +150,18 @@ class ttbar : public AnalyzerBase
 	//	TTBarPlots ttp_jets_wrong;
 	//	TTBarPlots ttp_blep_right;
 	//	TTBarPlots ttp_blep_wrong;
-		//TTBarPlots ttp_whad_right;
-		//TTBarPlots ttp_whad_wrong;
+	//	TTBarPlots ttp_whad_right;
+	//	TTBarPlots ttp_whad_wrong;
 
-		TTBarPlots ttp_tlepthad_right;
-		TTBarPlots ttp_tlep_right;
-		TTBarPlots ttp_thad_right;
-		TTBarPlots ttp_nn_right;
-		TTBarPlots ttp_nsemi_right;
+	//	TTBarPlots ttp_tlepthad_right;
+	//	TTBarPlots ttp_tlep_right;
+	//	TTBarPlots ttp_thad_right;
+	//	TTBarPlots ttp_nn_right;
+	//	TTBarPlots ttp_nsemi_right;
 
-		TTBarResponse response;
-		TTBarResponse2D response2d;
-		TTBarResponse response_ps;
+		//TTBarResponse response;
+		//TTBarResponse2D response2d;
+		//TTBarResponse response_ps;
 
 		BtagEff btageff;
 		BTagWeight btagweight;
@@ -175,9 +178,12 @@ class ttbar : public AnalyzerBase
 		bool JETSCALEMODE;
 		bool MUONS;
 		bool ELECTRONS;
+        bool runSR;
+		int runCSV;
 		double B_TIGHT;
 		double B_MEDIUM;
 		double B_LOOSE;
+        double B_SB;
 		//string cnbtag;
 		int cnbtag;
 		size_t cnusedjets;
@@ -203,6 +209,7 @@ class ttbar : public AnalyzerBase
 		string cBTaggingEff;
 		int cjetres;
 		double csigmamet;
+        double csigmalep;
 		double ctopptweight;
 		double ctoprapweight;
 		double cttptweight;
@@ -210,16 +217,25 @@ class ttbar : public AnalyzerBase
 		double cbfrag = 0.;
 		int cfacscale;
 		int crenscale;
-                int chdamp;
+        int chdamp;
 		int cbtagunc;
 		int cltagunc;
 		int cpileup;
+		int cnnlounc;
 		string cLeptonScaleFactor;
 		string cJetEnergyUncertainty;
 		string cJetResolution;
 		string cJetResolutionSF;
 		bool TTMC;
+		bool STtopMC;
+		bool WnJetsMC;
 		bool NOEW;
+		bool NNLO;
+		bool ct14;
+        bool NNLO_mtt = true;
+        bool NNLO_ptave = false;
+		bool NNLO_tyave = false;
+		bool NNLO_tty = false;
 		bool HERWIGPP;
 		bool PYTHIA6;
 		bool ISRUP;
@@ -228,9 +244,9 @@ class ttbar : public AnalyzerBase
 		bool FSRDOWN;
 		bool TUNEUP;
 		bool TUNEDOWN;
-                 string yukawasf;
-                 int njetsmin;
-                 int njetsmax;
+        string yukawasf;
+        int njetsmin;
+        int njetsmax;
 
 		//
 		double jetptmin;
@@ -240,8 +256,8 @@ class ttbar : public AnalyzerBase
 		//double weightlhe;
 		double mcweight;
 		double puweight;
-                double weightparametrize;
-                double weightparametrize_origin;
+        double weightparametrize;
+        double weightparametrize_origin;
 		BHadronDecayWeights bdecayweights;
 		BFragWeights bfragweights;
 
@@ -261,6 +277,10 @@ class ttbar : public AnalyzerBase
  		vector<double> runbins;
 
 		TH1D* puhist;
+        TH1D* hisoSBmuPT;
+        TH1D* hisoSBelPT;
+        LepEffCorrection mucorrector;
+        LepEffCorrection elcorrector;
 		TH2D* musfhist;
 		TH2D* elsfhist;
 		TH2D* mutrgsfhist;
@@ -272,6 +292,7 @@ class ttbar : public AnalyzerBase
                 TH2D* yukahist_2d;
                 TH2D* yukahist_2dlo;
                 TH2D* yukahist_2dew;
+                TH1D* nnlohist_1d;
                 TGraph* grlikelihood3j_nsd;
                 TGraph* grlikelihood3j_thad;
                 TH2D* likelihood3j_nspteta_2d;
@@ -293,6 +314,7 @@ class ttbar : public AnalyzerBase
 		void SelectRecoParticles(URStreamer& event);
 		void AddGenJetSelection(URStreamer& event);
 		void ttanalysis(URStreamer& event);
+                double lepeffweight(TLorentzVector* lep, URStreamer& event);
 
 		static void setOptions() {}
 };

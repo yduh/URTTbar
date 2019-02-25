@@ -26,10 +26,6 @@ class JetScaler
 		TH1D* Heta = nullptr;
 		vector<TH1D*> HptsP;
 		vector<TH1D*> HptsM;
-		vector<TH1D*> HptsPqcd;
-		vector<TH1D*> HptsMqcd;
-		vector<TH1D*> HptsPb;
-		vector<TH1D*> HptsMb;
 		TFile* tf = nullptr;
 		TGraph* hlE =nullptr;
 		TGraph* hlB =nullptr;

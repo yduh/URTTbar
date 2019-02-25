@@ -51,7 +51,8 @@ bool IDMuon::ID(IDS idtyp)
 		if(abs(dB()) > 0.2) return(false);
 		if(abs(dz()) > 0.5) return(false);
 		if(chi2()/ndof() > 10.) return(false);
-		if(PFIsoDb()/Pt() > 0.15) return(false);
+		if(PFIsoDb()/Pt() > 0.15) return(false);//iso
+		//if(PFIsoDb()/Pt() < 0.15) return(false);//inverted iso
 		return(true);
 	}
 	else if(idtyp == LOOSE_16)
@@ -59,7 +60,8 @@ bool IDMuon::ID(IDS idtyp)
 		if(TMath::Abs(Eta()) > 2.4) return(false);
 		if(!isPF()) return(false);
 		if(!isGlobal() && !isTracker()) return(false);
-		if(PFIsoDb()/Pt() > 0.25) return(false);
+		if(PFIsoDb()/Pt() > 0.25) return(false);//iso
+		//if(PFIsoDb()/Pt() < 0.15) return(false);//inverted iso
 		return(true);
 	}
 	return(false);

@@ -31,6 +31,17 @@ os.system(cpcomm)
 exe = os.path.join(jobdir, os.path.basename(exe))
 print exe, execonfig
 
+p = subprocess.Popen(['ldd', exe], stdout=subprocess.PIPE)
+slibs = p.stdout.read().split('\n')
+slibs = [(l.split('=>')[-1].split('(')[0]).strip() for l in slibs if 'uscms' in l]
+libs = []
+for lib in slibs:
+    cpcomm = 'cp ' + lib + ' ' + jobdir
+    print cpcomm
+    os.system(cpcomm)
+    libs.append(os.path.join(jobdir, os.path.basename(lib)))
+
+
 files = os.listdir(inputdir)
 
 samplefiles = [f for f in files if 'txt' in f]
@@ -41,17 +52,19 @@ if os.path.isdir(transferdir):
 	transferfiles = os.listdir(transferdir)
 
 transferfiles = [os.path.join(transferdir, tf) for tf in transferfiles]
+transferfiles+=libs
 transferfiles.append(execonfig)
+transferfiles.append(exe)
 
 transferfiles_config = ', '.join(transferfiles)
 
 for sf in samplefiles:
 	if 'QCD' in sf:
-		filesperjob = 12
+		filesperjob = 96 #72 #12
 	elif 'DATA_' in sf:
-		filesperjob = 10
+		filesperjob = 96 #80 #60 #10
 	else:
-		filesperjob = 12
+		filesperjob = 96 #96 #72 #12
 	#infile = os.path.join(inputdir, sf)
 	jobpath = os.path.join(jobdir, sf.split('.txt')[0])
 	os.mkdir(jobpath)
@@ -75,32 +88,44 @@ Error = con_{2}.stderr
 Arguments = {0} {1} {6}_out_{2}.root --thread 1 --j {2} --J {3} {4}
 Queue
 
-		""".format(exe, infile, j, numjobs, ' '.join(jobargs), transferfiles_config, sample)
+		""".format(exe.split('/')[-1], sf, j, numjobs, ' '.join(jobargs), transferfiles_config+', '+infile, sample)
         
 		conf = open(os.path.join(jobpath, 'condor_'+str(j)+'.jdl'), 'w')
 		conf.write(condorfile)
 		conf.close()
 
-	batch_job="""#!/bin/bash
-WORKINGDIR=$PWD
-cd {0}
-source environment.sh
-cd $WORKINGDIR
-
+                batch_job="""#!/bin/bash
 PA=$@
 PA=${{PA#* }}
 
 EXE=$1
-
+echo $HOSTNAME
 pwd
+THEDIR=`pwd`
 ls -lht
+
+export SCRAM_ARCH={0}
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+which scram
+scram p CMSSW {1}
+cd {1}
+eval `scramv1 runtime -sh`
+cd $THEDIR
+
+export LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
+echo $LD_LIBRARY_PATH
+ldd $EXE
 
 echo $EXE
 echo $PA
+date
+echo "BEGIN EXE"
+./$EXE $PA 
+echo "END EXE"
+date
+ls -lht
 
-$EXE $PA 
-
-	""".format(swdir)
+                """.format(os.environ['SCRAM_ARCH'], os.environ['CMSSW_VERSION'])
 
 	conf = open(os.path.join(jobpath, 'batch_job.sh'), 'w')
 	conf.write(batch_job)

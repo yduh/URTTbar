@@ -3,9 +3,11 @@ import sys, os
 
 updates = {}
 
-for i in range(0, (len(sys.argv)-1)/2):
-	updates[sys.argv[i+1]] = sys.argv[i+2]
+#for i in range(0, (len(sys.argv)-1)/2):
+#	updates[sys.argv[i+1]] = sys.argv[i+2]
 
+for i in range(0, (len(sys.argv)-1)/2):
+    updates[sys.argv[i*2+1]] = sys.argv[i*2+2]
 
 print updates
 

@@ -27,4 +27,5 @@ then
   export LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc481/external/lhapdf6/6.1.5/lib:$LD_LIBRARY_PATH
 fi
 
+export LD_LIBRARY_PATH=$PWD/lib:$LD_LIBRARY_PATH
 export LHAPDF_DATA_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc481/external/lhapdf6/6.1.5/share/LHAPDF

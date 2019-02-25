@@ -50,16 +50,6 @@ void JetScaler::Init(const string& filename, const string& type)
 {	
 	vector<TH1D*>* ErrP = &HptsP;
 	vector<TH1D*>* ErrM = &HptsM;
-	if(type == "FlavorQCD")
-	{
-		ErrP = &HptsPqcd;
-		ErrM = &HptsMqcd;
-	}
-	if(type == "FlavorPureBottom")
-	{
-		ErrP = &HptsPb;
-		ErrM = &HptsMb;
-	}
 
 	TDirectory* dir = gDirectory;
 	//gROOT->cd();
@@ -229,13 +219,13 @@ double JetScaler::GetScale(const IDJet& jet, double rho, double sigmascale)
 	int ptbin = HptsP[etabin]->FindFixBin(jet.Pt());
 	if(sigmascale >= 0)
 	{
-		if(BJET) return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPb[etabin]->GetBinContent(ptbin), 2)));
-		return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) + pow(HptsPqcd[etabin]->GetBinContent(ptbin), 2)));
+		if(BJET) return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) ));
+		return(sf + sigmascale*sqrt(pow(HptsP[etabin]->GetBinContent(ptbin), 2) ));
 	}
 	else
 	{
-		if(BJET) return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMb[etabin]->GetBinContent(ptbin), 2)));
-		return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2) + pow(HptsMqcd[etabin]->GetBinContent(ptbin), 2)));
+		if(BJET) return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2)));
+		return(sf + sigmascale*sqrt(pow(HptsM[etabin]->GetBinContent(ptbin), 2)));
 	}
 }
 

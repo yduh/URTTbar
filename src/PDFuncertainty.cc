@@ -128,7 +128,9 @@ void PDFuncertainty::Fill1d(string name, double val, double weight)
 
 	for(size_t h = 0 ; h < ws.size() ; ++h)
 	{
-		Whist1d[name][h]->Fill(val, weight*ws[h].weights()/ws[0].weights());
+		Whist1d[name][h]->Fill(val, weight*ws[h].weights()/ws[0].weights());//IF you are using the NNPDF
+		//Whist1d[name][h]->Fill(val, weight*(ws[h].weights()/ws[0].weights())/ (ws[112].weights()/abs(ws[0].weights())) );
+		//Besides, 112 is only for the tt PDF unc, if you need it for STt and WnJets, that's different weights
 	}
 
 }

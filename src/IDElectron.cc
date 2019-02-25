@@ -27,7 +27,7 @@ bool IDElectron::ID(IDS idtyp)
 {
 	if(Abs(Eta()) > 2.4) return(false);
 	double sceta = abs(SCeta());
-	if(sceta > 2.5) return(false);
+	if(sceta > 2.4) return(false);
 	if(sceta < 1.566 && sceta > 1.4442) return(false);
 	else if(idtyp == TIGHT_16)
 	{
@@ -37,7 +37,8 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(DEtaSCTrk()) > 0.00308){return(false);}
 			if(Abs(DPhiSCTrk()) > 0.0816){return(false);}
 			if(hadronicOverEM() > 0.0414){return(false);}
-			if(USEISO && CorPFIsolation() > 0.0588){return(false);}
+			if(USEISO && CorPFIsolation() > 0.0588){return(false);}//iso
+			//if(USEISO && CorPFIsolation() < 0.0588){return(false);}//inverted iso
 			if(Abs((1. - ESCOverETrack())/ecalEnergy()) > 0.0129){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
 			if(conversion()){return(false);}
@@ -51,7 +52,8 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(DEtaSCTrk()) > 0.00605){return(false);}
 			if(Abs(DPhiSCTrk()) > 0.0394){return(false);}
 			if(hadronicOverEM() > 0.0641){return(false);}
-			if(USEISO && CorPFIsolation() > 0.0571){return(false);}
+			if(USEISO && CorPFIsolation() > 0.0571){return(false);}//iso
+			//if(USEISO && CorPFIsolation() < 0.0571){return(false);}//inverted iso
 			if(Abs((1. - ESCOverETrack())/ecalEnergy()) > 0.0129){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
 			if(conversion()){return(false);}
@@ -68,7 +70,8 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(DEtaSCTrk()) > 0.00477){return(false);}
 			if(Abs(DPhiSCTrk()) > 0.222){return(false);}
 			if(hadronicOverEM() > 0.298){return(false);}
-			if(USEISO && CorPFIsolation() > 0.0994){return(false);}
+			if(USEISO && CorPFIsolation() > 0.0994){return(false);}//iso
+			//if(USEISO && CorPFIsolation() < 0.0588){return(false);}//inverted iso
 			if(Abs((1. - ESCOverETrack())/ecalEnergy()) > 0.241){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
 			if(conversion()){return(false);}
@@ -82,7 +85,8 @@ bool IDElectron::ID(IDS idtyp)
 			if(Abs(DEtaSCTrk()) > 0.00868){return(false);}
 			if(Abs(DPhiSCTrk()) > 0.213){return(false);}
 			if(hadronicOverEM() > 0.101){return(false);}
-			if(USEISO && CorPFIsolation() > 0.107){return(false);}
+			if(USEISO && CorPFIsolation() > 0.107){return(false);}//iso
+			//if(USEISO && CorPFIsolation() < 0.0571){return(false);}//inverted iso
 			if(Abs((1. - ESCOverETrack())/ecalEnergy()) > 0.14){return(false);}
 			if(nMissingInnerHits() > 1){return(false);}
 			if(conversion()){return(false);}
